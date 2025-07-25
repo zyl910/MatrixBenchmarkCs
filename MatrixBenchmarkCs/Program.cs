@@ -1,9 +1,8 @@
-﻿namespace MatrixBenchmarkCs
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
+﻿using System;
+
+namespace MatrixBenchmarkCs {
+    internal class Program {
+        static void Main(string[] args) {
             Console.WriteLine("Hello, World!");
         }
     }
