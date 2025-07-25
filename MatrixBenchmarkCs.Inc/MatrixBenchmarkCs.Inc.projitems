@@ -9,5 +9,7 @@
     <Import_RootNamespace>MatrixBenchmarkCs.Inc</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
   </ItemGroup>
 </Project>

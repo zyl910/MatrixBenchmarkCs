@@ -37,4 +37,8 @@
         <PackageReference Include="VectorTraits" Version="3.1.0" />
     </ItemGroup>
 
+    <Import Project="..\MatrixBenchmarkCs.Core.Inc\MatrixBenchmarkCs.Core.Inc.projitems" Label="Shared" />
+
+    <Import Project="..\MatrixBenchmarkCs.Inc\MatrixBenchmarkCs.Inc.projitems" Label="Shared" />
+
 </Project>

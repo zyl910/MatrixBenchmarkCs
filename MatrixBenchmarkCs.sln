@@ -27,6 +27,8 @@ Global
 		SolutionGuid = {236A690A-219E-47E5-8CF0-9BDC834DD86E}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MatrixBenchmarkCs.Core.Inc\MatrixBenchmarkCs.Core.Inc.projitems*{4fccbf08-167f-48f5-b4e9-ccf0a3b86080}*SharedItemsImports = 5
+		MatrixBenchmarkCs.Inc\MatrixBenchmarkCs.Inc.projitems*{4fccbf08-167f-48f5-b4e9-ccf0a3b86080}*SharedItemsImports = 5
 		MatrixBenchmarkCs.Core.Inc\MatrixBenchmarkCs.Core.Inc.projitems*{9bd453fd-3da7-43f7-8745-f13bc20c59fe}*SharedItemsImports = 13
 		MatrixBenchmarkCs.Inc\MatrixBenchmarkCs.Inc.projitems*{f7455a68-d985-4dcf-8310-70274063e680}*SharedItemsImports = 13
 	EndGlobalSection
