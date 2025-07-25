@@ -17,7 +17,7 @@ namespace MatrixBenchmarkCs {
         /// Values for N.
         /// </summary>
         //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024 };
-        public static IEnumerable<int> ValuesForN => new int[] { 256 * 1024 };
+        public static IEnumerable<int> ValuesForN => new int[] { 1024 };
         //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024, 256 * 1024 };
 
         /// <summary>

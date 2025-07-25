@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MatrixBenchmarkCs.MultiplyMatrix;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -48,8 +49,8 @@ namespace MatrixBenchmarkCs {
             if (_inited) return;
             _inited = true;
             WrappedType[] types = {
-                // MultiplyMatrixs
-                //typeof(SumBenchmark_Int32),
+                // MultiplyMatrix
+                typeof(MatrixNMultiplyBenchmark_Int32),
             };
             WrappedTypePool.Shared.RegisterAll(types);
         }

@@ -42,6 +42,30 @@ namespace MatrixBenchmarkCs {
         }
 
         /// <summary>
+        /// Is float type.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <returns>Return true if float type; false is other.</returns>
+        public static bool IsFloatType<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif // NET6_0_OR_GREATER
+            T>() where T: struct {
+#if NET7_0_OR_GREATER
+            //bool isFloat = typeof(IFloatingPoint<T>).IsAssignableFrom(typeof(T));
+            bool isFloat = typeof(T) == typeof(float) || typeof(T) == typeof(double) || typeof(T) == typeof(Half);
+            if (!isFloat) {
+                isFloat = typeof(T).GetInterface("IFloatingPoint`1") != null;
+            }
+#elif NET5_0_OR_GREATER
+            bool isFloat = typeof(T) == typeof(float) || typeof(T) == typeof(double) || typeof(T) == typeof(Half);
+#else
+            bool isFloat = typeof(T) == typeof(float) || typeof(T) == typeof(double);
+#endif // NET7_0_OR_GREATER
+            return isFloat;
+        }
+
+        /// <summary>
         /// Output Environment.
         /// </summary>
         /// <param name="writer">Output <see cref="TextWriter"/>.</param>

@@ -6,10 +6,12 @@
     <SharedGUID>f7455a68-d985-4dcf-8310-70274063e680</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>MatrixBenchmarkCs.Inc</Import_RootNamespace>
+    <Import_RootNamespace>MatrixBenchmarkCs</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Int32.cs" />
   </ItemGroup>
 </Project>

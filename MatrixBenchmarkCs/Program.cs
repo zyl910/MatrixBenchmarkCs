@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using MatrixBenchmarkCs.MultiplyMatrix;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -38,10 +39,10 @@ namespace MatrixBenchmarkCs {
                     //.WithId("InProcess")
                     );
                 if (benchmarkMode >= 2) {
-                    //var summary = BenchmarkRunner.Run<SumBenchmark_Int32>(config);
-                    //writer.WriteLine(summary);
+                    var summary = BenchmarkRunner.Run<MatrixNMultiplyBenchmark_Int32>(config);
+                    writer.WriteLine(summary);
                 } else {
-                    var summary = BenchmarkRunner.Run(typeof(BenchmarkMain).Assembly, config);
+                    var summary = BenchmarkRunner.Run(typeof(MatrixNMultiplyBenchmark_Int32).Assembly, config);
                     writer.WriteLine("Length={0}, {1}", summary.Length, summary);
                 }
             } else {
