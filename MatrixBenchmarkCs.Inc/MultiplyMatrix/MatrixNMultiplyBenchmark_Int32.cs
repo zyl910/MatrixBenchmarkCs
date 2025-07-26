@@ -59,7 +59,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         [Benchmark(Baseline = true)]
         public void Basic() {
-            StaticBasic(N, N, N, arrayA!, N, arrayB!, N, arrayC!, N);
+            StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 baselineTMy = dstTMy;
