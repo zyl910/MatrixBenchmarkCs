@@ -19,13 +19,13 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// <summary>
     /// Matrix N*N multiply matrix N*N benchmark - Int32.
     /// </summary>
-    public class MatrixNMultiplyBenchmark_Int32: MatrixNMultiplyBenchmark<Int32> {
+    public class MatrixNMultiplyBenchmark_Int32: MatrixNMultiplyBenchmark<TMy> {
 
         protected override void CheckResult(string name) {
             CheckResult_Report(name, dstTMy != baselineTMy, dstTMy, baselineTMy);
         }
 
-        protected override Int32 GetCheckSum() {
+        protected override TMy GetCheckSum() {
             return default;
         }
 

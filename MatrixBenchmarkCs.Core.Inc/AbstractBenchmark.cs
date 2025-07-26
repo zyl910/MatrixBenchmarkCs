@@ -9,6 +9,14 @@ namespace MatrixBenchmarkCs {
     /// </summary>
     public abstract class AbstractBenchmark {
         /// <summary>
+        /// Values for N default value.
+        /// </summary>
+        public static readonly int[] DefaultValuesForN = new int[] {
+            //64
+            32, 64
+        };
+
+        /// <summary>
         /// Is check mode.
         /// </summary>
         public bool CheckMode { get; set; }
@@ -16,9 +24,7 @@ namespace MatrixBenchmarkCs {
         /// <summary>
         /// Values for N.
         /// </summary>
-        //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024 };
-        public IEnumerable<int> ValuesForN { get; set; } = new int[] { 32, 64 };
-        //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024, 256 * 1024 };
+        public IEnumerable<int> ValuesForN { get; set; } = DefaultValuesForN;
 
         /// <summary>
         /// Test size.

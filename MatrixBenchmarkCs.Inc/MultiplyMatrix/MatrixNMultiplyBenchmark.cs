@@ -28,6 +28,16 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         protected T[]? arrayC;
 
         /// <summary>
+        /// Create MatrixNMultiplyBenchmark.
+        /// </summary>
+        protected MatrixNMultiplyBenchmark() : base() {
+            ValuesForN = new int[] {
+                //64
+                32, 64, 65
+            };
+        }
+
+        /// <summary>
         /// Array setup
         /// </summary>
         protected virtual void ArraySetup() {
