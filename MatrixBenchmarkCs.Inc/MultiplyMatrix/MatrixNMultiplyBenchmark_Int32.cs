@@ -27,7 +27,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         protected override TMy GetCheckSum() {
-            return default;
+            return CheckSumUtil.Calculate2D(arrayC, MatrixM, MatrixN, StrideC);
         }
 
         /// <summary>
@@ -99,6 +99,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("BasicSpan");
+                //BenchmarkUtil.WriteItem("# BasicSpan", string.Format("{0}", dstTMy));
             }
         }
 
