@@ -17,14 +17,14 @@ namespace MatrixBenchmarkCs {
         /// Values for N.
         /// </summary>
         //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024 };
-        public static IEnumerable<int> ValuesForN => new int[] { 1024 };
+        public IEnumerable<int> ValuesForN { get; set; } = new int[] { 32, 64 };
         //public static IEnumerable<int> ValuesForN => new int[] { 64 * 1024, 256 * 1024 };
 
         /// <summary>
         /// Test size.
         /// </summary>
         [ParamsSource(nameof(ValuesForN))]
-        public int N;
+        public int N { get; set; }
 
         /// <summary>
         /// Global setup

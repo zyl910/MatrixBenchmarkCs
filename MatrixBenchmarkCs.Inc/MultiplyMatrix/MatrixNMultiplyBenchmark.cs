@@ -108,7 +108,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <inheritdoc cref="ILoopCountGetter.LoopCount" />
-        public int LoopCount { get; set; }
+        public int LoopCount { get { return N; } set { } }
 
     }
 }

@@ -349,7 +349,7 @@ namespace MatrixBenchmarkCs {
             List<MethodInfo> lst = new List<MethodInfo>();
             FillMethodInfoOfBenchmark(lst, obj);
             if (lst.Count <= 0) return;
-            foreach (int n in AbstractBenchmark.ValuesForN) {
+            foreach (int n in obj.ValuesForN) {
                 double mopsBaseline = 0.0;
                 writer.WriteLine();
                 writer.WriteTitle(string.Format("{0}({1})", typ.Name, n));
@@ -403,7 +403,7 @@ namespace MatrixBenchmarkCs {
             if (lst.Count <= 0) return;
             string typeName = typ.Name;
             double total = lst.Count;
-            int[] valueList = AbstractBenchmark.ValuesForN.ToArray();
+            int[] valueList = obj.ValuesForN.ToArray();
             double percentageWeight2 = percentageWeight * 1.0 / valueList.Length;
             int j = 0;
             foreach (int n in valueList) {

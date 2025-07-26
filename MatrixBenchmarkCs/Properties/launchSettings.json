@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MatrixBenchmarkCs": {
+      "commandName": "Project",
+      "commandLineArgs": "0"
+    }
+  }
+}
