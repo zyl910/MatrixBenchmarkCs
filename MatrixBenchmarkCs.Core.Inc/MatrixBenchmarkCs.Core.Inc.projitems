@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)FakeBenchmarkAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IBenchmarkWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ILoopCountGetter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MatrixUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimpleBenchmarkWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TabBenchmarkWriter.cs" />
   </ItemGroup>

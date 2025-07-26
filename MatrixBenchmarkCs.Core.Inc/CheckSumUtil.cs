@@ -19,7 +19,7 @@ namespace MatrixBenchmarkCs {
         /// <param name="start">The start index (开始索引).</param>
         /// <returns>Returns check sum (返回校验和).</returns>
         public static int Calculate2D(Span<int> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
-            ref int p = ref Unsafe.Add(ref buffer[0], start);
+            ref int p = ref Unsafe.Add(ref buffer.GetPinnableReference(), start);
             return Calculate2D(ref p, width, height, stride);
         }
 

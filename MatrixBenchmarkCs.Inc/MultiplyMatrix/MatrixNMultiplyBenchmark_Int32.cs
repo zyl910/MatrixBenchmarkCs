@@ -2,6 +2,7 @@
 
 using BenchmarkDotNet.Attributes;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -27,7 +28,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         protected override TMy GetCheckSum() {
-            return CheckSumUtil.Calculate2D(arrayC, MatrixM, MatrixN, StrideC);
+            return CheckSumUtil.Calculate2D(arrayC, MatrixN, MatrixM, StrideC);
         }
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <param name="C">Matrix C.</param>
         /// <param name="strideC">Stride of C.</param>
         public static void StaticBasic(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
-            // Matrix matrix multiply.
+            // Matrix multiply.
             for (int i = 0; i < M; ++i) {
                 for (int j = 0; j < N; ++j) {
                     int cIdx = i * strideC + j;
@@ -70,7 +71,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <summary>Basic on Span.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticBasicSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
-            // Matrix matrix multiply.
+            // Matrix multiply.
             int aIdx0 = 0;
             //int bIdx0 = 0;
             int cIdx0 = 0;
@@ -106,7 +107,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <summary>Basic on Ref.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticBasicRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
-            // Matrix matrix multiply.
+            // Matrix multiply.
             ref TMy pA0 = ref Unsafe.AsRef(in A);
             ref TMy pB0 = ref Unsafe.AsRef(in B);
             ref TMy pC0 = ref C;
@@ -135,6 +136,40 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("BasicRef");
+            }
+        }
+
+        /// <summary>Transpose on Array.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTranspose(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
+            // Transpose matrix B.
+            int total = K * N;
+            TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+            try {
+                MatrixUtil.Transpose(K, N, B, strideB, BTrans.AsSpan());
+                // Matrix multiply.
+                for (int i = 0; i < M; ++i) {
+                    for (int j = 0; j < N; ++j) {
+                        int cIdx = i * strideC + j;
+                        C[cIdx] = 0;
+                        for (int k = 0; k < K; ++k) {
+                            int aIdx = i * strideA + k;
+                            int bIdx = j * strideB + k;
+                            C[cIdx] += A[aIdx] * BTrans[bIdx];
+                        }
+                    }
+                }
+            } finally {
+                ArrayPool<TMy>.Shared.Return(BTrans);
+            }
+        }
+
+        [Benchmark]
+        public void Transpose() {
+            StaticTranspose(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("Transpose");
             }
         }
 
