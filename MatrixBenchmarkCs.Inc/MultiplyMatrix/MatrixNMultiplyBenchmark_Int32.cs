@@ -3,6 +3,7 @@
 using BenchmarkDotNet.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -97,8 +98,42 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             StaticBasicSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                baselineTMy = dstTMy;
-                BenchmarkUtil.WriteItem("# BasicSpan", string.Format("{0}", baselineTMy));
+                CheckResult("BasicSpan");
+            }
+        }
+
+        /// <summary>Basic on Ref.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticBasicRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            // Matrix matrix multiply.
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref TMy pC = ref pC0;
+                for (int j = 0; j < N; ++j) {
+                    TMy cur = 0;
+                    ref TMy pA = ref pA0;
+                    ref TMy pB = ref Unsafe.Add(ref pB0, j);
+                    for (int k = 0; k < K; ++k) {
+                        cur += pA * pB;
+                        pA = ref Unsafe.Add(ref pA, 1);
+                        pB = ref Unsafe.Add(ref pB, strideB);
+                    }
+                    pC = cur;
+                    pC = ref Unsafe.Add(ref pC, 1);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void BasicRef() {
+            StaticBasicRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BasicRef");
             }
         }
 
