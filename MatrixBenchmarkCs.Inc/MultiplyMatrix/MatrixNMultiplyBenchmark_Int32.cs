@@ -19,7 +19,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// <summary>
     /// Matrix N*N multiply matrix N*N benchmark - Int32.
     /// </summary>
-    public class MatrixNMultiplyBenchmark_Int32: MatrixNMultiplyBenchmark<TMy> {
+    public class MatrixNMultiplyBenchmark_Int32 : MatrixNMultiplyBenchmark<TMy> {
 
         protected override void CheckResult(string name) {
             CheckResult_Report(name, dstTMy != baselineTMy, dstTMy, baselineTMy);
@@ -30,7 +30,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>
-        /// Basic - Array.
+        /// Basic on Array.
         /// </summary>
         /// <param name="M">The number of rows in matrix A (矩阵A的行数).</param>
         /// <param name="N">The number of columns in matrix B (矩阵B的列数).</param>
@@ -45,14 +45,13 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             // Matrix matrix multiply.
             for (int i = 0; i < M; ++i) {
                 for (int j = 0; j < N; ++j) {
-                    TMy cur = 0;
+                    int cIdx = i * strideC + j;
+                    C[cIdx] = 0;
                     for (int k = 0; k < K; ++k) {
                         int aIdx = i * strideA + k;
                         int bIdx = k * strideB + j;
-                        cur += A[aIdx] * B[bIdx];
+                        C[cIdx] += A[aIdx] * B[bIdx];
                     }
-                    int cIdx = i * strideC + j;
-                    C[cIdx] = cur;
                 }
             }
         }
@@ -66,5 +65,42 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
             }
         }
+
+        /// <summary>Basic on Span.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticBasicSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+            // Matrix matrix multiply.
+            int aIdx0 = 0;
+            //int bIdx0 = 0;
+            int cIdx0 = 0;
+            for (int i = 0; i < M; ++i) {
+                int cIdx = cIdx0;
+                for (int j = 0; j < N; ++j) {
+                    TMy cur = 0;
+                    int aIdx = aIdx0;
+                    int bIdx = j;
+                    for (int k = 0; k < K; ++k) {
+                        cur += A[aIdx] * B[bIdx];
+                        ++aIdx;
+                        bIdx += strideB;
+                    }
+                    C[cIdx] = cur;
+                    ++cIdx;
+                }
+                aIdx0 += strideA;
+                cIdx0 += strideC;
+            }
+        }
+
+        [Benchmark]
+        public void BasicSpan() {
+            StaticBasicSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                baselineTMy = dstTMy;
+                BenchmarkUtil.WriteItem("# BasicSpan", string.Format("{0}", baselineTMy));
+            }
+        }
+
     }
 }
