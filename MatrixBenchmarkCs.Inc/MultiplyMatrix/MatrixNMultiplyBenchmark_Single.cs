@@ -7,8 +7,11 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+#if NETCOREAPP3_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Zyl.VectorTraits;
 
@@ -286,7 +289,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <summary>TileRow on SIMD.</summary>
         /// <inheritdoc cref="StaticTileRow"/>
         public static void StaticTileRowSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
-            if (N < Vector<TMy>.Count) {
+            if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
             }
             // Clear matrix C.
@@ -310,7 +313,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     int pos = N - Vector<TMy>.Count;
                     ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
                     ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.Add(pCLast, Vectors.Multiply(vA, pBLast));
+                    Vector<TMy> vCLast = Vector.Add(Vectors.Multiply(vA, pBLast), pCLast);
                     // SIMD for.
                     if (cntBlock >= 0) {
                         //ref TMy pB = ref pB0;
@@ -318,7 +321,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
                         ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
                         for (int j = 0; j < cntBlock; ++j) {
-                            pC = Vector.Add(pC, Vectors.Multiply(vA, pB)); // pC += vA * pB;
+                            pC = Vector.Add(Vectors.Multiply(vA, pB), pC); // pC += vA * pB;
                             pB = ref Unsafe.Add(ref pB, 1);
                             pC = ref Unsafe.Add(ref pC, 1);
                         }
@@ -341,6 +344,137 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowSimd");
             }
         }
+
+#if NET9_0_OR_GREATER
+        /// <summary>TileRow on SIMD Fma.</summary>
+        /// <inheritdoc cref="StaticTileRow"/>
+        public static void StaticTileRowSimdFma(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+            }
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Matrix multiply.
+            int cntRem = N % Vector<TMy>.Count; // Remainder count.
+            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
+            int cntBlock = cntBlockRaw;
+            if (0 == cntRem) {
+                --cntBlock; // Use vCLast.
+            }
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref TMy pA = ref pA0;
+                ref TMy pB0 = ref Unsafe.AsRef(in B);
+                for (int k = 0; k < K; ++k) {
+                    TMy aValue = pA;
+                    Vector<TMy> vA = new Vector<TMy>(aValue);
+                    // Last.
+                    int pos = N - Vector<TMy>.Count;
+                    ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
+                    ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
+                    Vector<TMy> vCLast = Vector.FusedMultiplyAdd(vA, pBLast, pCLast);
+                    // SIMD for.
+                    if (cntBlock >= 0) {
+                        //ref TMy pB = ref pB0;
+                        //ref TMy pC = ref pC0;
+                        ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
+                        ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
+                        for (int j = 0; j < cntBlock; ++j) {
+                            pC = Vector.FusedMultiplyAdd(vA, pB, pC); // pC += vA * pB;
+                            pB = ref Unsafe.Add(ref pB, 1);
+                            pC = ref Unsafe.Add(ref pC, 1);
+                        }
+                    }
+                    pCLast = vCLast; // Overrride remainder items. 
+                    // Next.
+                    pA = ref Unsafe.Add(ref pA, 1);
+                    pB0 = ref Unsafe.Add(ref pB0, strideB);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSimdFma() {
+            StaticTileRowSimdFma(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdFma");
+            }
+        }
+#endif // NET9_0_OR_GREATER
+
+#if REDUCE_MEMORY_USAGE
+#if NETCOREAPP3_0_OR_GREATER
+        /// <summary>TileRow on SIMD Fma X86.</summary>
+        /// <inheritdoc cref="StaticTileRow"/>
+        public static void StaticTileRowSimdFmaX86(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated || !Fma.IsSupported) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+            }
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Matrix multiply.
+            int cntRem = N % Vector<TMy>.Count; // Remainder count.
+            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
+            int cntBlock = cntBlockRaw;
+            if (0 == cntRem) {
+                --cntBlock; // Use vCLast.
+            }
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref TMy pA = ref pA0;
+                ref TMy pB0 = ref Unsafe.AsRef(in B);
+                for (int k = 0; k < K; ++k) {
+                    TMy aValue = pA;
+                    Vector<TMy> vA = new Vector<TMy>(aValue);
+                    // Last.
+                    int pos = N - Vector<TMy>.Count;
+                    ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
+                    ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
+                    Vector<TMy> vCLast = Vector.Add(Vectors.Multiply(vA, pBLast), pCLast);
+                    // SIMD for.
+                    if (cntBlock >= 0) {
+                        //ref TMy pB = ref pB0;
+                        //ref TMy pC = ref pC0;
+                        ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
+                        ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
+                        for (int j = 0; j < cntBlock; ++j) {
+                            // pC += vA * pB;
+                            if (Vector<byte>.Count == Vector256<byte>.Count) {
+                                pC = Fma.MultiplyAdd(vA.AsVector256(), pB.AsVector256(), pC.AsVector256()).AsVector();
+                            } else if (Vector<byte>.Count == Vector256<byte>.Count) {
+                                pC = Fma.MultiplyAdd(vA.AsVector128(), pB.AsVector128(), pC.AsVector128()).AsVector();
+                            } else {
+                                pC = Vector.Add(Vectors.Multiply(vA, pB), pC);
+                            }
+                            pB = ref Unsafe.Add(ref pB, 1);
+                            pC = ref Unsafe.Add(ref pC, 1);
+                        }
+                    }
+                    pCLast = vCLast; // Overrride remainder items. 
+                    // Next.
+                    pA = ref Unsafe.Add(ref pA, 1);
+                    pB0 = ref Unsafe.Add(ref pB0, strideB);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSimdFmaX86() {
+            StaticTileRowSimdFmaX86(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdFmaX86");
+            }
+        }
+#endif // NETCOREAPP3_0_OR_GREATER
+#endif // REDUCE_MEMORY_USAGE
 
         [Benchmark]
         public void TileRowSimdParallel() {
