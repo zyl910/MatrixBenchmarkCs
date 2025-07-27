@@ -176,7 +176,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <summary>Tile row on Array (行分块 on 数组).</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTileRow(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
-            // Clear matC.
+            // Clear matrix C.
             //C.AsSpan().Clear();
             MatrixUtil.Fill((TMy)0, M, N, C, strideC);
             // Matrix multiply.
@@ -204,7 +204,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <summary>TileRow on Span.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTileRowSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
-            // Clear matC.
+            // Clear matrix C.
             MatrixUtil.Fill((TMy)0, M, N, C, strideC);
             // Matrix multiply.
             int aIdx0 = 0;
@@ -234,6 +234,43 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowSpan");
+            }
+        }
+
+        /// <summary>TileRow on Ref.</summary>
+        /// <inheritdoc cref="StaticTileRow"/>
+        public static void StaticTileRowRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Matrix multiply.
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref TMy pA = ref pA0;
+                ref TMy pB0 = ref Unsafe.AsRef(in B);
+                for (int k = 0; k < K; ++k) {
+                    TMy aValue = pA;
+                    ref TMy pB = ref pB0;
+                    ref TMy pC = ref pC0;
+                    for (int j = 0; j < N; ++j) {
+                        pC += aValue * pB;
+                        pB = ref Unsafe.Add(ref pB, 1);
+                        pC = ref Unsafe.Add(ref pC, 1);
+                    }
+                    pA = ref Unsafe.Add(ref pA, 1);
+                    pB0 = ref Unsafe.Add(ref pB0, strideB);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void TileRowRef() {
+            StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowRef");
             }
         }
 

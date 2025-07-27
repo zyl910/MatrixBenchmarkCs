@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace MatrixBenchmarkCs {
@@ -29,6 +30,44 @@ namespace MatrixBenchmarkCs {
                 span.Fill(value);
                 // Next.
                 idx0 += stride;
+            }
+        }
+
+        /// <summary>
+        /// Fill value (填充值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="value">The value (值).</param>
+        /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
+        /// <param name="cols">The number of columns in matrix (矩阵的列数).</param>
+        /// <param name="matrix">The matrix (矩阵).</param>
+        /// <param name="stride">The stride of matrix. When it is 0, use cols (矩阵的跨距. 为 0 时 使用 cols).</param>
+        public static void Fill<T>(T value, nint rows, nint cols, ref T matrix, nint stride = 0) {
+            if (0 == stride) {
+                stride = cols;
+            }
+            int colsInt = (int)cols;
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+            bool useSpan = (long)cols < int.MaxValue;
+#else
+            bool useSpan = false;
+#endif
+            ref T p0 = ref matrix;
+            for (nint i = 0; i < rows; i++) {
+                if (useSpan) {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+                    Span<T> span = MemoryMarshal.CreateSpan(ref p0, colsInt);
+                    span.Fill(value);
+#endif
+                } else {
+                    ref T p = ref p0;
+                    for (nint j = 0; j < cols; j++) {
+                        p = value;
+                        p = ref Unsafe.Add(ref p, 1);
+                    }
+                }
+                // Next.
+                p0 = ref Unsafe.Add(ref p0, stride);
             }
         }
 
