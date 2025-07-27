@@ -32,8 +32,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// </summary>
         protected MatrixNMultiplyBenchmark() : base() {
             ValuesForN = new int[] {
-                64
-                //32, 64, 65
+                //64
+                32, 64, 65
             };
         }
 
@@ -118,7 +118,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <inheritdoc cref="ILoopCountGetter.LoopCount" />
-        public int LoopCount { get { return N; } set { } }
+        public int LoopCount { get { return N * N; } set { } }
 
         /// <summary>The number of columns in matrix A, or the number of rows in matrix B (矩阵A的列数, 或矩阵B的行数).</summary>
         public int MatrixK { get { return N; } }
