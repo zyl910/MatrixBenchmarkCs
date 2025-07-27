@@ -201,5 +201,41 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>TileRow on Span.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTileRowSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+            // Clear matC.
+            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
+            // Matrix multiply.
+            int aIdx0 = 0;
+            int cIdx0 = 0;
+            for (int i = 0; i < M; ++i) {
+                int aIdx = aIdx0;
+                int bIdx0 = 0;
+                for (int k = 0; k < K; ++k) {
+                    int bIdx = bIdx0;
+                    int cIdx = cIdx0;
+                    for (int j = 0; j < N; ++j) {
+                        C[cIdx] += A[aIdx] * B[bIdx];
+                        ++bIdx;
+                        ++cIdx;
+                    }
+                    ++aIdx;
+                    bIdx0 += strideB;
+                }
+                aIdx0 += strideA;
+                cIdx0 += strideC;
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSpan() {
+            StaticTileRowSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSpan");
+            }
+        }
+
     }
 }
