@@ -4,9 +4,11 @@ using BenchmarkDotNet.Attributes;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Zyl.VectorTraits;
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if BENCHMARKS_OFF
@@ -271,6 +273,65 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowRef");
+            }
+        }
+
+        /// <summary>TileRow on SIMD.</summary>
+        /// <inheritdoc cref="StaticTileRow"/>
+        public static void StaticTileRowSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (N < Vector<TMy>.Count) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+            }
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Matrix multiply.
+            int cntRem = N % Vector<TMy>.Count; // Remainder count.
+            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
+            int cntBlock = cntBlockRaw;
+            if (0 == cntRem) {
+                --cntBlock; // Use vCLast.
+            }
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref TMy pA = ref pA0;
+                ref TMy pB0 = ref Unsafe.AsRef(in B);
+                for (int k = 0; k < K; ++k) {
+                    TMy aValue = pA;
+                    Vector<TMy> vA = new Vector<TMy>(aValue);
+                    // Last.
+                    int pos = N - Vector<TMy>.Count;
+                    ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
+                    ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
+                    Vector<TMy> vCLast = Vector.Add(pCLast, Vectors.Multiply(vA, pBLast));
+                    // SIMD for.
+                    if (cntBlock >= 0) {
+                        //ref TMy pB = ref pB0;
+                        //ref TMy pC = ref pC0;
+                        ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
+                        ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
+                        for (int j = 0; j < cntBlock; ++j) {
+                            pC = Vector.Add(pC, Vectors.Multiply(vA, pB)); // pC += vA * pB;
+                            pB = ref Unsafe.Add(ref pB, 1);
+                            pC = ref Unsafe.Add(ref pC, 1);
+                        }
+                    }
+                    pCLast = vCLast; // Overrride remainder items. 
+                    // Next.
+                    pA = ref Unsafe.Add(ref pA, 1);
+                    pB0 = ref Unsafe.Add(ref pB0, strideB);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSimd() {
+            StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimd");
             }
         }
 
