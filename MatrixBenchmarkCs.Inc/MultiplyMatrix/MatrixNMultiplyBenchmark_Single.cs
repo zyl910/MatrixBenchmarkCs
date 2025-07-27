@@ -473,6 +473,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif // NETCOREAPP3_0_OR_GREATER
 #endif // REDUCE_MEMORY_USAGE
 
+#if REDUCE_MEMORY_USAGE
         /// <summary>TileRow on SIMD - Loop Unrolling 4.</summary>
         /// <inheritdoc cref="StaticTileRow"/>
         public static void StaticTileRowSimdLU4(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
@@ -547,6 +548,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowSimdLU4");
             }
         }
+#endif // REDUCE_MEMORY_USAGE
 
         [Benchmark]
         public void TileRowSimdParallel() {
@@ -566,7 +568,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         [Benchmark]
         public void UseMKL() {
-            Blas.gemm(Layout.RowMajor, Trans.No, Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 1, arrayC!, StrideC);
+            Blas.gemm(Layout.RowMajor, Trans.No, Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 0, arrayC!, StrideC);
             //MKL.
             if (CheckMode) {
                 dstTMy = GetCheckSum();
