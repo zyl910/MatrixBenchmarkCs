@@ -173,5 +173,33 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>Tile row on Array (行分块 on 数组).</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTileRow(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
+            // Clear matC.
+            //C.AsSpan().Clear();
+            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
+            // Matrix multiply.
+            for (int i = 0; i < M; ++i) {
+                for (int k = 0; k < K; ++k) {
+                    int aIdx = i * strideA + k;
+                    for (int j = 0; j < N; ++j) {
+                        int bIdx = k * strideB + j;
+                        int cIdx = i * strideC + j;
+                        C[cIdx] += A[aIdx] * B[bIdx];
+                    }
+                }
+            }
+        }
+
+        [Benchmark]
+        public void TileRow() {
+            StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRow");
+            }
+        }
+
     }
 }
