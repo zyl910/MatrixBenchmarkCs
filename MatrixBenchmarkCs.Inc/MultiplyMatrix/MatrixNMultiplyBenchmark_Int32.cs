@@ -61,13 +61,15 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        [Benchmark(Baseline = true)]
+#if REDUCE_MEMORY_USAGE
+        [Benchmark]
         public void Basic() {
             StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 baselineTMy = dstTMy;
                 BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
+                //CheckResult("Basic");
             }
         }
 
@@ -239,6 +241,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowSpan");
             }
         }
+#endif // REDUCE_MEMORY_USAGE
 
         /// <summary>TileRow on Ref.</summary>
         /// <inheritdoc cref="StaticTileRow"/>
@@ -268,12 +271,14 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void TileRowRef() {
             StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("TileRowRef");
+                //CheckResult("TileRowRef");
+                baselineTMy = dstTMy;
+                BenchmarkUtil.WriteItem("# TileRowRef", string.Format("{0}", baselineTMy));
             }
         }
 
