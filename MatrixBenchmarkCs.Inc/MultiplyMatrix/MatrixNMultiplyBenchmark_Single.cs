@@ -30,6 +30,18 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// </summary>
     public class MatrixNMultiplyBenchmark_Single : MatrixNMultiplyBenchmark<TMy> {
 
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matA;
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matB;
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matC;
+
+        protected override void ArraySetup() {
+            base.ArraySetup();
+            matA = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixM, MatrixK, arrayA);
+            matB = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixK, MatrixN, arrayB);
+            matC = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.Dense(MatrixM, MatrixN);
+            //matA.Multiply(matB, matC);
+        }
+
         protected override void CheckResult(string name) {
             CheckResult_Report(name, dstTMy != baselineTMy, dstTMy, baselineTMy);
         }
@@ -567,9 +579,17 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
+        public void UseMathNet() {
+            matA!.Multiply(matB, matC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("UseMathNet");
+            }
+        }
+
+        [Benchmark]
         public void UseMKL() {
             Blas.gemm(Layout.RowMajor, Trans.No, Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 0, arrayC!, StrideC);
-            //MKL.
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("UseMKL");

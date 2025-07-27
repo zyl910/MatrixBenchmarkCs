@@ -24,7 +24,7 @@ namespace MatrixBenchmarkCs {
                 }
             }
             writer.WriteLine("benchmarkMode:\t{0}", benchmarkMode);
-            MklDemo.Call(writer);
+            //MklDemo.Call(writer);
             if (benchmarkMode == 3) {
                 AloneTestUtil.AloneTestByCommand(writer, args);
             } else if (benchmarkMode > 0) {
