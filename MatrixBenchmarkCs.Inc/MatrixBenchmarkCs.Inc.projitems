@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MklUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Int32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Single.cs" />

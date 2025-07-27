@@ -1,6 +1,7 @@
 ﻿#undef BENCHMARKS_OFF
 
 using BenchmarkDotNet.Attributes;
+using MKLNET;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -354,6 +355,16 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowSimdParallel");
+            }
+        }
+
+        [Benchmark]
+        public void UseMKL() {
+            Blas.gemm(Layout.RowMajor, Trans.No, Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 1, arrayC!, StrideC);
+            //MKL.
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("UseMKL");
             }
         }
 

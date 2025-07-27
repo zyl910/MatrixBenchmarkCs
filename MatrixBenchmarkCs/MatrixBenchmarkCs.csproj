@@ -8,14 +8,17 @@
     </When>
     <When Condition=" '$(OS)' == 'Windows_NT' ">
       <PropertyGroup>
-        <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;net462</TargetFrameworks>
+        <TargetFrameworks>net9.0;net462</TargetFrameworks>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <TargetFrameworks>net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
       </PropertyGroup>
     </Otherwise>
+      <!--
+      net8.0;net7.0;net6.0
+      -->
   </Choose>
 
   <PropertyGroup>
@@ -35,6 +38,8 @@
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
         <PackageReference Include="VectorTraits" Version="3.1.0" />
+        <PackageReference Include="MKL.NET" Version="1.6.0" />
+        <PackageReference Include="MKL.NET.win-x64" Version="2022.0.0.115" />
     </ItemGroup>
 
     <Import Project="..\MatrixBenchmarkCs.Core.Inc\MatrixBenchmarkCs.Core.Inc.projitems" Label="Shared" />
