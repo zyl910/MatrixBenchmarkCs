@@ -23,7 +23,7 @@
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <DefineConstants>$(DefineConstants);REDUCE_MEMORY_USAGE0</DefineConstants>
+    <DefineConstants>$(DefineConstants);BENCHMARKS_OFF;REDUCE_MEMORY_USAGE0</DefineConstants>
 
       <!--
       <PublishAot Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</PublishAot>

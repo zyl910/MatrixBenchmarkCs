@@ -18,8 +18,8 @@ namespace MatrixBenchmarkCs {
         /// <param name="stride">The stride. When it is 0, use width (跨距. 为 0 时 使用 width).</param>
         /// <param name="start">The start index (开始索引).</param>
         /// <returns>Returns check sum (返回校验和).</returns>
-        public static int Calculate2D(Span<int> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
-            ref int p = ref Unsafe.Add(ref buffer.GetPinnableReference(), start);
+        public static float Calculate2D(Span<float> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
+            ref float p = ref Unsafe.Add(ref buffer.GetPinnableReference(), start);
             return Calculate2D(ref p, width, height, stride);
         }
 
@@ -31,6 +31,31 @@ namespace MatrixBenchmarkCs {
         /// <param name="height">The height (高度).</param>
         /// <param name="stride">The stride. When it is 0, use width (跨距. 为 0 时 使用 width).</param>
         /// <returns>Returns check sum (返回校验和).</returns>
+        public static float Calculate2D(ref readonly float buffer, nint width, nint height, nint stride = 0) {
+            float rt = default;
+            ref float p0 = ref Unsafe.AsRef(in buffer);
+            if (0 == stride) {
+                stride = width;
+            }
+            for (nint i = 0; i < height; ++i) {
+                ref float p = ref p0;
+                for (float j = 0; j < width; ++j) {
+                    rt += p;
+                    // Next.
+                    p = ref Unsafe.Add(ref p, 1);
+                }
+                p0 = ref Unsafe.Add(ref p0, stride);
+            }
+            return rt;
+        }
+
+        /// <inheritdoc cref="Calculate2D(Span{float}, nint, nint, nint, nint)"/>
+        public static int Calculate2D(Span<int> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
+            ref int p = ref Unsafe.Add(ref buffer.GetPinnableReference(), start);
+            return Calculate2D(ref p, width, height, stride);
+        }
+
+        /// <inheritdoc cref="Calculate2D(ref readonly float, nint, nint, nint)"/>
         public static int Calculate2D(ref readonly int buffer, nint width, nint height, nint stride = 0) {
             int rt = default;
             ref int p0 = ref Unsafe.AsRef(in buffer);

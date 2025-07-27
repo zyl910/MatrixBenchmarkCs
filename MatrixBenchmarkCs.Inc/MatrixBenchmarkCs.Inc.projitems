@@ -13,5 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Int32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Single.cs" />
   </ItemGroup>
 </Project>

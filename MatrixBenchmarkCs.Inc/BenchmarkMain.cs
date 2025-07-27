@@ -51,6 +51,7 @@ namespace MatrixBenchmarkCs {
             WrappedType[] types = {
                 // MultiplyMatrix
                 typeof(MatrixNMultiplyBenchmark_Int32),
+                typeof(MatrixNMultiplyBenchmark_Single),
             };
             WrappedTypePool.Shared.RegisterAll(types);
         }
