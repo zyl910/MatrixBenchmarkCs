@@ -571,10 +571,37 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     StaticTileRowSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
                 });
             } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             }
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowSimdParallel");
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSimdParallel2() {
+            const int batchSize = 4;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                , ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticTileRowSimd(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdParallel2");
             }
         }
 

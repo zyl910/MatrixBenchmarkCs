@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using Zyl.VectorTraits;
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
@@ -33,8 +34,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         protected MatrixNMultiplyBenchmark() : base() {
             ValuesForN = new int[] {
                 //64
-                32, 64, 65,
-                //128, 256, 512, 1024, 1025,
+                //32, 64, 65,
+                128, 256,
+                //512, 1024, 1025,
                 //2048, 4096,
             };
         }
@@ -67,6 +69,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     ++idx;
                 }
             }
+            ParallelOptionsCPU = new ParallelOptions {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
         }
 
         /// <summary>
@@ -118,6 +123,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 Debug.WriteLine(msg);
             }
         }
+
+        /// <summary>ParallelOptions of CPU.</summary>
+        public ParallelOptions ParallelOptionsCPU { get; set; } = new ParallelOptions {
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
 
         /// <inheritdoc cref="ILoopCountGetter.LoopCount" />
         public int LoopCount { get { return N * N; } set { } }
