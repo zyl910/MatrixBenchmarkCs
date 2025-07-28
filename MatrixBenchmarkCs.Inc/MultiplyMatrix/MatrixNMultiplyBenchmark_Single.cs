@@ -724,6 +724,114 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>BlockCopy2 on Ref.</summary>
+        /// <inheritdoc cref="StaticBlockCopy2"/>
+        public static void StaticBlockCopy2Ref(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+                return;
+            }
+            uint cbBlockSize = (uint)(BLOCK_SIZE * Unsafe.SizeOf<TMy>());
+            int local2DSize = BLOCK_SIZE * BLOCK_SIZE;
+            TMy[] buf = ArrayPool<TMy>.Shared.Rent(local2DSize * 3);
+            try {
+                Span<TMy> localA = buf.AsSpan().Slice(0, local2DSize);
+                Span<TMy> localB = buf.AsSpan().Slice(local2DSize * 1, local2DSize);
+                Span<TMy> localC = buf.AsSpan().Slice(local2DSize * 2, local2DSize);
+                int blockM = M / BLOCK_SIZE;
+                int blockN = N / BLOCK_SIZE;
+                int blockK = K / BLOCK_SIZE;
+                // Traverse blocks.
+                int idxA, idxB, idxC;
+                int idxC0;
+                int idxCLocal;
+                ref TMy pALine = ref Unsafe.AsRef(in A);
+                ref TMy pCLine = ref C;
+                for (int bi = 0; bi < blockM; bi++) {
+                    ref TMy pBLine = ref Unsafe.AsRef(in B);
+                    ref TMy pC = ref pCLine;
+                    for (int bj = 0; bj < blockN; bj++) {
+                        ref TMy pA = ref pALine;
+                        ref TMy pB = ref pBLine;
+                        // Clear localC.
+                        localC.Clear();
+                        for (int bk = 0; bk < blockK; bk++) {
+                            // Copy local block.
+                            idxA = (bi * BLOCK_SIZE) * strideA + bk * BLOCK_SIZE;
+                            idxB = (bk * BLOCK_SIZE) * strideB + bj * BLOCK_SIZE;
+                            idxCLocal = 0;
+                            ref TMy pACur = ref pA;
+                            ref TMy pALocal = ref localA[0];
+                            ref TMy pBLocal = ref localB[0];
+                            for (int i = 0; i < BLOCK_SIZE; i++) {
+                                //idxA = (bi * BLOCK_SIZE + i) * strideA + bk * BLOCK_SIZE;
+                                //idxB = (bk * BLOCK_SIZE + i) * strideB + bj * BLOCK_SIZE;
+                                //A.Slice(idxA, BLOCK_SIZE).CopyTo(localA.Slice(idxCLocal, BLOCK_SIZE));
+                                //B.Slice(idxB, BLOCK_SIZE).CopyTo(localB.Slice(idxCLocal, BLOCK_SIZE));
+                                Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pALocal), ref Unsafe.As<TMy, byte>(ref pACur), cbBlockSize);
+                                Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pBLocal), ref Unsafe.As<TMy, byte>(ref pB), cbBlockSize);
+                                idxA += strideA;
+                                pACur = ref Unsafe.Add(ref pACur, strideA);
+                                idxB += strideB;
+                                pB = ref Unsafe.Add(ref pB, strideB);
+                                idxCLocal += BLOCK_SIZE;
+                                pALocal = ref Unsafe.Add(ref pALocal, BLOCK_SIZE);
+                                pBLocal = ref Unsafe.Add(ref pBLocal, BLOCK_SIZE);
+                            }
+                            // Block GEMM.
+                            idxA = 0;
+                            idxC0 = 0;
+                            for (int i = 0; i < BLOCK_SIZE; i++) {
+                                idxB = 0;
+                                for (int k = 0; k < BLOCK_SIZE; k++) {
+                                    idxC = idxC0;
+                                    for (int j = 0; j < BLOCK_SIZE; j++) {
+                                        //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
+                                        localC[idxC] += localA[idxA] * localB[idxB];
+                                        ++idxB;
+                                        ++idxC;
+                                    }
+                                    ++idxA;
+                                }
+                                idxC0 += BLOCK_SIZE;
+                            }
+                            pA = ref Unsafe.Add(ref pA, BLOCK_SIZE);
+                            //pB = ref Unsafe.Add(ref pB, BLOCK_SIZE * strideB);
+                        }
+                        // Copy localC back.
+                        idxC = (bi * BLOCK_SIZE) * strideC + bj * BLOCK_SIZE;
+                        idxCLocal = 0;
+                        ref TMy pCLocal = ref localC[0];
+                        ref TMy pCCur = ref pC;
+                        for (int i = 0; i < BLOCK_SIZE; i++) {
+                            //int idxC = (bi * BLOCK_SIZE + i) * strideC + bj * BLOCK_SIZE;
+                            //localC.Slice(idxCLocal, BLOCK_SIZE).CopyTo(C.Slice(idxC, BLOCK_SIZE));
+                            Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pCCur), ref Unsafe.As<TMy, byte>(ref pCLocal), cbBlockSize);
+                            idxC += strideC;
+                            idxCLocal += BLOCK_SIZE;
+                            pCCur = ref Unsafe.Add(ref pCCur, strideC);
+                            pCLocal = ref Unsafe.Add(ref pCLocal, BLOCK_SIZE);
+                        }
+                        pBLine = ref Unsafe.Add(ref pBLine, BLOCK_SIZE);
+                        pC = ref Unsafe.Add(ref pC, BLOCK_SIZE);
+                    }
+                    pALine = ref Unsafe.Add(ref pALine, BLOCK_SIZE * strideA);
+                    pCLine = ref Unsafe.Add(ref pCLine, BLOCK_SIZE * strideC);
+                }
+            } finally {
+                ArrayPool<TMy>.Shared.Return(buf);
+            }
+        }
+
+        [Benchmark]
+        public void BlockCopy2Ref() {
+            StaticBlockCopy2Ref(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2Ref");
+            }
+        }
+
         [Benchmark]
         public void TileRowSimdParallel() {
             int M = MatrixM;
