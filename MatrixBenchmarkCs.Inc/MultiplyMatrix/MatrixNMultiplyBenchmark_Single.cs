@@ -30,6 +30,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// </summary>
     public class MatrixNMultiplyBenchmark_Single : MatrixNMultiplyBenchmark<TMy> {
 
+        protected const int BLOCK_SIZE = 8;
+
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matA;
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matB;
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matC;
@@ -561,6 +563,85 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // REDUCE_MEMORY_USAGE
+
+        /// <summary>BlockCopy2 on Array (块复制2 on 数组).</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticBlockCopy2(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
+            if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
+                StaticTileRow(M, N, K, A, strideA, B, strideB, C, strideC);
+                return;
+            }
+            int local2DSize = BLOCK_SIZE * BLOCK_SIZE;
+            TMy[] buf = ArrayPool<TMy>.Shared.Rent(local2DSize * 3);
+            try {
+                Span<TMy> localA = buf.AsSpan().Slice(0, local2DSize);
+                Span<TMy> localB = buf.AsSpan().Slice(local2DSize * 1, local2DSize);
+                Span<TMy> localC = buf.AsSpan().Slice(local2DSize * 2, local2DSize);
+                int blockM = M / BLOCK_SIZE;
+                int blockN = N / BLOCK_SIZE;
+                int blockK = K / BLOCK_SIZE;
+                // Traverse blocks.
+                //#pragma omp parallel for
+                for (int bi = 0; bi < blockM; bi++) {
+                    for (int bj = 0; bj < blockN; bj++) {
+                        // Clear localC.
+                        //for (int i = 0; i < BLOCK_SIZE; i++) {
+                        //    for (int j = 0; j < BLOCK_SIZE; j++) {
+                        //        localC[i * BLOCK_SIZE + j] = 0;
+                        //    }
+                        //}
+                        localC.Clear();
+                        for (int bk = 0; bk < blockK; bk++) {
+                            // Copy local block.
+                            for (int i = 0; i < BLOCK_SIZE; i++) {
+                                //for (int j = 0; j < BLOCK_SIZE; j++) {
+                                //    int aIdx = bi * BLOCK_SIZE * blockNum * BLOCK_SIZE +
+                                //                  i * blockNum * BLOCK_SIZE + bk * BLOCK_SIZE + j;
+                                //    int bIdx = bk * BLOCK_SIZE * blockNum * BLOCK_SIZE +
+                                //                  i * blockNum * BLOCK_SIZE + bj * BLOCK_SIZE + j;
+                                //    localA[i][j] = matA[aIdx];
+                                //    localB[i][j] = matB[bIdx];
+                                //}
+                                int aIdx = (bi * BLOCK_SIZE + i) * strideA + bk * BLOCK_SIZE;
+                                int bIdx = (bk * BLOCK_SIZE + i) * strideB + bj * BLOCK_SIZE;
+                                A.AsSpan().Slice(aIdx, BLOCK_SIZE).CopyTo(localA.Slice(i * BLOCK_SIZE, BLOCK_SIZE));
+                                B.AsSpan().Slice(bIdx, BLOCK_SIZE).CopyTo(localB.Slice(i * BLOCK_SIZE, BLOCK_SIZE));
+                            }
+                            // Block GEMM.
+                            for (int i = 0; i < BLOCK_SIZE; i++) {
+                                for (int k = 0; k < BLOCK_SIZE; k++) {
+                                    //#pragma omp simd
+                                    for (int j = 0; j < BLOCK_SIZE; j++) {
+                                        localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
+                                    }
+                                }
+                            }
+                        }
+                        // Copy localC back.
+                        for (int i = 0; i < BLOCK_SIZE; i++) {
+                            //for (int j = 0; j < BLOCK_SIZE; j++) {
+                            //    int cIdx = bi * BLOCK_SIZE * blockNum * BLOCK_SIZE +
+                            //                  i * blockNum * BLOCK_SIZE + bj * BLOCK_SIZE + j;
+                            //    matC[cIdx] = localC[i][j];
+                            //}
+                            int cIdx = (bi * BLOCK_SIZE + i) * strideA + bj * BLOCK_SIZE;
+                            localC.Slice(i * BLOCK_SIZE, BLOCK_SIZE).CopyTo(C.AsSpan().Slice(cIdx, BLOCK_SIZE));
+                        }
+                    }
+                }
+            } finally {
+                ArrayPool<TMy>.Shared.Return(buf);
+            }
+        }
+
+        [Benchmark]
+        public void BlockCopy2() {
+            StaticBlockCopy2(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2");
+            }
+        }
 
         [Benchmark]
         public void TileRowSimdParallel() {
