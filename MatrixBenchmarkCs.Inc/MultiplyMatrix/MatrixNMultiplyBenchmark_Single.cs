@@ -742,9 +742,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 int blockN = N / BLOCK_SIZE;
                 int blockK = K / BLOCK_SIZE;
                 // Traverse blocks.
-                int idxA, idxB, idxC;
-                int idxC0;
-                int idxCLocal;
                 ref TMy pALine = ref Unsafe.AsRef(in A);
                 ref TMy pCLine = ref C;
                 for (int bi = 0; bi < blockM; bi++) {
@@ -757,9 +754,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         localC.Clear();
                         for (int bk = 0; bk < blockK; bk++) {
                             // Copy local block.
-                            idxA = (bi * BLOCK_SIZE) * strideA + bk * BLOCK_SIZE;
-                            idxB = (bk * BLOCK_SIZE) * strideB + bj * BLOCK_SIZE;
-                            idxCLocal = 0;
                             ref TMy pACur = ref pA;
                             ref TMy pALocal = ref localA[0];
                             ref TMy pBLocal = ref localB[0];
@@ -770,45 +764,37 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                 //B.Slice(idxB, BLOCK_SIZE).CopyTo(localB.Slice(idxCLocal, BLOCK_SIZE));
                                 Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pALocal), ref Unsafe.As<TMy, byte>(ref pACur), cbBlockSize);
                                 Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pBLocal), ref Unsafe.As<TMy, byte>(ref pB), cbBlockSize);
-                                idxA += strideA;
                                 pACur = ref Unsafe.Add(ref pACur, strideA);
-                                idxB += strideB;
                                 pB = ref Unsafe.Add(ref pB, strideB);
-                                idxCLocal += BLOCK_SIZE;
                                 pALocal = ref Unsafe.Add(ref pALocal, BLOCK_SIZE);
                                 pBLocal = ref Unsafe.Add(ref pBLocal, BLOCK_SIZE);
                             }
                             // Block GEMM.
-                            idxA = 0;
-                            idxC0 = 0;
+                            ref TMy pACore = ref localA[0];
+                            ref TMy pCCore0 = ref localC[0];
                             for (int i = 0; i < BLOCK_SIZE; i++) {
-                                idxB = 0;
+                                ref TMy pBCore = ref localB[0];
                                 for (int k = 0; k < BLOCK_SIZE; k++) {
-                                    idxC = idxC0;
+                                    ref TMy pCCore = ref pCCore0;
                                     for (int j = 0; j < BLOCK_SIZE; j++) {
                                         //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
-                                        localC[idxC] += localA[idxA] * localB[idxB];
-                                        ++idxB;
-                                        ++idxC;
+                                        pCCore += pACore * pBCore;
+                                        pBCore = ref Unsafe.Add(ref pBCore, 1);
+                                        pCCore = ref Unsafe.Add(ref pCCore, 1);
                                     }
-                                    ++idxA;
+                                    pACore = ref Unsafe.Add(ref pACore, 1);
                                 }
-                                idxC0 += BLOCK_SIZE;
+                                pCCore0 = ref Unsafe.Add(ref pCCore0, BLOCK_SIZE);
                             }
                             pA = ref Unsafe.Add(ref pA, BLOCK_SIZE);
-                            //pB = ref Unsafe.Add(ref pB, BLOCK_SIZE * strideB);
                         }
                         // Copy localC back.
-                        idxC = (bi * BLOCK_SIZE) * strideC + bj * BLOCK_SIZE;
-                        idxCLocal = 0;
                         ref TMy pCLocal = ref localC[0];
                         ref TMy pCCur = ref pC;
                         for (int i = 0; i < BLOCK_SIZE; i++) {
                             //int idxC = (bi * BLOCK_SIZE + i) * strideC + bj * BLOCK_SIZE;
                             //localC.Slice(idxCLocal, BLOCK_SIZE).CopyTo(C.Slice(idxC, BLOCK_SIZE));
                             Unsafe.CopyBlockUnaligned(ref Unsafe.As<TMy, byte>(ref pCCur), ref Unsafe.As<TMy, byte>(ref pCLocal), cbBlockSize);
-                            idxC += strideC;
-                            idxCLocal += BLOCK_SIZE;
                             pCCur = ref Unsafe.Add(ref pCCur, strideC);
                             pCLocal = ref Unsafe.Add(ref pCLocal, BLOCK_SIZE);
                         }
