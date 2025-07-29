@@ -564,6 +564,49 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // REDUCE_MEMORY_USAGE
 
+        [Benchmark]
+        public void TileRowSimdParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                Parallel.For(0, M, i => {
+                    StaticTileRowSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
+                });
+            } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdParallel");
+            }
+        }
+
+        [Benchmark]
+        public void TileRowSimdParallel2() {
+            const int batchSize = 4;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                , ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticTileRowSimd(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdParallel2");
+            }
+        }
+
 #if REDUCE_MEMORY_USAGE
         /// <summary>BlockCopy2 on Array (块复制2 on 数组).</summary>
         /// <inheritdoc cref="StaticBasic"/>
@@ -724,7 +767,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("BlockCopy2Span");
             }
         }
-#endif // REDUCE_MEMORY_USAGE
 
         /// <summary>BlockCopy2 on Ref.</summary>
         /// <inheritdoc cref="StaticBlockCopy2"/>
@@ -819,6 +861,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("BlockCopy2Ref");
             }
         }
+#endif // REDUCE_MEMORY_USAGE
 
         /// <summary>BlockCopy2 on ref SIMD.</summary>
         /// <inheritdoc cref="StaticBlockCopy2"/>
@@ -829,11 +872,12 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
             uint cbBlockSize = (uint)(BLOCK_SIZE * Unsafe.SizeOf<TMy>());
             int local2DSize = BLOCK_SIZE * BLOCK_SIZE;
-            TMy[] buf = ArrayPool<TMy>.Shared.Rent(local2DSize * 3);
+            //TMy[] buf = ArrayPool<TMy>.Shared.Rent(local2DSize * 3);
+            Span<TMy> buf = stackalloc TMy[local2DSize * 3];
             try {
-                Span<TMy> localA = buf.AsSpan().Slice(0, local2DSize);
-                Span<TMy> localB = buf.AsSpan().Slice(local2DSize * 1, local2DSize);
-                Span<TMy> localC = buf.AsSpan().Slice(local2DSize * 2, local2DSize);
+                Span<TMy> localA = buf.Slice(0, local2DSize);
+                Span<TMy> localB = buf.Slice(local2DSize * 1, local2DSize);
+                Span<TMy> localC = buf.Slice(local2DSize * 2, local2DSize);
                 int blockM = M / BLOCK_SIZE;
                 int blockN = N / BLOCK_SIZE;
                 int blockK = K / BLOCK_SIZE;
@@ -903,7 +947,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     pCLine = ref Unsafe.Add(ref pCLine, BLOCK_SIZE * strideC);
                 }
             } finally {
-                ArrayPool<TMy>.Shared.Return(buf);
+                //ArrayPool<TMy>.Shared.Return(buf);
             }
         }
 
@@ -913,49 +957,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("BlockCopy2Simd");
-            }
-        }
-
-        [Benchmark]
-        public void TileRowSimdParallel() {
-            int M = MatrixM;
-            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
-            if (allowParallel) {
-                Parallel.For(0, M, i => {
-                    StaticTileRowSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
-                });
-            } else {
-                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            }
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("TileRowSimdParallel");
-            }
-        }
-
-        [Benchmark]
-        public void TileRowSimdParallel2() {
-            const int batchSize = 4;
-            int M = MatrixM;
-            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
-            if (allowParallel) {
-                int count = (M + batchSize - 1) / batchSize;
-                Parallel.For(0, count
-                , ParallelOptionsCPU
-                , i => {
-                    int idx = batchSize * i;
-                    int curSize = batchSize;
-                    if (curSize > M - idx) {
-                        curSize = M - idx;
-                    }
-                    StaticTileRowSimd(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
-                });
-            } else {
-                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            }
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("TileRowSimdParallel2");
             }
         }
 
