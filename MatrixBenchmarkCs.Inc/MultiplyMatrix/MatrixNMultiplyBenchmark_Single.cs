@@ -321,8 +321,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     //    ++cIdx;
                     //}
                     TMy aValue = A[aIdx];
-                    Span<TMy> rowB = B.Slice(bIdx0, K);
-                    Span<TMy> rowC = C.Slice(cIdx0, K);
+                    Span<TMy> rowB = B.Slice(bIdx0, N);
+                    Span<TMy> rowC = C.Slice(cIdx0, N);
                     TensorPrimitives.MultiplyAdd(rowB, aValue, rowC, rowC);
                     // Next.
                     ++aIdx;
@@ -341,6 +341,49 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowTP");
             }
         }
+
+#if NET8_0_OR_GREATER
+        /// <summary>TileRow on Span TensorPrimitives - FMA.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTileRowTPFma(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
+            // Matrix multiply.
+            int aIdx0 = 0;
+            int cIdx0 = 0;
+            for (int i = 0; i < M; ++i) {
+                int aIdx = aIdx0;
+                int bIdx0 = 0;
+                for (int k = 0; k < K; ++k) {
+                    //int bIdx = bIdx0;
+                    //int cIdx = cIdx0;
+                    //for (int j = 0; j < N; ++j) {
+                    //    C[cIdx] += A[aIdx] * B[bIdx];
+                    //    ++bIdx;
+                    //    ++cIdx;
+                    //}
+                    TMy aValue = A[aIdx];
+                    Span<TMy> rowB = B.Slice(bIdx0, N);
+                    Span<TMy> rowC = C.Slice(cIdx0, N);
+                    TensorPrimitives.FusedMultiplyAdd(rowB, aValue, rowC, rowC);
+                    // Next.
+                    ++aIdx;
+                    bIdx0 += strideB;
+                }
+                aIdx0 += strideA;
+                cIdx0 += strideC;
+            }
+        }
+
+        [Benchmark]
+        public void TileRowTPFma() {
+            StaticTileRowTPFma(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowTPFma");
+            }
+        }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>TileRow on SIMD.</summary>
         /// <inheritdoc cref="StaticTileRow"/>
