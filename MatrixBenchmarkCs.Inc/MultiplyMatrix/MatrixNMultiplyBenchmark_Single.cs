@@ -6,6 +6,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Numerics.Tensors;
 using System.Runtime.CompilerServices;
 #if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -297,6 +298,47 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 //CheckResult("TileRowRef");
                 baselineTMy = dstTMy;
                 BenchmarkUtil.WriteItem("# TileRowRef", string.Format("{0}", baselineTMy));
+            }
+        }
+
+        /// <summary>TileRow on Span TensorPrimitives.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTileRowTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
+            // Matrix multiply.
+            int aIdx0 = 0;
+            int cIdx0 = 0;
+            for (int i = 0; i < M; ++i) {
+                int aIdx = aIdx0;
+                int bIdx0 = 0;
+                for (int k = 0; k < K; ++k) {
+                    //int bIdx = bIdx0;
+                    //int cIdx = cIdx0;
+                    //for (int j = 0; j < N; ++j) {
+                    //    C[cIdx] += A[aIdx] * B[bIdx];
+                    //    ++bIdx;
+                    //    ++cIdx;
+                    //}
+                    TMy aValue = A[aIdx];
+                    Span<TMy> rowB = B.Slice(bIdx0, K);
+                    Span<TMy> rowC = C.Slice(cIdx0, K);
+                    TensorPrimitives.MultiplyAdd(rowB, aValue, rowC, rowC);
+                    // Next.
+                    ++aIdx;
+                    bIdx0 += strideB;
+                }
+                aIdx0 += strideA;
+                cIdx0 += strideC;
+            }
+        }
+
+        [Benchmark]
+        public void TileRowTP() {
+            StaticTileRowTP(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowTP");
             }
         }
 
