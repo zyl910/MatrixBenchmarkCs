@@ -73,6 +73,13 @@ namespace MatrixBenchmarkCs {
         public static void OutputEnvironment(TextWriter writer, string? indent = null) {
             EnvironmentOutput.OutputEnvironment(writer, indent);
             //writer.WriteLine(indent + string.Format("Vectors.BaseInstance:\t{0}", Vectors.BaseInstance.GetType().Name));
+            // -- OpenBLAS.
+            if (true) {
+                writer.WriteLine(indent + string.Format("OpenBlas.GetConfig:\t{0}", OpenBlasSharp.OpenBlas.GetConfig()));
+                writer.WriteLine(indent + string.Format("OpenBlas.GetCorename:\t{0}", OpenBlasSharp.OpenBlas.GetCorename()));
+                writer.WriteLine(indent + string.Format("OpenBlas.GetNumProcs:\t{0}", OpenBlasSharp.OpenBlas.GetNumProcs()));
+                writer.WriteLine(indent + string.Format("OpenBlas.GetNumThreads:\t{0}", OpenBlasSharp.OpenBlas.GetNumThreads()));
+            }
         }
 
         /// <summary>

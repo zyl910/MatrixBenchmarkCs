@@ -1,7 +1,6 @@
 ﻿#undef BENCHMARKS_OFF
 
 using BenchmarkDotNet.Attributes;
-using MKLNET;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -1557,8 +1556,19 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
+        public unsafe void UseOpenBLAS() {
+            fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                OpenBlasSharp.Blas.Sgemm(OpenBlasSharp.Order.RowMajor, OpenBlasSharp.Transpose.NoTrans, OpenBlasSharp.Transpose.NoTrans, MatrixM, MatrixN, MatrixK, 1, pA, StrideA, pB, StrideB, 0, pC, StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("UseOpenBLAS");
+            }
+        }
+
+        [Benchmark]
         public void UseMKL() {
-            Blas.gemm(Layout.RowMajor, Trans.No, Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 0, arrayC!, StrideC);
+            MKLNET.Blas.gemm(MKLNET.Layout.RowMajor, MKLNET.Trans.No, MKLNET.Trans.No, MatrixM, MatrixN, MatrixK, 1, arrayA!, StrideA, arrayB!, StrideB, 0, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("UseMKL");
