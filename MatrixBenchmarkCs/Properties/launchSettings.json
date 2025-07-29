@@ -2,7 +2,11 @@
   "profiles": {
     "MatrixBenchmarkCs": {
       "commandName": "Project",
-      "commandLineArgs": "0"
+      "commandLineArgs": "0",
+      "environmentVariables": {
+        "COMPlus_EnableAVX2": "1",
+        "COMPlus_EnableAVX512F": "1"
+      }
     }
   }
 }
