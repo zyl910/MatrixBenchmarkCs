@@ -1409,6 +1409,60 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
+        public void BlockCopy2SimdParallel() {
+            int batchSize = Vector<TMy>.Count;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1) && (0 == (MatrixM % batchSize)) && (0 == (MatrixN % batchSize)) && (0 == (MatrixK % batchSize));
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                //, ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticBlockCopy2SimdRegi(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                // StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, batchSize));
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdParallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockCopy2SimdParallel2() {
+            int batchSize = Vector<TMy>.Count;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1) && (0 == (MatrixM % batchSize)) && (0 == (MatrixN % batchSize)) && (0 == (MatrixK % batchSize));
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                //, ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticBlockCopy2SimdRegi2(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                // StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, batchSize));
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdParallel2");
+            }
+        }
+
+        [Benchmark]
         public void UseMathNet() {
             matA!.Multiply(matB, matC);
             if (CheckMode) {
