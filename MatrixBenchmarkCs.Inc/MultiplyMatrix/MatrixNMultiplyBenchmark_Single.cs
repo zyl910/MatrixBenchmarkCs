@@ -300,6 +300,45 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>Transpose on Span TensorPrimitives.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+            // Transpose matrix B.
+            int total = K * N;
+            TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+            try {
+                var spanBTrans = BTrans.AsSpan();
+                MatrixUtil.Transpose(K, N, B, strideB, spanBTrans);
+                // Matrix multiply.
+                for (int i = 0; i < M; ++i) {
+                    int aIdx = i * strideA;
+                    for (int j = 0; j < N; ++j) {
+                        int cIdx = i * strideC + j;
+                        //C[cIdx] = 0;
+                        //for (int k = 0; k < K; ++k) {
+                        //    int aIdx = i * strideA + k;
+                        //    int bIdx = j * strideB + k;
+                        //    C[cIdx] += A[aIdx] * BTrans[bIdx];
+                        //}
+                        int bIdx = j * strideB;
+                        C[cIdx] = TensorPrimitives.Dot(A.Slice(aIdx, K), spanBTrans.Slice(bIdx, K));
+                    }
+                }
+            } finally {
+                ArrayPool<TMy>.Shared.Return(BTrans);
+            }
+        }
+
+        [Benchmark]
+        public void TransposeSpanTP() {
+            StaticTransposeSpanTP(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSpanTP");
+            }
+        }
+
+#if REDUCE_MEMORY_USAGE
         /// <summary>TileRow on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTileRowTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
@@ -383,6 +422,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // NET8_0_OR_GREATER
+#endif // REDUCE_MEMORY_USAGE
 
         /// <summary>TileRow on SIMD.</summary>
         /// <inheritdoc cref="StaticTileRow"/>
@@ -947,6 +987,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // REDUCE_MEMORY_USAGE
 
+#if REDUCE_MEMORY_USAGE
         /// <summary>BlockCopy2 on ref SIMD.</summary>
         /// <inheritdoc cref="StaticBlockCopy2"/>
         public static void StaticBlockCopy2Simd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
@@ -1545,6 +1586,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("BlockCopy2SimdParallel2");
             }
         }
+#endif // REDUCE_MEMORY_USAGE
 
         [Benchmark]
         public void UseMathNet() {
