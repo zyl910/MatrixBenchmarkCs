@@ -344,6 +344,52 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+#endif
+        /// <summary>Transpose on Ref Simd.</summary>
+        /// <inheritdoc cref="StaticTranspose"/>
+        public static void StaticTransposeSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            // Transpose matrix B.
+            int total = K * N;
+            TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+            try {
+                MatrixUtil.Transpose(K, N, in B, strideB, ref BTrans[0]);
+                // Matrix multiply.
+                ref TMy pA0 = ref Unsafe.AsRef(in A);
+                ref TMy pC0 = ref C;
+                for (int i = 0; i < M; ++i) {
+                    ref TMy pB = ref BTrans[0];
+                    ref TMy pC = ref pC0;
+                    for (int j = 0; j < N; ++j) {
+                        //int cIdx = i * strideC + j;
+                        //C[cIdx] = 0;
+                        //for (int k = 0; k < K; ++k) {
+                        //    int aIdx = i * strideA + k;
+                        //    int bIdx = j * strideB + k;
+                        //    C[cIdx] += A[aIdx] * BTrans[bIdx];
+                        //}
+                        //pC = TensorPrimitives.Dot(MemoryMarshal.CreateReadOnlySpan(ref pA0, K), MemoryMarshal.CreateReadOnlySpan(ref pB, K)); // C[cIdx] = TensorPrimitives.Dot(A.Slice(aIdx, K), spanBTrans.Slice(bIdx, K));
+                        pC = MatrixUtil.Dot(K, ref pA0, ref pB);
+                        pB = ref Unsafe.Add(ref pB, K);
+                        pC = ref Unsafe.Add(ref pC, 1);
+                    }
+                    pA0 = ref Unsafe.Add(ref pA0, strideA);
+                    pC0 = ref Unsafe.Add(ref pC0, strideC);
+                }
+            } finally {
+                ArrayPool<TMy>.Shared.Return(BTrans);
+            }
+        }
+
+        [Benchmark]
+        public void TransposeSimd() {
+            StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimd");
+            }
+        }
+
 #if REDUCE_MEMORY_USAGE
         /// <summary>TileRow on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
