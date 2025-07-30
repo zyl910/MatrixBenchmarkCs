@@ -310,19 +310,25 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 var spanBTrans = BTrans.AsSpan();
                 MatrixUtil.Transpose(K, N, B, strideB, spanBTrans);
                 // Matrix multiply.
+                int aIdx = 0;
+                int cIdx0 = 0;
                 for (int i = 0; i < M; ++i) {
-                    int aIdx = i * strideA;
+                    int bIdx = 0;
+                    int cIdx = cIdx0;
                     for (int j = 0; j < N; ++j) {
-                        int cIdx = i * strideC + j;
+                        //int cIdx = i * strideC + j;
                         //C[cIdx] = 0;
                         //for (int k = 0; k < K; ++k) {
                         //    int aIdx = i * strideA + k;
                         //    int bIdx = j * strideB + k;
                         //    C[cIdx] += A[aIdx] * BTrans[bIdx];
                         //}
-                        int bIdx = j * strideB;
                         C[cIdx] = TensorPrimitives.Dot(A.Slice(aIdx, K), spanBTrans.Slice(bIdx, K));
+                        bIdx += strideB;
+                        ++cIdx;
                     }
+                    aIdx += strideA;
+                    cIdx0 += strideC;
                 }
             } finally {
                 ArrayPool<TMy>.Shared.Return(BTrans);
