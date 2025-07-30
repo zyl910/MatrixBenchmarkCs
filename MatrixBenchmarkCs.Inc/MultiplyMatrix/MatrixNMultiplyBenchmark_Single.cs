@@ -348,17 +348,30 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif
         /// <summary>Transpose on Ref Simd.</summary>
         /// <inheritdoc cref="StaticTranspose"/>
-        public static void StaticTransposeSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+        public static void StaticTransposeSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool transposedB = false) {
             // Transpose matrix B.
-            int total = K * N;
-            TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+            TMy[] BTrans;
+            if (transposedB) {
+                BTrans = [];
+            } else {
+                int total = K * N;
+                BTrans = ArrayPool<TMy>.Shared.Rent(total);
+            }
             try {
-                MatrixUtil.Transpose(K, N, in B, strideB, ref BTrans[0]);
+                ref TMy pB0 = ref Unsafe.AsRef(in B);
+                nint strideBTran = strideB;
+                if (transposedB) {
+                    // Nothing.
+                } else {
+                    pB0 = ref BTrans[0];
+                    strideBTran = K;
+                    MatrixUtil.Transpose(K, N, in B, strideB, ref pB0, strideBTran);
+                }
                 // Matrix multiply.
                 ref TMy pA0 = ref Unsafe.AsRef(in A);
                 ref TMy pC0 = ref C;
                 for (int i = 0; i < M; ++i) {
-                    ref TMy pB = ref BTrans[0];
+                    ref TMy pB = ref pB0;
                     ref TMy pC = ref pC0;
                     for (int j = 0; j < N; ++j) {
                         //int cIdx = i * strideC + j;
@@ -370,14 +383,18 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         //}
                         //pC = TensorPrimitives.Dot(MemoryMarshal.CreateReadOnlySpan(ref pA0, K), MemoryMarshal.CreateReadOnlySpan(ref pB, K)); // C[cIdx] = TensorPrimitives.Dot(A.Slice(aIdx, K), spanBTrans.Slice(bIdx, K));
                         pC = MatrixUtil.Dot(K, ref pA0, ref pB);
-                        pB = ref Unsafe.Add(ref pB, K);
+                        pB = ref Unsafe.Add(ref pB, strideBTran);
                         pC = ref Unsafe.Add(ref pC, 1);
                     }
                     pA0 = ref Unsafe.Add(ref pA0, strideA);
                     pC0 = ref Unsafe.Add(ref pC0, strideC);
                 }
             } finally {
-                ArrayPool<TMy>.Shared.Return(BTrans);
+                if (transposedB) {
+                    // Nothing.
+                } else {
+                    ArrayPool<TMy>.Shared.Return(BTrans);
+                }
             }
         }
 
@@ -387,6 +404,32 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TransposeSimd");
+            }
+        }
+
+        [Benchmark]
+        public void TransposeSimdParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int total = MatrixK * MatrixN;
+                TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+                ref TMy pB0 = ref BTrans[0];
+                int strideBTran = MatrixK;
+                MatrixUtil.Transpose(MatrixK, MatrixN, ref arrayB![0], StrideB, ref pB0, strideBTran);
+                try {
+                    Parallel.For(0, M, i => {
+                        StaticTransposeSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref BTrans[0], strideBTran, ref arrayC![StrideC * i], StrideC, true);
+                    });
+                } finally {
+                    ArrayPool<TMy>.Shared.Return(BTrans);
+                }
+            } else {
+                StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimdParallel");
             }
         }
 
