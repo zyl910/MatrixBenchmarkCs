@@ -440,6 +440,23 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        [Benchmark]
+        public void LinearWriteSimdParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                Parallel.For(0, M, i => {
+                    StaticLinearWriteSimdLU(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
+                });
+            } else {
+                StaticLinearWriteSimdLU(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimdParallel");
+            }
+        }
+
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
