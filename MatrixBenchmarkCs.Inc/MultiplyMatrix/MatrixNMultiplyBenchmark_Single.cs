@@ -363,6 +363,83 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>LinearWrite on Ref Simd - Loop Unrolling.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticLinearWriteSimdLU(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            const int LU = 4; // Loop Unrolling 4.
+            if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+                return;
+            }
+            int cntRem = N % Vector<TMy>.Count; // Remainder count.
+            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
+            int cntBlock = cntBlockRaw;
+            if (0 == cntRem) {
+                --cntBlock; // Use vCLast.
+            }
+            int cntBlockUL = cntBlock / LU;
+            cntBlock = cntBlock % LU;
+            // Matrix multiply.
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                // Make last.
+                int pos = N - Vector<TMy>.Count;
+                ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
+                ref TMy pBLast = ref Unsafe.Add(ref pB0, pos);
+                Vector<float> vCLast = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBLast);
+                // SIMD for cntBlockUL.
+                ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
+                ref TMy pBBlock = ref pB0;
+                for (int j = 0; j < cntBlockUL; ++j) {
+                    Vector<TMy> cur = Vector<TMy>.Zero;
+                    Vector<TMy> cur1 = Vector<TMy>.Zero;
+                    Vector<TMy> cur2 = Vector<TMy>.Zero;
+                    Vector<TMy> cur3 = Vector<TMy>.Zero;
+                    ref TMy pA = ref pA0;
+                    ref TMy pB = ref pBBlock;
+                    for (int k = 0; k < K; ++k) {
+                        //cur += pA * pB;
+                        Vector<TMy> vA = new Vector<TMy>(pA);
+                        ref Vector<TMy> pBCur = ref Unsafe.As<TMy, Vector<TMy>>(ref pB);
+                        cur = Vector.Add(Vectors.Multiply(vA, pBCur), cur);
+                        cur1 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 1)), cur1);
+                        cur2 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 2)), cur2);
+                        cur3 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 3)), cur3);
+                        pA = ref Unsafe.Add(ref pA, 1);
+                        pB = ref Unsafe.Add(ref pB, strideB);
+                    }
+                    pC = cur;
+                    Unsafe.Add(ref pC, 1) = cur1;
+                    Unsafe.Add(ref pC, 2) = cur2;
+                    Unsafe.Add(ref pC, 3) = cur3;
+                    pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count * LU);
+                    pC = ref Unsafe.Add(ref pC, LU);
+                }
+                // SIMD for cntBlock.
+                for (int j = 0; j < cntBlock; ++j) {
+                    Vector<float> cur = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBBlock);
+                    pC = cur;
+                    pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count);
+                    pC = ref Unsafe.Add(ref pC, 1);
+                }
+                pCLast = vCLast; // Overrride remainder items. 
+                // Next.
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void LinearWriteSimdLU() {
+            StaticLinearWriteSimdLU(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimdLU");
+            }
+        }
+
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
