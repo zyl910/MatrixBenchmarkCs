@@ -300,6 +300,21 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector<float> LinearWriteSimd_Vector(int K, int strideB, ref float pA0, ref float pB0) {
+            Vector<TMy> cur = Vector<TMy>.Zero;
+            ref TMy pA = ref pA0;
+            ref TMy pB = ref pB0;
+            for (int k = 0; k < K; ++k) {
+                //cur += pA * pB;
+                Vector<TMy> vA = new Vector<TMy>(pA);
+                cur = Vector.Add(Vectors.Multiply(vA, Unsafe.As<TMy, Vector<TMy>>(ref pB)), cur); // pC += vA * pB;
+                pA = ref Unsafe.Add(ref pA, 1);
+                pB = ref Unsafe.Add(ref pB, strideB);
+            }
+            return cur;
+        }
+
         /// <summary>LinearWrite on Ref Simd.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticLinearWriteSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
@@ -307,33 +322,33 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
                 return;
             }
-            if (0!=(N % Vector<TMy>.Count)) {
-                StaticTileRowSimd(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
-                return;
+            int cntRem = N % Vector<TMy>.Count; // Remainder count.
+            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
+            int cntBlock = cntBlockRaw;
+            if (0 == cntRem) {
+                --cntBlock; // Use vCLast.
             }
-            int cntBlock = N / Vector<TMy>.Count; // Block count raw.
             // Matrix multiply.
             ref TMy pA0 = ref Unsafe.AsRef(in A);
             ref TMy pB0 = ref Unsafe.AsRef(in B);
             ref TMy pC0 = ref C;
             for (int i = 0; i < M; ++i) {
+                // Make last.
+                int pos = N - Vector<TMy>.Count;
+                ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
+                ref TMy pBLast = ref Unsafe.Add(ref pB0, pos);
+                Vector<float> vCLast = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBLast);
+                // SIMD for.
                 ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
                 ref TMy pBBlock = ref pB0;
                 for (int j = 0; j < cntBlock; ++j) {
-                    Vector<TMy> cur = Vector<TMy>.Zero;
-                    ref TMy pA = ref pA0;
-                    ref TMy pB = ref pBBlock;
-                    for (int k = 0; k < K; ++k) {
-                        //cur += pA * pB;
-                        Vector<TMy> vA = new Vector<TMy>(pA);
-                        cur = Vector.Add(Vectors.Multiply(vA, Unsafe.As<TMy, Vector<TMy>>(ref pB)), cur); // pC += vA * pB;
-                        pA = ref Unsafe.Add(ref pA, 1);
-                        pB = ref Unsafe.Add(ref pB, strideB);
-                    }
-                    pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count);
+                    Vector<float> cur = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBBlock);
                     pC = cur;
+                    pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count);
                     pC = ref Unsafe.Add(ref pC, 1);
                 }
+                pCLast = vCLast; // Overrride remainder items. 
+                // Next.
                 pA0 = ref Unsafe.Add(ref pA0, strideA);
                 pC0 = ref Unsafe.Add(ref pC0, strideC);
             }
