@@ -300,6 +300,54 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        /// <summary>LinearWrite on Ref Simd.</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public static void StaticLinearWriteSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
+                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+                return;
+            }
+            if (0!=(N % Vector<TMy>.Count)) {
+                StaticTileRowSimd(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+                return;
+            }
+            int cntBlock = N / Vector<TMy>.Count; // Block count raw.
+            // Matrix multiply.
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; ++i) {
+                ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
+                ref TMy pBBlock = ref pB0;
+                for (int j = 0; j < cntBlock; ++j) {
+                    Vector<TMy> cur = Vector<TMy>.Zero;
+                    ref TMy pA = ref pA0;
+                    ref TMy pB = ref pBBlock;
+                    for (int k = 0; k < K; ++k) {
+                        //cur += pA * pB;
+                        Vector<TMy> vA = new Vector<TMy>(pA);
+                        cur = Vector.Add(Vectors.Multiply(vA, Unsafe.As<TMy, Vector<TMy>>(ref pB)), cur); // pC += vA * pB;
+                        pA = ref Unsafe.Add(ref pA, 1);
+                        pB = ref Unsafe.Add(ref pB, strideB);
+                    }
+                    pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count);
+                    pC = cur;
+                    pC = ref Unsafe.Add(ref pC, 1);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA);
+                pC0 = ref Unsafe.Add(ref pC0, strideC);
+            }
+        }
+
+        [Benchmark]
+        public void LinearWriteSimd() {
+            StaticLinearWriteSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimd");
+            }
+        }
+
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
