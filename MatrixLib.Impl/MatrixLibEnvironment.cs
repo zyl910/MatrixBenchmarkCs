@@ -34,7 +34,7 @@ namespace MatrixLib {
         }
 
         static MatrixLibEnvironment() {
-            MatrixMath._instance = new MatrixMathImpl();
+            MatrixMath._instance = MatrixMathImpl.Instance;
             m_InitCheckSum = MatrixMath.Instance.GetHashCode();
         }
 

@@ -1,6 +1,7 @@
 ﻿#undef BENCHMARKS_OFF
 
 using BenchmarkDotNet.Attributes;
+using MatrixLib.Impl;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
