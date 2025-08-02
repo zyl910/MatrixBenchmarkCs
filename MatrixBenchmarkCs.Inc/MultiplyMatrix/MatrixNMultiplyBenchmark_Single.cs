@@ -354,7 +354,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if REDUCE_MEMORY_USAGE
         [Benchmark]
+#endif // REDUCE_MEMORY_USAGE
         public void LinearWriteSimd() {
             StaticLinearWriteSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
@@ -587,6 +589,40 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TransposeSimdParallel");
+            }
+        }
+
+        [Benchmark]
+        public unsafe void TransposeSimdParallelAlign() {
+            const int alignment = 64;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int strideBTran = (MatrixK + alignment - 1) / alignment * alignment;
+                int total = strideBTran * MatrixN + (alignment / sizeof(TMy));
+                TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+                try {
+                    fixed (TMy* pBTransRaw = &BTrans[0]) {
+                        nint offset = 0;
+                        nint rem = (nint)pBTransRaw % alignment;
+                        if (0 != rem) {
+                            offset = alignment - rem;
+                        }
+                        TMy* pBTrans = (TMy*)((byte*)pBTransRaw + offset);
+                        MatrixUtil.Transpose(MatrixK, MatrixN, ref arrayB![0], StrideB, ref Unsafe.AsRef<TMy>(pBTrans), strideBTran);
+                        Parallel.For(0, M, i => {
+                            StaticTransposeSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref Unsafe.AsRef<TMy>(pBTrans), strideBTran, ref arrayC![StrideC * i], StrideC, true);
+                        });
+                    }
+                } finally {
+                    ArrayPool<TMy>.Shared.Return(BTrans);
+                }
+            } else {
+                StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimdParallelAlign");
             }
         }
 
