@@ -1,0 +1,22 @@
+<Project>
+    <PropertyGroup>
+
+        <ProductVersion>1.0.0</ProductVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <VersionPrefix>1.0.0</VersionPrefix>
+
+        <BenchmarkDotNetPackageVersion>0.15.2</BenchmarkDotNetPackageVersion>
+        <MathNetNumericsVersion>6.0.0-beta2</MathNetNumericsVersion>
+        <SystemNumericsTensorsVersion>9.0.7</SystemNumericsTensorsVersion>
+        <VectorTraitsPackageVersion>3.1.0</VectorTraitsPackageVersion>
+
+        <MKLNETVersion>1.6.0</MKLNETVersion>
+        <MKLNETwinx64Version>2022.0.0.115</MKLNETwinx64Version>
+        <MKLNETlinuxx64Version>2022.0.1.117</MKLNETlinuxx64Version>
+        <MKLNETosxx64Version>2022.0.0.105</MKLNETosxx64Version>
+
+        <OpenBlasSharpVersion>0.3.4</OpenBlasSharpVersion>
+        <OpenBlasSharpWindowsVersion>2025.1.13</OpenBlasSharpWindowsVersion>
+
+    </PropertyGroup>
+</Project>
