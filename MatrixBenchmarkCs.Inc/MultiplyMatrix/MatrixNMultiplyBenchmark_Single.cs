@@ -1,6 +1,7 @@
 ﻿#undef BENCHMARKS_OFF
 
 using BenchmarkDotNet.Attributes;
+using MatrixLib;
 using MatrixLib.Impl;
 using System;
 using System.Buffers;
@@ -976,6 +977,33 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // REDUCE_MEMORY_USAGE
+
+        [Benchmark]
+        public void CallLib() {
+            MatrixMath.MultiplyMatrix(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLib");
+            }
+        }
+
+        [Benchmark]
+        public void CallLibSimd() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimd");
+            }
+        }
+
+        [Benchmark]
+        public void CallLibSimdParallel() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimdParallel");
+            }
+        }
 
         [Benchmark]
         public void TileRowSimdParallel() {
