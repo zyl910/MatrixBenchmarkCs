@@ -1,5 +1,9 @@
-﻿using System;
+﻿using MatrixLib.Impl;
+using System;
 using System.Diagnostics;
+using Zyl.VectorTraits;
+
+[assembly: CLSCompliant(true)]
 
 namespace MatrixLib {
     /// <summary>
@@ -30,7 +34,8 @@ namespace MatrixLib {
         }
 
         static MatrixLibEnvironment() {
-            m_InitCheckSum = 0;
+            MatrixMath._instance = new MatrixMathImpl();
+            m_InitCheckSum = MatrixMath.Instance.GetHashCode();
         }
 
     }

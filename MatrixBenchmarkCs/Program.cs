@@ -24,8 +24,12 @@ namespace MatrixBenchmarkCs {
                     benchmarkMode = 1;
                 }
             }
-            writer.WriteLine("benchmarkMode:\t{0}", benchmarkMode);
             MatrixLibEnvironment.Init();
+            try {
+                writer.WriteLine("MatrixMath.SupportedInstructionSets:\t{0}", MatrixMath.SupportedInstructionSets);
+            } catch (Exception ex) {
+                writer.WriteLine(ex.ToString());
+            }
             //MklDemo.Call(writer);
             if (benchmarkMode == 3) {
                 AloneTestUtil.AloneTestByCommand(writer, args);
