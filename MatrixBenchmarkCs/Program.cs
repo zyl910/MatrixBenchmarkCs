@@ -3,6 +3,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using MatrixBenchmarkCs.MultiplyMatrix;
+using MatrixLib.Impl;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -24,6 +25,7 @@ namespace MatrixBenchmarkCs {
                 }
             }
             writer.WriteLine("benchmarkMode:\t{0}", benchmarkMode);
+            MatrixLibEnvironment.Init();
             //MklDemo.Call(writer);
             if (benchmarkMode == 3) {
                 AloneTestUtil.AloneTestByCommand(writer, args);

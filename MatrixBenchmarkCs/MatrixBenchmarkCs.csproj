@@ -53,6 +53,10 @@
         <PackageReference Include="MKL.NET" Version="$(MKLNETVersion)" />
         <PackageReference Include="OpenBlasSharp" Version="$(OpenBlasSharpVersion)" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\MatrixLib.Impl\MatrixLib.Impl.csproj" />
+      <ProjectReference Include="..\MatrixLib\MatrixLib.csproj" />
+    </ItemGroup>
     <Choose>
         <When Condition=" '$(ExUseNativeDll)' == 'true' AND '$(OS)' == 'Windows_NT' ">
             <ItemGroup>

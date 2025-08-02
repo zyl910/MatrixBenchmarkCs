@@ -34,10 +34,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         protected MatrixNMultiplyBenchmark() : base() {
             ValuesForN = new int[] {
                 //64
-                32, 64, 65,
+                //32, 64, 65,
                 //128, 256,
                 //512, 1024, 1025,
-                //2048, 4096,
+                //2048,
+                //4096,
             };
         }
 
