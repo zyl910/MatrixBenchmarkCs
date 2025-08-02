@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace MatrixLib.Impl {
+namespace MatrixLib {
     /// <summary>
     /// MatrixLib Environment (矩阵库的环境).
     /// </summary>

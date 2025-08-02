@@ -3,7 +3,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using MatrixBenchmarkCs.MultiplyMatrix;
-using MatrixLib.Impl;
+using MatrixLib;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
