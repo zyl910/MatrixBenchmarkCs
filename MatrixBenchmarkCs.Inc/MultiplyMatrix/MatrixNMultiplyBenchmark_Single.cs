@@ -713,7 +713,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif // REDUCE_MEMORY_USAGE
 
         /// <summary>TileRow on SIMD.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
+        /// <inheritdoc cref="StaticTileRowRef"/>
         public static void StaticTileRowSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);

@@ -7,7 +7,7 @@ namespace MatrixLib.Impl {
     /// <summary>
     /// Implements of MatrixMathBase (MatrixMathBase 的实现).
     /// </summary>
-    public sealed class MatrixMathImpl : MatrixMathBase {
+    public sealed partial class MatrixMathImpl : MatrixMathBase {
 
         public override string SupportedInstructionSets {
             get {

@@ -10,6 +10,11 @@ namespace MatrixLib.Impl {
     /// </summary>
     public class MatrixMathBase {
 
+        /// <inheritdoc cref="MatrixMath.MultiplyMatrix"/>
+        public virtual void MultiplyMatrix(int M, int N, int K, ref readonly float A, int strideA, ref readonly float B, int strideB, ref float C, int strideC) {
+            ThrowNotSupportedException();
+        }
+
         /// <summary>
         /// throw new NotSupportedException.
         /// </summary>

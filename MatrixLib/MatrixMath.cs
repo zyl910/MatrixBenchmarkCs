@@ -14,6 +14,22 @@ namespace MatrixLib {
         internal static MatrixMathBase _instance = new MatrixMathBase();
 
         /// <summary>
+        /// Matrix M*K multiply matrix K*N.
+        /// </summary>
+        /// <param name="M">The number of rows in matrix A (矩阵A的行数).</param>
+        /// <param name="N">The number of columns in matrix B (矩阵B的列数).</param>
+        /// <param name="K">The number of columns in matrix A, or the number of rows in matrix B (矩阵A的列数, 或矩阵B的行数).</param>
+        /// <param name="A">Matrix A.</param>
+        /// <param name="strideA">Stride of A.</param>
+        /// <param name="B">Matrix B.</param>
+        /// <param name="strideB">Stride of B.</param>
+        /// <param name="C">Matrix C.</param>
+        /// <param name="strideC">Stride of C.</param>
+        public static void MultiplyMatrix(int M, int N, int K, ref readonly float A, int strideA, ref readonly float B, int strideB, ref float C, int strideC) {
+            _instance.MultiplyMatrix(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+        }
+
+        /// <summary>
         /// The instance (实例).
         /// </summary>
         public static MatrixMathBase Instance { get { return _instance; } }
