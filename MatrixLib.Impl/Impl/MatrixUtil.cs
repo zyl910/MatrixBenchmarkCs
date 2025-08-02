@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Zyl.VectorTraits;
 
-namespace MatrixBenchmarkCs {
+namespace MatrixLib.Impl {
     /// <summary>
     /// Matrix utility (矩阵工具).
     /// </summary>
