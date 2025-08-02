@@ -74,6 +74,7 @@ namespace MatrixBenchmarkCs {
             EnvironmentOutput.OutputEnvironment(writer, indent);
             //writer.WriteLine(indent + string.Format("Vectors.BaseInstance:\t{0}", Vectors.BaseInstance.GetType().Name));
             // -- OpenBLAS.
+#if USE_NATIVE_DLL
             if (true) {
                 try {
                     writer.WriteLine(indent + string.Format("OpenBlas.GetConfig:\t{0}", OpenBlasSharp.OpenBlas.GetConfig()));
@@ -84,6 +85,7 @@ namespace MatrixBenchmarkCs {
                     writer.WriteLine(indent + string.Format("OpenBlas load fail! {0}", ex.ToString()));
                 }
             }
+#endif // USE_NATIVE_DLL
         }
 
         /// <summary>

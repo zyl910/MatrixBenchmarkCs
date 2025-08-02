@@ -1,4 +1,5 @@
-﻿using MKLNET;
+﻿#if USE_NATIVE_DLL
+using MKLNET;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,3 +31,4 @@ namespace MatrixBenchmarkCs {
 
     }
 }
+#endif // USE_NATIVE_DLL

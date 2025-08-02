@@ -1885,6 +1885,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if USE_NATIVE_DLL
         [Benchmark]
         public unsafe void UseOpenBLAS() {
             fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
@@ -1904,6 +1905,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("UseMKL");
             }
         }
+#endif // USE_NATIVE_DLL
 
     }
 }
