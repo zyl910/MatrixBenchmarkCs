@@ -10,7 +10,7 @@ namespace MatrixBenchmarkCs {
     /// <summary>
     /// Matrix utility (矩阵工具).
     /// </summary>
-    internal static class MatrixUtil {
+    public static class MatrixUtil {
 
         /// <summary>
         /// Computes the dot product of two tensors containing single-precision floating-point numbers.
