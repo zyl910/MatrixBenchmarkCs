@@ -15,6 +15,7 @@ using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using System.Threading.Tasks;
+using Zyl.ExSpans;
 using Zyl.VectorTraits;
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
@@ -984,6 +985,15 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("CallLib");
+            }
+        }
+
+        [Benchmark]
+        public void CallLibSpan() {
+            MatrixMath.MultiplyMatrixSpan(MatrixM, MatrixN, MatrixK, arrayA.AsExSpan(), StrideA, arrayB.AsExSpan(), StrideB, arrayC.AsExSpan(), StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSpan");
             }
         }
 

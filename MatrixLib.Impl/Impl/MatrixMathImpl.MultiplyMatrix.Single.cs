@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Zyl.VectorTraits;
@@ -12,8 +13,19 @@ namespace MatrixLib.Impl {
     using TMy = Single;
 
     partial class MatrixMathImpl {
+        private bool _Used_MultiplyMatrix = false;
 
         public override void MultiplyMatrix(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            if (!_Used_MultiplyMatrix) {
+                _Used_MultiplyMatrix = true;
+                Console.WriteLine(string.Format(" SupportedInstructionSets: {0}", VectorEnvironment.SupportedInstructionSets));
+#if NETCOREAPP3_0_OR_GREATER // .NET 9.0 not output.
+                Console.WriteLine(string.Format(" RuntimeInformation.FrameworkDescription: {0}", RuntimeInformation.FrameworkDescription));
+#endif // NETCOREAPP3_0_OR_GREATER
+#if NET8_0_OR_GREATER
+                Console.WriteLine(" NET8_0_OR_GREATER");
+#endif // NET8_0_OR_GREATER
+            }
             MultiplyMatrix_TileRowSimd(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
         }
 

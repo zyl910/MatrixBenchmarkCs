@@ -1,6 +1,7 @@
 ﻿using MatrixLib.Impl;
 using System;
 using System.Runtime.CompilerServices;
+using Zyl.ExSpans;
 
 [assembly: CLSCompliant(true)]
 
@@ -27,6 +28,11 @@ namespace MatrixLib {
         /// <param name="strideC">Stride of C.</param>
         public static void MultiplyMatrix(int M, int N, int K, ref readonly float A, int strideA, ref readonly float B, int strideB, ref float C, int strideC) {
             _instance.MultiplyMatrix(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+        }
+
+        /// <inheritdoc cref="MultiplyMatrix"/>
+        public static void MultiplyMatrixSpan(int M, int N, int K, ReadOnlyExSpan<float> A, int strideA, ReadOnlyExSpan<float> B, int strideB, ExSpan<float> C, int strideC) {
+            MultiplyMatrix(M, N, K, in A[0], strideA, in B[0], strideB, ref C[0], strideC);
         }
 
         /// <summary>

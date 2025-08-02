@@ -6,6 +6,7 @@
         <VersionPrefix>1.0.0</VersionPrefix>
 
         <BenchmarkDotNetPackageVersion>0.15.2</BenchmarkDotNetPackageVersion>
+        <ExSpansVersion>1.0.0</ExSpansVersion>
         <MathNetNumericsVersion>6.0.0-beta2</MathNetNumericsVersion>
         <SystemNumericsTensorsVersion>9.0.7</SystemNumericsTensorsVersion>
         <VectorTraitsPackageVersion>3.1.0</VectorTraitsPackageVersion>

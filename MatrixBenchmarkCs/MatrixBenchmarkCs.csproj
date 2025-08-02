@@ -38,6 +38,7 @@
 
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="$(BenchmarkDotNetPackageVersion)" />
+        <PackageReference Include="ExSpans.Core" Version="$(ExSpansVersion)" />
         <PackageReference Include="MathNet.Numerics" Version="$(MathNetNumericsVersion)" />
         <PackageReference Include="System.Numerics.Tensors" Version="$(SystemNumericsTensorsVersion)" />
         <PackageReference Include="VectorTraits" Version="$(VectorTraitsPackageVersion)" />
