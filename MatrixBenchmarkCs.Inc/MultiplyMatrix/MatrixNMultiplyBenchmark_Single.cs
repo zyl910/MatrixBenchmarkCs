@@ -368,6 +368,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if REDUCE_MEMORY_USAGE
         /// <summary>LinearWrite on Ref Simd - Loop Unrolling.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticLinearWriteSimdLU(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
@@ -461,6 +462,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("LinearWriteSimdParallel");
             }
         }
+#endif // REDUCE_MEMORY_USAGE
 
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>

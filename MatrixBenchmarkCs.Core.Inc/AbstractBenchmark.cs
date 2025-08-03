@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using MatrixLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,6 +37,11 @@ namespace MatrixBenchmarkCs {
         /// Global setup
         /// </summary>
         public virtual void GlobalSetup() {
+        }
+
+        static AbstractBenchmark() {
+            // Fix CallLib/CallLibSpan error on BenchmarkDotNet: System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.NotSupportedException: The MultiplyMatrix methods is not supported!
+            MatrixLibEnvironment.Init();
         }
 
     }

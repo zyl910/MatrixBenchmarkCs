@@ -33,7 +33,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// </summary>
         protected MatrixNMultiplyBenchmark() : base() {
             ValuesForN = new int[] {
-                //64
+                //64,
                 //32, 64, 65,
                 128, 256,
                 //512, 1024, 1025,
@@ -92,6 +92,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <inheritdoc/>
         [GlobalSetup]
         public override void GlobalSetup() {
+            base.GlobalSetup();
             ArraySetup();
             // Check.
             BenchmarkUtil.CheckAllBenchmark(this);

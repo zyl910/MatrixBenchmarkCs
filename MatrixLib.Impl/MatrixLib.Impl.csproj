@@ -13,7 +13,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
-        <TargetFrameworks>net9.0netstandard2.0;</TargetFrameworks>
+        <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
       </PropertyGroup>
     </Otherwise>
       <!--

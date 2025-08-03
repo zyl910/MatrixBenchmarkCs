@@ -21,6 +21,7 @@ namespace MatrixLib {
         /// <summary>
         /// Do initialize (进行初始化).
         /// </summary>
+        /// <remarks>If MatrixMath's methods throws NotImplementedException exception, please call `MatrixLibEnvironment.Init` method of `MatrixLib.Impl` first (若 MatrixMath 的方法抛出 NotSupportedException 异常, 请先调用 `MatrixLib.Impl` 的 `MatrixLibEnvironment.Init` 方法).</remarks>
         public static void Init() {
             if (m_Inited) return;
             m_Inited = true;

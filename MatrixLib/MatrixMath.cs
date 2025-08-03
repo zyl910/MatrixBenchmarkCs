@@ -11,6 +11,7 @@ namespace MatrixLib {
     /// <summary>
     /// Matrix Math (矩阵数学).
     /// </summary>
+    /// <remarks>If MatrixMath's methods throws NotImplementedException exception, please call `MatrixLibEnvironment.Init` method of `MatrixLib.Impl` first (若 MatrixMath 的方法抛出 NotSupportedException 异常, 请先调用 `MatrixLib.Impl` 的 `MatrixLibEnvironment.Init` 方法).</remarks>
     public static class MatrixMath {
         internal static MatrixMathBase _instance = new MatrixMathBase();
 
