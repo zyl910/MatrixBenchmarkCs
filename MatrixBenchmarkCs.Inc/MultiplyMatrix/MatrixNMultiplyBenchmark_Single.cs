@@ -1,4 +1,5 @@
 ﻿#undef BENCHMARKS_OFF
+//#define USED_EXSPANS
 
 using BenchmarkDotNet.Attributes;
 using MatrixLib;
@@ -15,7 +16,9 @@ using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using System.Threading.Tasks;
+#if USED_EXSPANS
 using Zyl.ExSpans;
+#endif // USED_EXSPANS
 using Zyl.VectorTraits;
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
@@ -990,6 +993,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if USED_EXSPANS
         [Benchmark]
         public void CallLibSpan() {
             MatrixMath.MultiplyMatrixSpan(MatrixM, MatrixN, MatrixK, arrayA.AsExSpan(), StrideA, arrayB.AsExSpan(), StrideB, arrayC.AsExSpan(), StrideC);
@@ -998,6 +1002,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("CallLibSpan");
             }
         }
+#endif // USED_EXSPANS
 
         [Benchmark]
         public void CallLibSimd() {

@@ -1,7 +1,11 @@
-﻿using MatrixLib.Impl;
+﻿//#define USED_EXSPANS
+
+using MatrixLib.Impl;
 using System;
 using System.Runtime.CompilerServices;
+#if USED_EXSPANS
 using Zyl.ExSpans;
+#endif // USED_EXSPANS
 
 [assembly: CLSCompliant(true)]
 
@@ -31,10 +35,12 @@ namespace MatrixLib {
             _instance.MultiplyMatrix(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
         }
 
+#if USED_EXSPANS
         /// <inheritdoc cref="MultiplyMatrix"/>
         public static void MultiplyMatrixSpan(int M, int N, int K, ReadOnlyExSpan<float> A, int strideA, ReadOnlyExSpan<float> B, int strideB, ExSpan<float> C, int strideC) {
             MultiplyMatrix(M, N, K, in A[0], strideA, in B[0], strideB, ref C[0], strideC);
         }
+#endif // USED_EXSPANS
 
         /// <summary>
         /// The instance (实例).
