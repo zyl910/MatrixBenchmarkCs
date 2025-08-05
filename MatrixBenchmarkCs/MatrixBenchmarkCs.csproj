@@ -78,8 +78,23 @@
         </Otherwise>
     </Choose>
 
+    <Choose>
+        <When Condition=" '$(TargetFramework)' == 'net9.0' ">
+            <PropertyGroup>
+                <ImplTargetFramework>net9.0</ImplTargetFramework>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <ImplTargetFramework>netstandard2.0</ImplTargetFramework>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+
     <ItemGroup>
-        <ProjectReference Include="..\MatrixLib.Impl\MatrixLib.Impl.csproj" />
+        <ProjectReference Include="..\MatrixLib.Impl\MatrixLib.Impl.csproj" >
+            <SetTargetFramework>TargetFramework=$(ImplTargetFramework)</SetTargetFramework>
+        </ProjectReference>
         <ProjectReference Include="..\MatrixLib\MatrixLib.csproj" />
     </ItemGroup>
 
