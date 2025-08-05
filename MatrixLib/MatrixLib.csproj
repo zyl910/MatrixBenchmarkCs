@@ -5,6 +5,9 @@
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
   </PropertyGroup>
 
     <ItemGroup>

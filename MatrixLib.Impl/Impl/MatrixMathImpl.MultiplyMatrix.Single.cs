@@ -19,7 +19,8 @@ namespace MatrixLib.Impl {
             if (!_Used_MultiplyMatrix) {
                 _Used_MultiplyMatrix = true;
                 Console.WriteLine(string.Format(" SupportedInstructionSets: {0}", VectorEnvironment.SupportedInstructionSets));
-                Console.WriteLine(string.Format(" TargetFrameworkDisplayName:\t{0}", VectorTextUtil.GetTargetFrameworkDisplayName(typeof(MatrixMathImpl).Assembly)));
+                Console.WriteLine(string.Format(" TargetFrameworkDisplayName-MatrixMathImpl:\t{0}", VectorTextUtil.GetTargetFrameworkDisplayName(typeof(MatrixMathImpl).Assembly)));
+                Console.WriteLine(string.Format(" TargetFrameworkDisplayName-VectorEnvironment:\t{0}", VectorTextUtil.GetTargetFrameworkDisplayName(typeof(VectorEnvironment).Assembly)));
 #if NETCOREAPP3_0_OR_GREATER // .NET 9.0 not output.
                 Console.WriteLine(string.Format(" RuntimeInformation.FrameworkDescription: {0}", RuntimeInformation.FrameworkDescription));
 #endif // NETCOREAPP3_0_OR_GREATER
