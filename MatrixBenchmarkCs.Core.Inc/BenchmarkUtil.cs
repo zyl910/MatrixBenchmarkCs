@@ -48,7 +48,7 @@ namespace MatrixBenchmarkCs {
         /// <returns>Return true if float type; false is other.</returns>
         public static bool IsFloatType<
 #if NET6_0_OR_GREATER
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
 #endif // NET6_0_OR_GREATER
             T>() where T: struct {
 #if NET7_0_OR_GREATER
