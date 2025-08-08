@@ -1,5 +1,6 @@
 ﻿global using BLASLONG = long;
 global using FLOAT = float;
+global using int64_t = long;
 
 using MatrixLib.Impl;
 using System;
