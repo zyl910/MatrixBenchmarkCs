@@ -1,4 +1,7 @@
-﻿using MatrixLib.Impl;
+﻿global using BLASLONG = long;
+global using FLOAT = float;
+
+using MatrixLib.Impl;
 using System;
 using System.Diagnostics;
 using Zyl.VectorTraits;
