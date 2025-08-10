@@ -1,5 +1,5 @@
-﻿//#undef BENCHMARKS_OFF
-#define Tensor_Primitives_ALLOW_T
+﻿#undef BENCHMARKS_OFF
+//#define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
 
 using BenchmarkDotNet.Attributes;
@@ -30,12 +30,12 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 
     // My type.
-    using TMy = Single;
+    using TMy = Double;
 
     /// <summary>
-    /// Matrix N*N multiply matrix N*N benchmark - Single.
+    /// Matrix N*N multiply matrix N*N benchmark - Double.
     /// </summary>
-    public class MatrixNMultiplyBenchmark_Single : MatrixNMultiplyBenchmark<TMy> {
+    public class MatrixNMultiplyBenchmark_Double : MatrixNMultiplyBenchmark<TMy> {
 
         protected const int BLOCK_SIZE = 8;
 
@@ -1938,7 +1938,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         [Benchmark]
         public unsafe void UseOpenBLAS() {
             fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
-                OpenBlasSharp.Blas.Sgemm(OpenBlasSharp.Order.RowMajor, OpenBlasSharp.Transpose.NoTrans, OpenBlasSharp.Transpose.NoTrans, MatrixM, MatrixN, MatrixK, 1, pA, StrideA, pB, StrideB, 0, pC, StrideC);
+                OpenBlasSharp.Blas.Dgemm(OpenBlasSharp.Order.RowMajor, OpenBlasSharp.Transpose.NoTrans, OpenBlasSharp.Transpose.NoTrans, MatrixM, MatrixN, MatrixK, 1, pA, StrideA, pB, StrideB, 0, pC, StrideC);
             }
             if (CheckMode) {
                 dstTMy = GetCheckSum();

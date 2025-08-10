@@ -50,6 +50,7 @@ namespace MatrixBenchmarkCs {
             _inited = true;
             WrappedType[] types = {
                 // MultiplyMatrix
+                typeof(MatrixNMultiplyBenchmark_Double),
                 typeof(MatrixNMultiplyBenchmark_Int32),
                 typeof(MatrixNMultiplyBenchmark_Single),
             };
