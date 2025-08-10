@@ -1071,19 +1071,35 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if NETCOREAPP3_0_OR_GREATER
         /// <summary>OtherGemmAvxBlock - https://gitee.com/hillgao/dgemm.git. dgemm_avx_unroll_blk.c</summary>
         /// <inheritdoc cref="StaticBasic"/>
-        public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, double* A, int strideA, double* B, int strideB, double* C, int strideC) {
+        public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, TMy* A, int strideA, TMy* B, int strideB, TMy* C, int strideC, bool allowParallel = false) {
             const int UNROLL = 4;
             const int BLOCKSIZE = 32;
-            if (0 != (M % (BLOCKSIZE* UNROLL))) {
+            if (0 != (M % (BLOCKSIZE))) {
                 throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, BLOCKSIZE));
             }
             if (M != N || M != K) {
                 throw new NotSupportedException(string.Format("{0} is not equals {1} or {2}!", M, N, K));
             }
+            int n = M;
+            if (allowParallel) {
+                nint addressA = (nint)A;
+                nint addressB = (nint)B;
+                nint addressC = (nint)C;
+                int cntJ = n / BLOCKSIZE;
+                Parallel.For(0, cntJ, j => {
+                    int sj = j * BLOCKSIZE;
+                    dgemm_avx_unroll_blk(n, (TMy*)addressA, (TMy*)addressB, (TMy*)addressC, sj);
+                });
+            } else {
+                for (int sj = 0; sj < n; sj += BLOCKSIZE) {
+                    dgemm_avx_unroll_blk(n, A, B, C, sj);
+                }
+            }
+
             // #define UNROLL 4
             // #define BLOCKSIZE 32
             // 
-            // void dgemm_avx_unroll_blk(size_t n, double *A, double *B, double *C)
+            // void dgemm_avx_unroll_blk(size_t n, TMy *A, TMy *B, TMy *C)
             // {
             // //#pragma omp parallel for
             // 	for (int sj = 0; sj < n; sj += BLOCKSIZE) {
@@ -1094,8 +1110,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             // 		}
             // 	}
             // }
-            int n = M;
-            for (int sj = 0; sj < n; sj += BLOCKSIZE) {
+            static void dgemm_avx_unroll_blk(int n, TMy* A, TMy* B, TMy* C, int sj) {
                 for (int si = 0; si < n; si += BLOCKSIZE) {
                     for (int sk = 0; sk < n; sk += BLOCKSIZE) {
                         do_block(n, si, sj, sk, A, B, C);
@@ -1104,7 +1119,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
 
             // static inline void do_block(int n, int si, int sj, int sk,
-            // 			double *A, double *B, double *C)
+            // 			TMy *A, TMy *B, TMy *C)
             // {
             // 	for (int i = si; i < si + BLOCKSIZE; i += UNROLL) {
             // 		for (int j = sj; j < sj + BLOCKSIZE; j += 4) {
@@ -1125,32 +1140,32 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             // 		}
             // 	}
             // }
-            static void do_block(int n, int si, int sj, int sk, double* A, double* B, double* C) {
+            static void do_block(int n, int si, int sj, int sk, TMy* A, TMy* B, TMy* C) {
                 for (int i = si; i < si + BLOCKSIZE; i += UNROLL) {
                     for (int j = sj; j < sj + BLOCKSIZE; j += 4) {
-                        //Vector256<double>[] c = new Vector256<double>[UNROLL];
-                        Vector256<double> c0;
-                        Vector256<double> c1;
-                        Vector256<double> c2;
-                        Vector256<double> c3;
+                        //Vector256<TMy>[] c = new Vector256<TMy>[UNROLL];
+                        Vector256<TMy> c0;
+                        Vector256<TMy> c1;
+                        Vector256<TMy> c2;
+                        Vector256<TMy> c3;
                         //for (int x = 0; x < UNROLL; x++) {
                         //    c[x] = Avx.LoadVector256(&C[(i + x) * n + j]);
                         //}
-                        double* pCLine = &C[i * n + j];
-                        double* pC = pCLine;
+                        TMy* pCLine = &C[i * n + j];
+                        TMy* pC = pCLine;
                         c0 = Avx.LoadVector256(pC); pC += n;
                         c1 = Avx.LoadVector256(pC); pC += n;
                         c2 = Avx.LoadVector256(pC); pC += n;
                         c3 = Avx.LoadVector256(pC);
 
-                        double* pALine = &A[(i) * n + sk];
-                        double* pB = &B[sk * n + j];
+                        TMy* pALine = &A[(i) * n + sk];
+                        TMy* pB = &B[sk * n + j];
                         for (int k = sk; k < sk + BLOCKSIZE; k++) {
-                            //Vector256<double> b = Avx.LoadVector256(&B[k * n + j]);
-                            Vector256<double> b = Avx.LoadVector256(pB);
-                            double* pA = pALine;
+                            //Vector256<TMy> b = Avx.LoadVector256(&B[k * n + j]);
+                            Vector256<TMy> b = Avx.LoadVector256(pB);
+                            TMy* pA = pALine;
                             //for (int x = 0; x < UNROLL; x++) {
-                            //    Vector256<double> a = Vector256.Create(A[(i + x) * n + k]);
+                            //    Vector256<TMy> a = Vector256.Create(A[(i + x) * n + k]);
                             //    c[x] = Avx.Add(c[x], Avx.Multiply(a, b));
                             //}
                             c0 = Avx.Add(c0, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
@@ -1179,12 +1194,29 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         [Benchmark]
         public unsafe void OtherGemmAvxBlock() {
             arrayC!.AsSpan().Clear();
-            fixed (double* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
-                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC);
+            fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC, false);
             }
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("OtherGemmAvxBlock");
+            }
+        }
+
+        [Benchmark]
+        public unsafe void OtherGemmAvxBlockParallel() {
+            const int BLOCKSIZE = 32;
+            bool allowParallel = (MatrixM >= (BLOCKSIZE * 2)) && (Environment.ProcessorCount > 1);
+            if (!allowParallel) {
+                throw new NotSupportedException(string.Format("No parallel, the matrix too small({0}, {1}, {2})!", MatrixM, MatrixN, MatrixK));
+            }
+            arrayC!.AsSpan().Clear();
+            fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC, allowParallel);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("OtherGemmAvxBlockParallel");
             }
         }
 #endif // NETCOREAPP3_0_OR_GREATER
