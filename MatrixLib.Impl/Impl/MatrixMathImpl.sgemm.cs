@@ -1,4 +1,8 @@
-﻿using System;
+﻿//#define LEFT
+//#define TRANSA
+//#define TRMMKERNEL
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -238,15 +242,32 @@ namespace MatrixLib.Impl {
         /// OpenBLAS: /kernel/x86_64/sgemm_kernel_8x4_haswell.c
         /// </summary>
         [CLSCompliant(false)]
-        public unsafe static int sgemm_kernel_8x4_haswell(BLASLONG m, BLASLONG n, BLASLONG k, float alpha, float* A, float* B, float* C, BLASLONG LDC) {
+        public unsafe static int sgemm_kernel_8x4_haswell(BLASLONG m, BLASLONG n, BLASLONG k, float alpha, float* A, float* B, float* C, BLASLONG LDC
+#if TRMMKERNEL
+            , BLASLONG offset
+#endif
+            ) {
             // int CNAME(BLASLONG m, BLASLONG n, BLASLONG k, float alpha, float * __restrict__ A, float * __restrict__ B, float * __restrict__ C, BLASLONG LDC
             if(m==0||n==0) return 0;
             int64_t ldc_in_bytes = (int64_t)LDC * sizeof(float);
             float constval = alpha;
             float *const_val=&constval;
-            int64_t M = (int64_t)m, K = (int64_t)k, off = 0;
+            int64_t M = (int64_t)m, K = (int64_t)k;
+#if TRMMKERNEL
+            int64_t off = 0;
+    #if LEFT
+            off = offset;
+    #else
+            off = -offset;
+    #endif
+#endif
             BLASLONG n_count = n;
             float *a_pointer = A,b_pointer = B,c_pointer = C,ctemp = C,next_b = B;
+            Vector256<FLOAT> ymm0 = default;
+            BLASLONG r11 = default;
+            BLASLONG r12 = default;
+            BLASLONG r13 = default;
+            FLOAT* r14 = default;
             for (; n_count > 11; n_count -= 12) COMPUTE(12);
             for (; n_count > 7; n_count -= 8) COMPUTE(8);
             for (; n_count > 3; n_count -= 4) COMPUTE(4);
@@ -254,6 +275,10 @@ namespace MatrixLib.Impl {
             if (n_count > 0) COMPUTE(1);
             return 0;
 
+            // /* %0 = "+r"(a_pointer), %1 = "+r"(b_pointer), %2 = "+r"(c_pointer), %3 = "+r"(ldc_in_bytes), %4 for k_count, %5 for c_store, %6 = &alpha, %7 = b_pref */
+            // /* r11 = m_counter, r12 = k << 2(const), r13 = k_skip << 2, r14 = b_head_pos(const), r15 for assisting prefetch */
+            // 
+            // //recommended settings: GEMM_P = 320, GEMM_Q = 320.
             // #ifdef TRMMKERNEL
             //   #define mult_alpha(acc,alpha,...) "vmulps "#acc","#alpha","#acc";"
             // #else
@@ -272,7 +297,28 @@ namespace MatrixLib.Impl {
             //   #define HEAD_SET_OFFSET(ndim) {}
             //   #define TAIL_SET_OFFSET(ndim) {}
             // #endif
-            // 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void HEAD_SET_OFFSET(int ndim) {
+#if TRMMKERNEL && !LEFT
+#if TRANSA
+                off+=(ndim>4?4:ndim);
+#else
+#endif // TRANSA
+#else
+#endif // TRMMKERNEL && !LEFT
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void TAIL_SET_OFFSET(int ndim) {
+#if TRMMKERNEL && !LEFT
+#if TRANSA
+                off+=ndim;
+#else
+                off+=(ndim>4?(ndim-4):0);
+#endif // TRANSA
+#else
+#endif // TRMMKERNEL && !LEFT
+            }
+
             // #if defined(TRMMKERNEL) && defined(LEFT)
             //   #ifdef TRANSA
             //     #define init_update_kskip(val) "subq $"#val",%%r13;"
@@ -285,7 +331,27 @@ namespace MatrixLib.Impl {
             //   #define init_update_kskip(val) ""
             //   #define save_update_kskip(val) ""
             // #endif
-            // 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void init_update_kskip(int val) {
+#if TRMMKERNEL && !LEFT
+#if TRANSA
+                r13 -= val;
+#else
+#endif // TRANSA
+#else
+#endif // TRMMKERNEL && !LEFT
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void save_update_kskip(int val) {
+#if TRMMKERNEL && !LEFT
+#if TRANSA
+#else
+                r13 += val;
+#endif // TRANSA
+#else
+#endif // TRMMKERNEL && !LEFT
+            }
+
             // #ifdef TRMMKERNEL
             //   #define init_set_k "movq %%r12,%4; subq %%r13,%4;"
             //   #if (defined(LEFT) && !defined(TRANSA)) || (!defined(LEFT) && defined(TRANSA))
@@ -303,6 +369,47 @@ namespace MatrixLib.Impl {
             //   #define init_set_pointers(a_copy,b_copy) ""
             //   #define save_set_pointers(a_copy,b_copy) ""
             // #endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void init_set_k() {
+#if TRMMKERNEL
+                K = r12 - r13;
+#else
+                K = r12;
+#endif // TRMMKERNEL
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void INIT_SET_KSKIP() {
+#if TRMMKERNEL && !LEFT
+#if (LEFT && !TRANSA) || (!LEFT && TRANSA)
+                r13 = off << 2;
+#else
+                r13 = (K - off) << 2;
+#endif // (LEFT && !TRANSA) || (!LEFT && TRANSA)
+#else
+                r13 = 0;
+#endif // TRMMKERNEL
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void init_set_pointers(void* a_copy, void* b_copy) {
+#if TRMMKERNEL && !LEFT
+#if (LEFT && !TRANSA) || (!LEFT && TRANSA)
+                // leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;
+#else
+#endif // (LEFT && !TRANSA) || (!LEFT && TRANSA)
+#else
+#endif // TRMMKERNEL
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void save_set_pointers(void* a_copy, void* b_copy) {
+#if TRMMKERNEL && !LEFT
+#if (LEFT && !TRANSA) || (!LEFT && TRANSA)
+#else
+                // leaq (%0,%%r13,"#a_copy"),%0; leaq (%1,%%r13,"#b_copy"),%1;
+#endif // (LEFT && !TRANSA) || (!LEFT && TRANSA)
+#else
+#endif // TRMMKERNEL
+            }
+
             // #define init_set_pa_pb_n12(mdim) init_set_pointers(mdim,4)
             // #define init_set_pa_pb_n8(mdim) init_set_pointers(mdim,4)
             // #define init_set_pa_pb_n4(mdim) init_set_pointers(mdim,4)
@@ -671,6 +778,7 @@ namespace MatrixLib.Impl {
             // #define SAVE_m1n4 "movq %2,%5;" unit_save_m1n4(%%xmm4)
             // #define SAVE_m1n8  SAVE_m1n4    unit_save_m1n4(%%xmm5)
             // #define SAVE_m1n12 SAVE_m1n8    unit_save_m1n4(%%xmm6)
+
             // #define COMPUTE_m1(ndim) \
             //     init_update_kskip(4) INIT_m1n##ndim\
             //     init_set_k "movq %%r14,%1;" init_set_pa_pb_n##ndim(1)\
@@ -683,6 +791,21 @@ namespace MatrixLib.Impl {
             //     kernel_kend_m1n##ndim save_set_pa_pb_n##ndim(1) SAVE_m1n##ndim "addq $4,%2;" save_update_kskip(4)
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             void COMPUTE_m1(int ndim) {
+                init_update_kskip(4);
+                //INIT_m1n##ndim
+                init_set_k();
+                b_pointer = r14; // movq %%r14,%1;
+                //init_set_pa_pb_n##ndim(1)
+                //kernel_kstart_n##ndim(1)
+                while (0 != K) { // testq %4,%4; jz "#ndim"113f;
+                    //KERNEL_k1m1n##ndim
+                    K -= 4; // subq $4,%4;
+                } // jmp "#ndim"112b
+                // kernel_kend_m1n##ndim
+                // save_set_pa_pb_n##ndim(1)
+                // SAVE_m1n##ndim
+                c_pointer += 4;// "addq $4,%2;"
+                save_update_kskip(4);
             }
 
             // #define COMPUTE(ndim) {\
@@ -714,6 +837,32 @@ namespace MatrixLib.Impl {
             // }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             void COMPUTE(int ndim) {
+                HEAD_SET_OFFSET(ndim); next_b = b_pointer + ndim * K;
+                ymm0 = Vector256.Create(alpha); // vbroadcastss (%6),%%ymm0;
+                r12 = K; // movq %4,%%r12;
+                r12 <<= 2; // salq $2,%%r12;
+                r14 = b_pointer;// movq %1,%%r14;
+                r11 = M; // movq %8,%%r11;
+                r13 = 0; // #define INIT_SET_KSKIP "xorq %%r13,%%r13;"
+                while (r11 >= 8) { // cmpq $8,%%r11;jb 33101
+                    //COMPUTE_m8(ndim);
+                    r11 -= 8; // subq $8,%%r11;
+                } // cmpq $8,%%r11;jnb 33109
+                if (r11 >= 4) { // cmpq $4,%%r11;jb 33103
+                    //COMPUTE_m4(ndim);
+                    r11 -= 4; // subq $4,%%r11;
+                }
+                if (r11 >= 2) { // cmpq $2,%%r11;jb 33104
+                    //COMPUTE_m2(ndim);
+                    r11 -= 2; // subq $2,%%r11;
+                }
+                if (r11 >= 1) { // testq %%r11,%%r11;jz 33105
+                    COMPUTE_m1(ndim);
+                }
+                K = r12; // movq %%r12,%4;
+                K >>= 2; // sarq $2,%4;
+                b_pointer = r14; // movq %%r14,%1;
+                TAIL_SET_OFFSET(ndim); a_pointer -= M * K; b_pointer += ndim * K; c_pointer += (LDC * ndim - M);
             }
             // Finish - sgemm_ncopy_4_skylakex
         }
