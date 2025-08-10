@@ -1068,6 +1068,127 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if NETCOREAPP3_0_OR_GREATER
+        /// <summary>OtherGemmAvxBlock - https://gitee.com/hillgao/dgemm.git. dgemm_avx_unroll_blk.c</summary>
+        /// <inheritdoc cref="StaticBasic"/>
+        public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, double* A, int strideA, double* B, int strideB, double* C, int strideC) {
+            const int UNROLL = 4;
+            const int BLOCKSIZE = 32;
+            if (0 != (M % (BLOCKSIZE* UNROLL))) {
+                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, BLOCKSIZE));
+            }
+            if (M != N || M != K) {
+                throw new NotSupportedException(string.Format("{0} is not equals {1} or {2}!", M, N, K));
+            }
+            // #define UNROLL 4
+            // #define BLOCKSIZE 32
+            // 
+            // void dgemm_avx_unroll_blk(size_t n, double *A, double *B, double *C)
+            // {
+            // //#pragma omp parallel for
+            // 	for (int sj = 0; sj < n; sj += BLOCKSIZE) {
+            // 		for (int si = 0; si < n; si += BLOCKSIZE) {
+            // 			for (int sk = 0; sk < n; sk += BLOCKSIZE) {
+            // 				do_block(n, si, sj, sk, A, B, C);
+            // 			}
+            // 		}
+            // 	}
+            // }
+            int n = M;
+            for (int sj = 0; sj < n; sj += BLOCKSIZE) {
+                for (int si = 0; si < n; si += BLOCKSIZE) {
+                    for (int sk = 0; sk < n; sk += BLOCKSIZE) {
+                        do_block(n, si, sj, sk, A, B, C);
+                    }
+                }
+            }
+
+            // static inline void do_block(int n, int si, int sj, int sk,
+            // 			double *A, double *B, double *C)
+            // {
+            // 	for (int i = si; i < si + BLOCKSIZE; i += UNROLL) {
+            // 		for (int j = sj; j < sj + BLOCKSIZE; j += 4) {
+            // 			__m256d c[UNROLL];
+            // 			for (int x = 0; x < UNROLL; x++) {
+            // 				c[x] = _mm256_load_pd(C+(i+x)*n+j);
+            // 			}
+            // 			for (int k = sk; k < sk + BLOCKSIZE; k++) {
+            // 				__m256d b = _mm256_load_pd(B+k*n+j);
+            // 				for (int x = 0; x < UNROLL; x++) {
+            //                     __m256d a = _mm256_broadcast_sd(A+(i+x)*n+k);
+            // 					c[x] = _mm256_add_pd(c[x], _mm256_mul_pd(a, b));
+            // 				}
+            // 			}
+            // 			for (int x = 0; x < UNROLL; x++) {
+            // 				_mm256_store_pd(C+(i+x)*n+j, c[x]);
+            // 			}
+            // 		}
+            // 	}
+            // }
+            static void do_block(int n, int si, int sj, int sk, double* A, double* B, double* C) {
+                for (int i = si; i < si + BLOCKSIZE; i += UNROLL) {
+                    for (int j = sj; j < sj + BLOCKSIZE; j += 4) {
+                        //Vector256<double>[] c = new Vector256<double>[UNROLL];
+                        Vector256<double> c0;
+                        Vector256<double> c1;
+                        Vector256<double> c2;
+                        Vector256<double> c3;
+                        //for (int x = 0; x < UNROLL; x++) {
+                        //    c[x] = Avx.LoadVector256(&C[(i + x) * n + j]);
+                        //}
+                        double* pCLine = &C[i * n + j];
+                        double* pC = pCLine;
+                        c0 = Avx.LoadVector256(pC); pC += n;
+                        c1 = Avx.LoadVector256(pC); pC += n;
+                        c2 = Avx.LoadVector256(pC); pC += n;
+                        c3 = Avx.LoadVector256(pC);
+
+                        double* pALine = &A[(i) * n + sk];
+                        double* pB = &B[sk * n + j];
+                        for (int k = sk; k < sk + BLOCKSIZE; k++) {
+                            //Vector256<double> b = Avx.LoadVector256(&B[k * n + j]);
+                            Vector256<double> b = Avx.LoadVector256(pB);
+                            double* pA = pALine;
+                            //for (int x = 0; x < UNROLL; x++) {
+                            //    Vector256<double> a = Vector256.Create(A[(i + x) * n + k]);
+                            //    c[x] = Avx.Add(c[x], Avx.Multiply(a, b));
+                            //}
+                            c0 = Avx.Add(c0, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c1 = Avx.Add(c1, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c2 = Avx.Add(c2, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c3 = Avx.Add(c3, Avx.Multiply(Vector256.Create(*pA), b));
+                            // Next.
+                            pALine += 1;
+                            pB += n;
+                        }
+
+                        //for (int x = 0; x < UNROLL; x++) {
+                        //    Avx.Store(&C[(i + x) * n + j], c[x]);
+                        //}
+                        pC = pCLine;
+                        Avx.Store(pC, c0); pC += n;
+                        Avx.Store(pC, c1); pC += n;
+                        Avx.Store(pC, c2); pC += n;
+                        Avx.Store(pC, c3);
+                    }
+                }
+            }
+
+        }
+
+        [Benchmark]
+        public unsafe void OtherGemmAvxBlock() {
+            arrayC!.AsSpan().Clear();
+            fixed (double* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("OtherGemmAvxBlock");
+            }
+        }
+#endif // NETCOREAPP3_0_OR_GREATER
+
 #if REDUCE_MEMORY_USAGE
         /// <summary>BlockCopy2 on Array (块复制2 on 数组).</summary>
         /// <inheritdoc cref="StaticBasic"/>
