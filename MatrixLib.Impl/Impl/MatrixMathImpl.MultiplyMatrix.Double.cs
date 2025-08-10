@@ -10,7 +10,7 @@ using Zyl.VectorTraits;
 
 namespace MatrixLib.Impl {
     // My type.
-    using TMy = Single;
+    using TMy = Double;
 
     partial class MatrixMathImpl {
 

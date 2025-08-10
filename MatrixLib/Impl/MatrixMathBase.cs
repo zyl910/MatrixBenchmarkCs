@@ -11,8 +11,13 @@ namespace MatrixLib.Impl {
     /// <remarks>If MatrixMathBase's methods throws NotImplementedException exception, please call `MatrixLibEnvironment.Init` method of `MatrixLib.Impl` first (若 MatrixMathBase 的方法抛出 NotSupportedException 异常, 请先调用 `MatrixLib.Impl` 的 `MatrixLibEnvironment.Init` 方法).</remarks>
     public class MatrixMathBase {
 
-        /// <inheritdoc cref="MatrixMath.MultiplyMatrix"/>
+        /// <inheritdoc cref="MatrixMath.MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
         public virtual void MultiplyMatrix(int M, int N, int K, ref readonly float A, int strideA, ref readonly float B, int strideB, ref float C, int strideC) {
+            ThrowNotImplementedException();
+        }
+
+        /// <inheritdoc cref="MatrixMath.MultiplyMatrix(int, int, int, ref readonly double, int, ref readonly double, int, ref double, int)"/>
+        public virtual void MultiplyMatrix(int M, int N, int K, ref readonly double A, int strideA, ref readonly double B, int strideB, ref double C, int strideC) {
             ThrowNotImplementedException();
         }
 

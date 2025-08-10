@@ -1,4 +1,5 @@
 ﻿#undef BENCHMARKS_OFF
+#define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
 
 using BenchmarkDotNet.Attributes;
@@ -307,7 +308,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Vector<float> LinearWriteSimd_Vector(int K, int strideB, ref float pA0, ref float pB0) {
+        private static Vector<TMy> LinearWriteSimd_Vector(int K, int strideB, ref TMy pA0, ref TMy pB0) {
             Vector<TMy> cur = Vector<TMy>.Zero;
             ref TMy pA = ref pA0;
             ref TMy pB = ref pB0;
@@ -343,12 +344,12 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 int pos = N - Vector<TMy>.Count;
                 ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
                 ref TMy pBLast = ref Unsafe.Add(ref pB0, pos);
-                Vector<float> vCLast = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBLast);
+                Vector<TMy> vCLast = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBLast);
                 // SIMD for.
                 ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
                 ref TMy pBBlock = ref pB0;
                 for (int j = 0; j < cntBlock; ++j) {
-                    Vector<float> cur = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBBlock);
+                    Vector<TMy> cur = LinearWriteSimd_Vector(K, strideB, ref pA0, ref pBBlock);
                     pC = cur;
                     pBBlock = ref Unsafe.Add(ref pBBlock, Vector<TMy>.Count);
                     pC = ref Unsafe.Add(ref pC, 1);
@@ -467,6 +468,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // REDUCE_MEMORY_USAGE
 
+#if Tensor_Primitives_ALLOW_T
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic"/>
         public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
@@ -510,6 +512,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TransposeSpanTP");
             }
         }
+#endif // Tensor_Primitives_ALLOW_T
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
@@ -1935,7 +1938,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         [Benchmark]
         public unsafe void UseOpenBLAS() {
             fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
-                OpenBlasSharp.Blas.Sgemm(OpenBlasSharp.Order.RowMajor, OpenBlasSharp.Transpose.NoTrans, OpenBlasSharp.Transpose.NoTrans, MatrixM, MatrixN, MatrixK, 1, pA, StrideA, pB, StrideB, 0, pC, StrideC);
+                OpenBlasSharp.Blas.Dgemm(OpenBlasSharp.Order.RowMajor, OpenBlasSharp.Transpose.NoTrans, OpenBlasSharp.Transpose.NoTrans, MatrixM, MatrixN, MatrixK, 1, pA, StrideA, pB, StrideB, 0, pC, StrideC);
             }
             if (CheckMode) {
                 dstTMy = GetCheckSum();

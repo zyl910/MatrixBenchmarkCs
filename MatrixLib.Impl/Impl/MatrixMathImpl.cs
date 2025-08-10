@@ -10,6 +10,8 @@ namespace MatrixLib.Impl {
     public sealed partial class MatrixMathImpl : MatrixMathBase {
         private static readonly MatrixMathImpl _instance = new MatrixMathImpl();
 
+        private bool _Used_MultiplyMatrix = false;
+
         /// <summary>
         /// The instance (实例).
         /// </summary>

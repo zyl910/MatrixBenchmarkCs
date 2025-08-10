@@ -36,8 +36,20 @@ namespace MatrixLib {
         }
 
 #if USED_EXSPANS
-        /// <inheritdoc cref="MultiplyMatrix"/>
+        /// <inheritdoc cref="MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
         public static void MultiplyMatrixSpan(int M, int N, int K, ReadOnlyExSpan<float> A, int strideA, ReadOnlyExSpan<float> B, int strideB, ExSpan<float> C, int strideC) {
+            MultiplyMatrix(M, N, K, in A[0], strideA, in B[0], strideB, ref C[0], strideC);
+        }
+#endif // USED_EXSPANS
+
+        /// <inheritdoc cref="MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
+        public static void MultiplyMatrix(int M, int N, int K, ref readonly double A, int strideA, ref readonly double B, int strideB, ref double C, int strideC) {
+            _instance.MultiplyMatrix(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+        }
+
+#if USED_EXSPANS
+        /// <inheritdoc cref="MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
+        public static void MultiplyMatrixSpan(int M, int N, int K, ReadOnlyExSpan<double> A, int strideA, ReadOnlyExSpan<double> B, int strideB, ExSpan<double> C, int strideC) {
             MultiplyMatrix(M, N, K, in A[0], strideA, in B[0], strideB, ref C[0], strideC);
         }
 #endif // USED_EXSPANS

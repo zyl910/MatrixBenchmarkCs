@@ -238,6 +238,7 @@ namespace MatrixLib.Impl {
             return 0;
         }
 
+#if TODO
         /// <summary>
         /// OpenBLAS: /kernel/x86_64/sgemm_kernel_8x4_haswell.c
         /// </summary>
@@ -255,11 +256,11 @@ namespace MatrixLib.Impl {
             int64_t M = (int64_t)m, K = (int64_t)k;
 #if TRMMKERNEL
             int64_t off = 0;
-    #if LEFT
+#if LEFT
             off = offset;
-    #else
+#else
             off = -offset;
-    #endif
+#endif
 #endif
             BLASLONG n_count = n;
             float *a_pointer = A,b_pointer = B,c_pointer = C,ctemp = C,next_b = B;
@@ -866,6 +867,7 @@ namespace MatrixLib.Impl {
             }
             // Finish - sgemm_ncopy_4_skylakex
         }
+#endif
 
 #endif // NET7_0_OR_GREATER
     }

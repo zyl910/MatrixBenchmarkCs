@@ -48,6 +48,30 @@ namespace MatrixBenchmarkCs {
             }
             return rt;
         }
+        /// <inheritdoc cref="Calculate2D(Span{float}, nint, nint, nint, nint)"/>
+        public static double Calculate2D(Span<double> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
+            ref double p = ref Unsafe.Add(ref buffer.GetPinnableReference(), start);
+            return Calculate2D(ref p, width, height, stride);
+        }
+
+        /// <inheritdoc cref="Calculate2D(ref readonly float, nint, nint, nint)"/>
+        public static double Calculate2D(ref readonly double buffer, nint width, nint height, nint stride = 0) {
+            double rt = default;
+            ref double p0 = ref Unsafe.AsRef(in buffer);
+            if (0 == stride) {
+                stride = width;
+            }
+            for (nint i = 0; i < height; ++i) {
+                ref double p = ref p0;
+                for (double j = 0; j < width; ++j) {
+                    rt += p;
+                    // Next.
+                    p = ref Unsafe.Add(ref p, 1);
+                }
+                p0 = ref Unsafe.Add(ref p0, stride);
+            }
+            return rt;
+        }
 
         /// <inheritdoc cref="Calculate2D(Span{float}, nint, nint, nint, nint)"/>
         public static int Calculate2D(Span<int> buffer, nint width, nint height, nint stride = 0, nint start = 0) {
