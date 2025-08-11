@@ -1069,7 +1069,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
 #if NETCOREAPP3_0_OR_GREATER
-        /// <summary>OtherGemmAvxBlock - https://gitee.com/hillgao/dgemm.git. dgemm_avx_unroll_blk.c</summary>
+        /// <summary>OtherGemmAvxBlock - dgemm_avx_unroll_blk.c from https://gitee.com/hillgao/dgemm.git .</summary>
+        /// <remarks>
+        /// <para>[矩阵乘法优化过程（DGEMM）](https://zhuanlan.zhihu.com/p/76347262)</para>
+        /// <para>[dgemm矩阵乘优化，分块，unroll，avx512](https://zhuanlan.zhihu.com/p/574357927)</para>
+        /// </remarks>
         /// <inheritdoc cref="StaticBasic"/>
         public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, TMy* A, int strideA, TMy* B, int strideB, TMy* C, int strideC, bool allowParallel = false) {
             const int UNROLL = 4;
