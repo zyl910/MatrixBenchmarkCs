@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CheckSumUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DisableBenchmarkAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DisabledBenchmarkAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EnvironmentOutput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FakeBenchmarkAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IBenchmarkWriter.cs" />
