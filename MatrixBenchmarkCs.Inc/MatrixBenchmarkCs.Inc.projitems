@@ -15,5 +15,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Double.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Int32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MatrixNMultiplyBenchmark_Single.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MultiplyMatrixStatic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MultiplyMatrixStatic.Double.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MultiplyMatrixStatic.Int32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultiplyMatrix\MultiplyMatrixStatic.Single.cs" />
   </ItemGroup>
 </Project>
