@@ -50,7 +50,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>Basic on Span.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBasicSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Matrix multiply.
             int aIdx0 = 0;
@@ -76,7 +76,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>Basic on Ref.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBasicRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             // Matrix multiply.
             ref TMy pA0 = ref Unsafe.AsRef(in A);
@@ -102,7 +102,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>Transpose on Array.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTranspose(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
             // Transpose matrix B.
             int total = K * N;
@@ -127,7 +127,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>Tile row on Array (行分块 on 数组).</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRow(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
             // Clear matrix C.
             //C.AsSpan().Clear();
@@ -146,7 +146,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>TileRow on Span.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Clear matrix C.
             MatrixUtil.Fill((TMy)0, M, N, C, strideC);
@@ -173,7 +173,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>TileRow on Ref.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             // Clear matrix C.
             MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
@@ -216,7 +216,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>LinearWrite on Ref Simd.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticLinearWriteSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
@@ -255,7 +255,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>LinearWrite on Ref Simd - Loop Unrolling.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticLinearWriteSimdLU(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             const int LU = 4; // Loop Unrolling 4.
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
@@ -324,7 +324,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #if Tensor_Primitives_ALLOW_T
         /// <summary>Transpose on Span TensorPrimitives.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Transpose matrix B.
             int total = K * N;
@@ -362,7 +362,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         /// <summary>Transpose on Ref Simd.</summary>
-        /// <inheritdoc cref="StaticTranspose"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTransposeSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool transposedB = false) {
             // Transpose matrix B.
             TMy[] BTrans;
@@ -415,7 +415,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #if Tensor_Primitives_ALLOW_T
         /// <summary>TileRow on Span TensorPrimitives.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Clear matrix C.
             MatrixUtil.Fill((TMy)0, M, N, C, strideC);
@@ -449,7 +449,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #if NET8_0_OR_GREATER
         /// <summary>TileRow on Span TensorPrimitives - FMA.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowTPFma(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Clear matrix C.
             MatrixUtil.Fill((TMy)0, M, N, C, strideC);
@@ -483,7 +483,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif // NET8_0_OR_GREATER
 
         /// <summary>TileRow on SIMD.</summary>
-        /// <inheritdoc cref="StaticTileRowRef"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
@@ -533,7 +533,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #if NET9_0_OR_GREATER
         /// <summary>TileRow on SIMD Fma.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowSimdFma(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
@@ -585,7 +585,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #if NETCOREAPP3_0_OR_GREATER
         /// <summary>TileRow on SIMD Fma X86.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowSimdFmaX86(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated || !Fma.IsSupported) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
@@ -642,7 +642,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif // NETCOREAPP3_0_OR_GREATER
 
         /// <summary>TileRow on SIMD - Loop Unrolling 4.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticTileRowSimdLU4(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             const int LU = 2; // Loop Unrolling 4.
             if (N < Vector<TMy>.Count || !Vector.IsHardwareAccelerated) {
@@ -713,7 +713,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <para>[矩阵乘法优化过程（DGEMM）](https://zhuanlan.zhihu.com/p/76347262)</para>
         /// <para>[dgemm矩阵乘优化，分块，unroll，avx512](https://zhuanlan.zhihu.com/p/574357927)</para>
         /// </remarks>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, TMy* A, int strideA, TMy* B, int strideB, TMy* C, int strideC, bool allowParallel = false) {
             const int UNROLL = 4;
             const int BLOCKSIZE = 32;
@@ -837,7 +837,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #endif // NETCOREAPP3_0_OR_GREATER
 
         /// <summary>BlockCopy2 on Array (块复制2 on 数组).</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
                 StaticTileRow(M, N, K, A, strideA, B, strideB, C, strideC);
@@ -907,7 +907,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>BlockCopy2 on Span.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2Span(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
                 StaticTileRowSpan(M, N, K, A, strideA, B, strideB, C, strideC);
@@ -979,7 +979,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>BlockCopy2 on Ref.</summary>
-        /// <inheritdoc cref="StaticBlockCopy2"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2Ref(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
                 StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
@@ -1064,7 +1064,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>BlockCopy2 on ref SIMD.</summary>
-        /// <inheritdoc cref="StaticBlockCopy2"/>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2Simd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             // If 8==BLOCK_SIZE, need Vector is 256 bit.
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
@@ -1153,7 +1153,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>BlockCopy2 on ref SIMD register.</summary>
-        /// <inheritdoc cref="StaticBlockCopy2"/>
+        /// <<inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2SimdRegi(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             int BLOCK_SIZE = Vector<TMy>.Count;
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {
@@ -1362,7 +1362,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         /// <summary>BlockCopy2 on ref SIMD register v2.</summary>
-        /// <inheritdoc cref="StaticBlockCopy2"/>
+        /// <<inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         public static void StaticBlockCopy2SimdRegi2(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             int BLOCK_SIZE = Vector<TMy>.Count;
             if (0 != (M % BLOCK_SIZE) || 0 != (N % BLOCK_SIZE) || 0 != (K % BLOCK_SIZE)) {

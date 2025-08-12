@@ -1,4 +1,4 @@
-﻿#undef BENCHMARKS_OFF
+﻿//#undef BENCHMARKS_OFF
 //#define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
 
@@ -20,23 +20,31 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     using BenchmarkAttribute = FakeBenchmarkAttribute;
 #else
 #endif // BENCHMARKS_OFF
-#if REDUCE_MEMORY_USAGE_B
+#if REDUCE_MEMORY_USAGE_B && !BENCHMARKS_OFF
     using Benchmark_BAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_B && BENCHMARKS_OFF
+    using Benchmark_BAttribute = FakeBenchmarkAttribute;
 #else
     using Benchmark_BAttribute = DisabledBenchmarkAttribute;
 #endif // REDUCE_MEMORY_USAGE_B
-#if REDUCE_MEMORY_USAGE_C
+#if REDUCE_MEMORY_USAGE_C && !BENCHMARKS_OFF
     using Benchmark_CAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_C && BENCHMARKS_OFF
+    using Benchmark_CAttribute = FakeBenchmarkAttribute;
 #else
     using Benchmark_CAttribute = DisabledBenchmarkAttribute;
 #endif // REDUCE_MEMORY_USAGE_C
-#if REDUCE_MEMORY_USAGE_D
+#if REDUCE_MEMORY_USAGE_D && !BENCHMARKS_OFF
     using Benchmark_DAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_D && BENCHMARKS_OFF
+    using Benchmark_DAttribute = FakeBenchmarkAttribute;
 #else
     using Benchmark_DAttribute = DisabledBenchmarkAttribute;
 #endif // REDUCE_MEMORY_USAGE_D
-#if REDUCE_MEMORY_USAGE
+#if REDUCE_MEMORY_USAGE_E && !BENCHMARKS_OFF
     using Benchmark_EAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_E && BENCHMARKS_OFF
+    using Benchmark_EAttribute = FakeBenchmarkAttribute;
 #else
     using Benchmark_EAttribute = DisabledBenchmarkAttribute;
 #endif // REDUCE_MEMORY_USAGE
@@ -50,8 +58,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// Matrix N*N multiply matrix N*N benchmark - Double.
     /// </summary>
     public class MatrixNMultiplyBenchmark_Double : MatrixNMultiplyBenchmark<TMy> {
-
-        protected const int BLOCK_SIZE = 8;
 
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matA;
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matB;
