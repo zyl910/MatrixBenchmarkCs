@@ -785,7 +785,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             // }
             static void do_block(int n, int si, int sj, int sk, TMy* A, TMy* B, TMy* C) {
                 for (int i = si; i < si + BLOCKSIZE; i += UNROLL) {
-                    for (int j = sj; j < sj + BLOCKSIZE; j += 4) {
+                    for (int j = sj; j < sj + BLOCKSIZE; j += Vector256<TMy>.Count) {
                         //Vector256<TMy>[] c = new Vector256<TMy>[UNROLL];
                         Vector256<TMy> c0;
                         Vector256<TMy> c1;

@@ -406,7 +406,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
 #if NETCOREAPP3_0_OR_GREATER
-        //[Benchmark] // [Benchmark_C]
+        [Benchmark] // [Benchmark_C]
         public unsafe void OtherGemmAvxBlock() {
             arrayC!.AsSpan().Clear();
             fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
@@ -418,7 +418,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        //[Benchmark_B]
+        [Benchmark_B]
         public unsafe void OtherGemmAvxBlockParallel() {
             const int BLOCKSIZE = 32;
             bool allowParallel = (MatrixM >= (BLOCKSIZE * 2)) && (Environment.ProcessorCount > 1);
