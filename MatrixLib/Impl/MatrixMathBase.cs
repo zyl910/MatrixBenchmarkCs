@@ -21,6 +21,11 @@ namespace MatrixLib.Impl {
             ThrowNotImplementedException();
         }
 
+        /// <inheritdoc cref="MatrixMath.MultiplyMatrix(int, int, int, ref readonly int, int, ref readonly int, int, ref int, int)"/>
+        public virtual void MultiplyMatrix(int M, int N, int K, ref readonly int A, int strideA, ref readonly int B, int strideB, ref int C, int strideC) {
+            ThrowNotImplementedException();
+        }
+
         /// <summary>
         /// throw new NotImplementedException.
         /// </summary>

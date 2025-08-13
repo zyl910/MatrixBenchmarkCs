@@ -54,6 +54,18 @@ namespace MatrixLib {
         }
 #endif // USED_EXSPANS
 
+        /// <inheritdoc cref="MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
+        public static void MultiplyMatrix(int M, int N, int K, ref readonly int A, int strideA, ref readonly int B, int strideB, ref int C, int strideC) {
+            _instance.MultiplyMatrix(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
+        }
+
+#if USED_EXSPANS
+        /// <inheritdoc cref="MultiplyMatrix(int, int, int, ref readonly float, int, ref readonly float, int, ref float, int)"/>
+        public static void MultiplyMatrixSpan(int M, int N, int K, ReadOnlyExSpan<int> A, int strideA, ReadOnlyExSpan<int> B, int strideB, ExSpan<int> C, int strideC) {
+            MultiplyMatrix(M, N, K, in A[0], strideA, in B[0], strideB, ref C[0], strideC);
+        }
+#endif // USED_EXSPANS
+
         /// <summary>
         /// The instance (实例).
         /// </summary>

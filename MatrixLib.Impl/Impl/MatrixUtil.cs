@@ -118,6 +118,56 @@ namespace MatrixLib.Impl {
             return rt;
         }
 
+        /// <inheritdoc cref="Dot(nint, ref readonly float, ref readonly float)"/>
+        public static int Dot(nint count, ref readonly int x, ref readonly int y) {
+            const int LU = 4; // Loop Unrolling.
+            if (count <= 0) return 0;
+            int rt = 0;
+            nint cntBlock = count / (Vector<int>.Count * LU); // Block count.
+            nint cntRem = count % (Vector<int>.Count * LU); // Remainder count.
+            nint cntLastBlock = cntRem / Vector<int>.Count; // Last block count.
+            nint cntLastRem = cntRem % Vector<int>.Count; // Last remainder count.
+            ref Vector<int> pVX = ref Unsafe.As<int, Vector<int>>(ref Unsafe.AsRef(in x));
+            ref Vector<int> pVY = ref Unsafe.As<int, Vector<int>>(ref Unsafe.AsRef(in y));
+            if (cntBlock > 0 || cntLastBlock > 0) {
+                Vector<int> vrt = Vector<int>.Zero;
+                Vector<int> vrt1 = Vector<int>.Zero;
+                Vector<int> vrt2 = Vector<int>.Zero;
+                Vector<int> vrt3 = Vector<int>.Zero;
+                if (cntBlock > 0) {
+                    for (nint i = 0; i < cntBlock; ++i) {
+                        vrt = Vector.Add(vrt, Vector.Multiply(pVX, pVY));
+                        vrt1 = Vector.Add(vrt1, Vector.Multiply(Unsafe.Add(ref pVX, 1), Unsafe.Add(ref pVY, 1)));
+                        vrt2 = Vector.Add(vrt2, Vector.Multiply(Unsafe.Add(ref pVX, 2), Unsafe.Add(ref pVY, 2)));
+                        vrt3 = Vector.Add(vrt3, Vector.Multiply(Unsafe.Add(ref pVX, 3), Unsafe.Add(ref pVY, 3)));
+                        pVX = ref Unsafe.Add(ref pVX, LU);
+                        pVY = ref Unsafe.Add(ref pVY, LU);
+                    }
+                    vrt = Vector.Add(vrt, vrt1);
+                    vrt2 = Vector.Add(vrt2, vrt3);
+                    vrt = Vector.Add(vrt, vrt2);
+                }
+                if (cntLastBlock > 0) {
+                    for (nint i = 0; i < cntLastBlock; ++i) {
+                        vrt = Vector.Add(vrt, Vector.Multiply(pVX, pVY));
+                        pVX = ref Unsafe.Add(ref pVX, 1);
+                        pVY = ref Unsafe.Add(ref pVY, 1);
+                    }
+                }
+                rt = Vectors.Sum(vrt);
+            }
+            if (cntRem > 0) {
+                ref int pX = ref Unsafe.As<Vector<int>, int>(ref pVX);
+                ref int pY = ref Unsafe.As<Vector<int>, int>(ref pVY);
+                for (nint i = 0; i < cntLastRem; ++i) {
+                    rt += pX * pY;
+                    pX = ref Unsafe.Add(ref pX, 1);
+                    pY = ref Unsafe.Add(ref pY, 1);
+                }
+            }
+            return rt;
+        }
+
         /// <summary>
         /// Fill value (填充值).
         /// </summary>
