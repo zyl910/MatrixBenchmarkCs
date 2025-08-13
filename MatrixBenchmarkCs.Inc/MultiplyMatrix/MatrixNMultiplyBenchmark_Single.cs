@@ -1,4 +1,5 @@
-﻿#undef BENCHMARKS_OFF
+﻿//#undef BENCHMARKS_OFF
+#define Tensor_Primitives_ALLOW_FMA
 #define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
 
@@ -65,10 +66,14 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         protected override void ArraySetup() {
             base.ArraySetup();
-            matA = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixM, MatrixK, arrayA);
-            matB = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixK, MatrixN, arrayB);
-            matC = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.Dense(MatrixM, MatrixN);
-            //matA.Multiply(matB, matC);
+            try {
+                matA = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixM, MatrixK, arrayA);
+                matB = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixK, MatrixN, arrayB);
+                matC = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.Dense(MatrixM, MatrixN);
+                //matA.Multiply(matB, matC);
+            } catch (Exception ex) {
+                BenchmarkUtil.WriteItem("# Setup-error", string.Format("{0}", ex.Message));
+            }
         }
 
         protected override void CheckResult(string name) {
@@ -273,6 +278,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // Tensor_Primitives_ALLOW_T
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NET8_0_OR_GREATER
         [Benchmark_D]
         public void TileRowTPFma() {
@@ -283,6 +289,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // NET8_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
 
         [Benchmark] // [Benchmark_C]
         public void TileRowSimd() {
@@ -293,6 +300,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NET9_0_OR_GREATER
         [Benchmark_D]
         public void TileRowSimdFma() {
@@ -314,6 +322,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // NETCOREAPP3_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
 
         [Benchmark_D]
         public void TileRowSimdLU4() {

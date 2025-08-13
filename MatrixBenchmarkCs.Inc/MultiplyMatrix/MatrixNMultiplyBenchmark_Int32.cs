@@ -1,22 +1,57 @@
-﻿//#undef BENCHMARKS_OFF
+﻿#undef BENCHMARKS_OFF
+//#define Tensor_Primitives_ALLOW_FMA
+#if NET8_0_OR_GREATER
+#define Tensor_Primitives_ALLOW_T
+#endif // NET8_0_OR_GREATER
+//#define USED_EXSPANS
 
 using BenchmarkDotNet.Attributes;
+using MatrixLib;
 using MatrixLib.Impl;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Zyl.VectorTraits;
+#if USED_EXSPANS
+using Zyl.ExSpans;
+#endif // USED_EXSPANS
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if BENCHMARKS_OFF
     using BenchmarkAttribute = FakeBenchmarkAttribute;
 #else
 #endif // BENCHMARKS_OFF
+#if REDUCE_MEMORY_USAGE_B && !BENCHMARKS_OFF
+    using Benchmark_BAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_B && BENCHMARKS_OFF
+    using Benchmark_BAttribute = FakeBenchmarkAttribute;
+#else
+    using Benchmark_BAttribute = DisabledBenchmarkAttribute;
+#endif // REDUCE_MEMORY_USAGE_B
+#if REDUCE_MEMORY_USAGE_C && !BENCHMARKS_OFF
+    using Benchmark_CAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_C && BENCHMARKS_OFF
+    using Benchmark_CAttribute = FakeBenchmarkAttribute;
+#else
+    using Benchmark_CAttribute = DisabledBenchmarkAttribute;
+#endif // REDUCE_MEMORY_USAGE_C
+#if REDUCE_MEMORY_USAGE_D && !BENCHMARKS_OFF
+    using Benchmark_DAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_D && BENCHMARKS_OFF
+    using Benchmark_DAttribute = FakeBenchmarkAttribute;
+#else
+    using Benchmark_DAttribute = DisabledBenchmarkAttribute;
+#endif // REDUCE_MEMORY_USAGE_D
+#if REDUCE_MEMORY_USAGE_E && !BENCHMARKS_OFF
+    using Benchmark_EAttribute = BenchmarkAttribute;
+#elif REDUCE_MEMORY_USAGE_E && BENCHMARKS_OFF
+    using Benchmark_EAttribute = FakeBenchmarkAttribute;
+#else
+    using Benchmark_EAttribute = DisabledBenchmarkAttribute;
+#endif // REDUCE_MEMORY_USAGE
+    using static MultiplyMatrixStatic;
 
 
     // My type.
@@ -27,249 +62,28 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// </summary>
     public class MatrixNMultiplyBenchmark_Int32 : MatrixNMultiplyBenchmark<TMy> {
 
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matA;
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matB;
+        protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matC;
+
+        protected override void ArraySetup() {
+            base.ArraySetup();
+            try {
+                matA = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixM, MatrixK, arrayA);
+                matB = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixK, MatrixN, arrayB);
+                matC = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.Dense(MatrixM, MatrixN);
+                //matA.Multiply(matB, matC);
+            } catch (Exception ex) {
+                BenchmarkUtil.WriteItem("# Setup-error", string.Format("{0}", ex.Message));
+            }
+        }
+
         protected override void CheckResult(string name) {
             CheckResult_Report(name, dstTMy != baselineTMy, dstTMy, baselineTMy);
         }
 
         protected override TMy GetCheckSum() {
             return CheckSumUtil.Calculate2D(arrayC, MatrixN, MatrixM, StrideC);
-        }
-
-        /// <summary>
-        /// Basic on Array.
-        /// </summary>
-        /// <param name="M">The number of rows in matrix A (矩阵A的行数).</param>
-        /// <param name="N">The number of columns in matrix B (矩阵B的列数).</param>
-        /// <param name="K">The number of columns in matrix A, or the number of rows in matrix B (矩阵A的列数, 或矩阵B的行数).</param>
-        /// <param name="A">Matrix A.</param>
-        /// <param name="strideA">Stride of A.</param>
-        /// <param name="B">Matrix B.</param>
-        /// <param name="strideB">Stride of B.</param>
-        /// <param name="C">Matrix C.</param>
-        /// <param name="strideC">Stride of C.</param>
-        public static void StaticBasic(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
-            // Matrix multiply.
-            for (int i = 0; i < M; ++i) {
-                for (int j = 0; j < N; ++j) {
-                    int cIdx = i * strideC + j;
-                    C[cIdx] = 0;
-                    for (int k = 0; k < K; ++k) {
-                        int aIdx = i * strideA + k;
-                        int bIdx = k * strideB + j;
-                        C[cIdx] += A[aIdx] * B[bIdx];
-                    }
-                }
-            }
-        }
-
-#if REDUCE_MEMORY_USAGE
-        [Benchmark]
-        public void Basic() {
-            StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                baselineTMy = dstTMy;
-                BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
-                //CheckResult("Basic");
-            }
-        }
-
-        /// <summary>Basic on Span.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
-        public static void StaticBasicSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
-            // Matrix multiply.
-            int aIdx0 = 0;
-            //int bIdx0 = 0;
-            int cIdx0 = 0;
-            for (int i = 0; i < M; ++i) {
-                int cIdx = cIdx0;
-                for (int j = 0; j < N; ++j) {
-                    TMy cur = 0;
-                    int aIdx = aIdx0;
-                    int bIdx = j;
-                    for (int k = 0; k < K; ++k) {
-                        cur += A[aIdx] * B[bIdx];
-                        ++aIdx;
-                        bIdx += strideB;
-                    }
-                    C[cIdx] = cur;
-                    ++cIdx;
-                }
-                aIdx0 += strideA;
-                cIdx0 += strideC;
-            }
-        }
-
-        [Benchmark]
-        public void BasicSpan() {
-            StaticBasicSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("BasicSpan");
-                //BenchmarkUtil.WriteItem("# BasicSpan", string.Format("{0}", dstTMy));
-            }
-        }
-
-        /// <summary>Basic on Ref.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
-        public static void StaticBasicRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
-            // Matrix multiply.
-            ref TMy pA0 = ref Unsafe.AsRef(in A);
-            ref TMy pB0 = ref Unsafe.AsRef(in B);
-            ref TMy pC0 = ref C;
-            for (int i = 0; i < M; ++i) {
-                ref TMy pC = ref pC0;
-                for (int j = 0; j < N; ++j) {
-                    TMy cur = 0;
-                    ref TMy pA = ref pA0;
-                    ref TMy pB = ref Unsafe.Add(ref pB0, j);
-                    for (int k = 0; k < K; ++k) {
-                        cur += pA * pB;
-                        pA = ref Unsafe.Add(ref pA, 1);
-                        pB = ref Unsafe.Add(ref pB, strideB);
-                    }
-                    pC = cur;
-                    pC = ref Unsafe.Add(ref pC, 1);
-                }
-                pA0 = ref Unsafe.Add(ref pA0, strideA);
-                pC0 = ref Unsafe.Add(ref pC0, strideC);
-            }
-        }
-
-        [Benchmark]
-        public void BasicRef() {
-            StaticBasicRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("BasicRef");
-            }
-        }
-
-        /// <summary>Transpose on Array.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
-        public static void StaticTranspose(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
-            // Transpose matrix B.
-            int total = K * N;
-            TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
-            try {
-                MatrixUtil.Transpose(K, N, B, strideB, BTrans.AsSpan());
-                // Matrix multiply.
-                for (int i = 0; i < M; ++i) {
-                    for (int j = 0; j < N; ++j) {
-                        int cIdx = i * strideC + j;
-                        C[cIdx] = 0;
-                        for (int k = 0; k < K; ++k) {
-                            int aIdx = i * strideA + k;
-                            int bIdx = j * strideB + k;
-                            C[cIdx] += A[aIdx] * BTrans[bIdx];
-                        }
-                    }
-                }
-            } finally {
-                ArrayPool<TMy>.Shared.Return(BTrans);
-            }
-        }
-
-        [Benchmark]
-        public void Transpose() {
-            StaticTranspose(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("Transpose");
-            }
-        }
-
-        /// <summary>Tile row on Array (行分块 on 数组).</summary>
-        /// <inheritdoc cref="StaticBasic"/>
-        public static void StaticTileRow(int M, int N, int K, TMy[] A, int strideA, TMy[] B, int strideB, TMy[] C, int strideC) {
-            // Clear matrix C.
-            //C.AsSpan().Clear();
-            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
-            // Matrix multiply.
-            for (int i = 0; i < M; ++i) {
-                for (int k = 0; k < K; ++k) {
-                    int aIdx = i * strideA + k;
-                    for (int j = 0; j < N; ++j) {
-                        int bIdx = k * strideB + j;
-                        int cIdx = i * strideC + j;
-                        C[cIdx] += A[aIdx] * B[bIdx];
-                    }
-                }
-            }
-        }
-
-        [Benchmark]
-        public void TileRow() {
-            StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("TileRow");
-            }
-        }
-
-        /// <summary>TileRow on Span.</summary>
-        /// <inheritdoc cref="StaticBasic"/>
-        public static void StaticTileRowSpan(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
-            // Clear matrix C.
-            MatrixUtil.Fill((TMy)0, M, N, C, strideC);
-            // Matrix multiply.
-            int aIdx0 = 0;
-            int cIdx0 = 0;
-            for (int i = 0; i < M; ++i) {
-                int aIdx = aIdx0;
-                int bIdx0 = 0;
-                for (int k = 0; k < K; ++k) {
-                    int bIdx = bIdx0;
-                    int cIdx = cIdx0;
-                    for (int j = 0; j < N; ++j) {
-                        C[cIdx] += A[aIdx] * B[bIdx];
-                        ++bIdx;
-                        ++cIdx;
-                    }
-                    ++aIdx;
-                    bIdx0 += strideB;
-                }
-                aIdx0 += strideA;
-                cIdx0 += strideC;
-            }
-        }
-
-        [Benchmark]
-        public void TileRowSpan() {
-            StaticTileRowSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("TileRowSpan");
-            }
-        }
-#endif // REDUCE_MEMORY_USAGE
-
-        /// <summary>TileRow on Ref.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
-        public static void StaticTileRowRef(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
-            // Clear matrix C.
-            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
-            // Matrix multiply.
-            ref TMy pA0 = ref Unsafe.AsRef(in A);
-            ref TMy pC0 = ref C;
-            for (int i = 0; i < M; ++i) {
-                ref TMy pA = ref pA0;
-                ref TMy pB0 = ref Unsafe.AsRef(in B);
-                for (int k = 0; k < K; ++k) {
-                    TMy aValue = pA;
-                    ref TMy pB = ref pB0;
-                    ref TMy pC = ref pC0;
-                    for (int j = 0; j < N; ++j) {
-                        pC += aValue * pB;
-                        pB = ref Unsafe.Add(ref pB, 1);
-                        pC = ref Unsafe.Add(ref pC, 1);
-                    }
-                    pA = ref Unsafe.Add(ref pA, 1);
-                    pB0 = ref Unsafe.Add(ref pB0, strideB);
-                }
-                pA0 = ref Unsafe.Add(ref pA0, strideA);
-                pC0 = ref Unsafe.Add(ref pC0, strideC);
-            }
         }
 
         [Benchmark(Baseline = true)]
@@ -283,57 +97,203 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>TileRow on SIMD.</summary>
-        /// <inheritdoc cref="StaticTileRow"/>
-        public static void StaticTileRowSimd(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
-            if (N < Vector<TMy>.Count) {
-                StaticTileRowRef(M, N, K, in A, strideA, in B, strideB, ref C, strideC);
-            }
-            // Clear matrix C.
-            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
-            // Matrix multiply.
-            int cntRem = N % Vector<TMy>.Count; // Remainder count.
-            int cntBlockRaw = N / Vector<TMy>.Count; // Block count raw.
-            int cntBlock = cntBlockRaw;
-            if (0 == cntRem) {
-                --cntBlock; // Use vCLast.
-            }
-            ref TMy pA0 = ref Unsafe.AsRef(in A);
-            ref TMy pC0 = ref C;
-            for (int i = 0; i < M; ++i) {
-                ref TMy pA = ref pA0;
-                ref TMy pB0 = ref Unsafe.AsRef(in B);
-                for (int k = 0; k < K; ++k) {
-                    TMy aValue = pA;
-                    Vector<TMy> vA = new Vector<TMy>(aValue);
-                    // Last.
-                    int pos = N - Vector<TMy>.Count;
-                    ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
-                    ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.Add(pCLast, Vectors.Multiply(vA, pBLast));
-                    // SIMD for.
-                    if (cntBlock >= 0) {
-                        //ref TMy pB = ref pB0;
-                        //ref TMy pC = ref pC0;
-                        ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
-                        ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
-                        for (int j = 0; j < cntBlock; ++j) {
-                            pC = Vector.Add(pC, Vectors.Multiply(vA, pB)); // pC += vA * pB;
-                            pB = ref Unsafe.Add(ref pB, 1);
-                            pC = ref Unsafe.Add(ref pC, 1);
-                        }
-                    }
-                    pCLast = vCLast; // Overrride remainder items. 
-                    // Next.
-                    pA = ref Unsafe.Add(ref pA, 1);
-                    pB0 = ref Unsafe.Add(ref pB0, strideB);
-                }
-                pA0 = ref Unsafe.Add(ref pA0, strideA);
-                pC0 = ref Unsafe.Add(ref pC0, strideC);
+        [Benchmark_E]
+        public void Basic() {
+            StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                //baselineTMy = dstTMy;
+                //BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
+                CheckResult("Basic");
             }
         }
 
-        [Benchmark]
+        [Benchmark_E]
+        public void BasicSpan() {
+            StaticBasicSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BasicSpan");
+                //BenchmarkUtil.WriteItem("# BasicSpan", string.Format("{0}", dstTMy));
+            }
+        }
+
+        [Benchmark_E]
+        public void BasicRef() {
+            StaticBasicRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BasicRef");
+            }
+        }
+
+        [Benchmark_E]
+        public void LinearWriteSimd() {
+            StaticLinearWriteSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimd");
+            }
+        }
+
+        [Benchmark_E]
+        public void LinearWriteSimdLU() {
+            StaticLinearWriteSimdLU(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimdLU");
+            }
+        }
+
+        [Benchmark_D]
+        public void LinearWriteSimdParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                Parallel.For(0, M, i => {
+                    StaticLinearWriteSimdLU(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
+                });
+            } else {
+                StaticLinearWriteSimdLU(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("LinearWriteSimdParallel");
+            }
+        }
+
+        [Benchmark_E]
+        public void Transpose() {
+            StaticTranspose(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("Transpose");
+            }
+        }
+
+#if Tensor_Primitives_ALLOW_T
+        [Benchmark_D]
+        public void TransposeSpanTP() {
+            StaticTransposeSpanTP(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSpanTP");
+            }
+        }
+#endif // Tensor_Primitives_ALLOW_T
+
+        [Benchmark_D]
+        public void TransposeSimd() {
+            StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimd");
+            }
+        }
+
+        [Benchmark_C]
+        public void TransposeSimdParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int total = MatrixK * MatrixN;
+                TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+                ref TMy pB0 = ref BTrans[0];
+                int strideBTran = MatrixK;
+                MatrixUtil.Transpose(MatrixK, MatrixN, ref arrayB![0], StrideB, ref pB0, strideBTran);
+                try {
+                    Parallel.For(0, M, i => {
+                        StaticTransposeSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref BTrans[0], strideBTran, ref arrayC![StrideC * i], StrideC, true);
+                    });
+                } finally {
+                    ArrayPool<TMy>.Shared.Return(BTrans);
+                }
+            } else {
+                StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimdParallel");
+            }
+        }
+
+        [Benchmark_B]
+        public unsafe void TransposeSimdParallelAlign() {
+            const int alignment = 64;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int strideBTran = (MatrixK + alignment - 1) / alignment * alignment;
+                int total = strideBTran * MatrixN + (alignment / sizeof(TMy));
+                TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
+                try {
+                    fixed (TMy* pBTransRaw = &BTrans[0]) {
+                        nint offset = 0;
+                        nint rem = (nint)pBTransRaw % alignment;
+                        if (0 != rem) {
+                            offset = alignment - rem;
+                        }
+                        TMy* pBTrans = (TMy*)((byte*)pBTransRaw + offset);
+                        MatrixUtil.Transpose(MatrixK, MatrixN, ref arrayB![0], StrideB, ref Unsafe.AsRef<TMy>(pBTrans), strideBTran);
+                        Parallel.For(0, M, i => {
+                            StaticTransposeSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref Unsafe.AsRef<TMy>(pBTrans), strideBTran, ref arrayC![StrideC * i], StrideC, true);
+                        });
+                    }
+                } finally {
+                    ArrayPool<TMy>.Shared.Return(BTrans);
+                }
+            } else {
+                StaticTransposeSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TransposeSimdParallelAlign");
+            }
+        }
+
+        [Benchmark_D]
+        public void TileRow() {
+            StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRow");
+            }
+        }
+
+        [Benchmark_E]
+        public void TileRowSpan() {
+            StaticTileRowSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSpan");
+            }
+        }
+
+#if Tensor_Primitives_ALLOW_T
+        [Benchmark_D]
+        public void TileRowTP() {
+            StaticTileRowTP(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowTP");
+            }
+        }
+#endif // Tensor_Primitives_ALLOW_T
+
+#if Tensor_Primitives_ALLOW_FMA
+#if NET8_0_OR_GREATER
+        [Benchmark_D]
+        public void TileRowTPFma() {
+            StaticTileRowTPFma(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowTPFma");
+            }
+        }
+#endif // NET8_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
+
+        [Benchmark] // [Benchmark_C]
         public void TileRowSimd() {
             StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
@@ -342,7 +302,78 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        [Benchmark]
+#if Tensor_Primitives_ALLOW_FMA
+#if NET9_0_OR_GREATER
+        [Benchmark_D]
+        public void TileRowSimdFma() {
+            StaticTileRowSimdFma(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdFma");
+            }
+        }
+#endif // NET9_0_OR_GREATER
+
+#if NETCOREAPP3_0_OR_GREATER
+        [Benchmark_D]
+        public void TileRowSimdFmaX86() {
+            StaticTileRowSimdFmaX86(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdFmaX86");
+            }
+        }
+#endif // NETCOREAPP3_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
+
+        [Benchmark_D]
+        public void TileRowSimdLU4() {
+            StaticTileRowSimdLU4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdLU4");
+            }
+        }
+
+        [Benchmark_C]
+        public void CallLib() {
+            MatrixMath.MultiplyMatrix(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLib");
+            }
+        }
+
+#if USED_EXSPANS
+        [Benchmark_C]
+        public void CallLibSpan() {
+            MatrixMath.MultiplyMatrixSpan(MatrixM, MatrixN, MatrixK, arrayA.AsExSpan(), StrideA, arrayB.AsExSpan(), StrideB, arrayC.AsExSpan(), StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSpan");
+            }
+        }
+#endif // USED_EXSPANS
+
+        [Benchmark_D]
+        public void CallLibSimd() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimd");
+            }
+        }
+
+        [Benchmark_B]
+        public void CallLibSimdParallel() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimdParallel");
+            }
+        }
+
+        [Benchmark_B]
         public void TileRowSimdParallel() {
             int M = MatrixM;
             bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
@@ -351,10 +382,186 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     StaticTileRowSimd(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
                 });
             } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             }
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowSimdParallel");
+            }
+        }
+
+        [Benchmark_C]
+        public void TileRowSimdParallel2() {
+            const int batchSize = 4;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                , ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticTileRowSimd(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdParallel2");
+            }
+        }
+
+#if NETCOREAPP3_0_OR_GREATER
+        [Benchmark] // [Benchmark_C]
+        public unsafe void OtherGemmAvxBlock() {
+            arrayC!.AsSpan().Clear();
+            fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC, false);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("OtherGemmAvxBlock");
+            }
+        }
+
+        [Benchmark_B]
+        public unsafe void OtherGemmAvxBlockParallel() {
+            const int BLOCKSIZE = 32;
+            bool allowParallel = (MatrixM >= (BLOCKSIZE * 2)) && (Environment.ProcessorCount > 1);
+            if (!allowParallel) {
+                throw new NotSupportedException(string.Format("No parallel, the matrix too small({0}, {1}, {2})!", MatrixM, MatrixN, MatrixK));
+            }
+            arrayC!.AsSpan().Clear();
+            fixed (TMy* pA = &arrayA![0], pB = &arrayB![0], pC = &arrayC![0]) {
+                StaticOtherGemmAvxBlock(MatrixM, MatrixN, MatrixK, pA, StrideA, pB, StrideB, pC, StrideC, allowParallel);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("OtherGemmAvxBlockParallel");
+            }
+        }
+#endif // NETCOREAPP3_0_OR_GREATER
+
+        [Benchmark_E]
+        public void BlockCopy2() {
+            StaticBlockCopy2(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2Span() {
+            StaticBlockCopy2Span(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2Span");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2Ref() {
+            StaticBlockCopy2Ref(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2Ref");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2Simd() {
+            StaticBlockCopy2Simd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2Simd");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2SimdRegi() {
+            StaticBlockCopy2SimdRegi(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdRegi");
+                //BenchmarkUtil.WriteItem("# Vector<TMy>.Count", string.Format("{0}", Vector<TMy>.Count));
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2SimdRegi2() {
+            StaticBlockCopy2SimdRegi2(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdRegi2");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2SimdParallel() {
+            int batchSize = Vector<TMy>.Count;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1) && (0 == (MatrixM % batchSize)) && (0 == (MatrixN % batchSize)) && (0 == (MatrixK % batchSize));
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                //, ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticBlockCopy2SimdRegi(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                // StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, batchSize));
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdParallel");
+            }
+        }
+
+        [Benchmark_E]
+        public void BlockCopy2SimdParallel2() {
+            int batchSize = Vector<TMy>.Count;
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1) && (0 == (MatrixM % batchSize)) && (0 == (MatrixN % batchSize)) && (0 == (MatrixK % batchSize));
+            if (allowParallel) {
+                int count = (M + batchSize - 1) / batchSize;
+                Parallel.For(0, count
+                //, ParallelOptionsCPU
+                , i => {
+                    int idx = batchSize * i;
+                    int curSize = batchSize;
+                    if (curSize > M - idx) {
+                        curSize = M - idx;
+                    }
+                    StaticBlockCopy2SimdRegi2(curSize, MatrixN, MatrixK, ref arrayA![StrideA * idx], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * idx], StrideC);
+                });
+            } else {
+                // StaticTileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, batchSize));
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockCopy2SimdParallel2");
+            }
+        }
+
+        [Benchmark_B]
+        public void UseMathNet() {
+            matA!.Multiply(matB, matC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("UseMathNet");
             }
         }
 

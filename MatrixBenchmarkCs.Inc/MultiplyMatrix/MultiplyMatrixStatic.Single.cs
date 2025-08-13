@@ -326,7 +326,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if Tensor_Primitives_ALLOW_T
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+        public static void StaticTransposeSpanTP(int M, int N, int K, ReadOnlySpan<TMy> A, int strideA, ReadOnlySpan<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Transpose matrix B.
             int total = K * N;
             TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
