@@ -1,6 +1,7 @@
 ﻿#define Tensor_Primitives_ALLOW_FMA
 #define Tensor_Primitives_ALLOW_T
 
+using MatrixLib.Extensions;
 using MatrixLib.Impl;
 using System;
 using System.Buffers;
@@ -193,8 +194,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         pB = ref Unsafe.Add(ref pB, 1);
                         pC = ref Unsafe.Add(ref pC, 1);
                     }
-                    pA = ref Unsafe.Add(ref pA, 1);
-                    pB0 = ref Unsafe.Add(ref pB0, strideB);
+                    //pA = ref Unsafe.Add(ref pA, 1);
+                    //pB0 = ref Unsafe.Add(ref pB0, strideB);
+                    pA = ref pA.Inc();
+                    //pA = ref pA.At(1);
+                    pB0 = ref pB0.At(strideB);
                 }
                 pA0 = ref Unsafe.Add(ref pA0, strideA);
                 pC0 = ref Unsafe.Add(ref pC0, strideC);
