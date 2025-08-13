@@ -1,4 +1,7 @@
-﻿//#define Tensor_Primitives_ALLOW_T
+﻿#define Tensor_Primitives_ALLOW_FMA
+#if NET8_0_OR_GREATER
+#define Tensor_Primitives_ALLOW_T
+#endif // NET8_0_OR_GREATER
 
 using MatrixLib.Impl;
 using System;
@@ -325,7 +328,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #if Tensor_Primitives_ALLOW_T
         /// <summary>Transpose on Span TensorPrimitives.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        public static void StaticTransposeSpanTP(int M, int N, int K, Span<TMy> A, int strideA, Span<TMy> B, int strideB, Span<TMy> C, int strideC) {
+        public static void StaticTransposeSpanTP(int M, int N, int K, ReadOnlySpan<TMy> A, int strideA, ReadOnlySpan<TMy> B, int strideB, Span<TMy> C, int strideC) {
             // Transpose matrix B.
             int total = K * N;
             TMy[] BTrans = ArrayPool<TMy>.Shared.Rent(total);
@@ -447,6 +450,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // Tensor_Primitives_ALLOW_T
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NET8_0_OR_GREATER
         /// <summary>TileRow on Span TensorPrimitives - FMA.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
@@ -481,6 +485,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
 #endif // NET8_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
 
         /// <summary>TileRow on SIMD.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
@@ -531,6 +536,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NET9_0_OR_GREATER
         /// <summary>TileRow on SIMD Fma.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
@@ -640,6 +646,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // NETCOREAPP3_0_OR_GREATER
+#endif // Tensor_Primitives_ALLOW_FMA
 
         /// <summary>TileRow on SIMD - Loop Unrolling 4.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
@@ -811,10 +818,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                             //    Vector256<TMy> a = Vector256.Create(A[(i + x) * n + k]);
                             //    c[x] = Avx.Add(c[x], Avx.Multiply(a, b));
                             //}
-                            c0 = Avx.Add(c0, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
-                            c1 = Avx.Add(c1, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
-                            c2 = Avx.Add(c2, Avx.Multiply(Vector256.Create(*pA), b)); pA += n;
-                            c3 = Avx.Add(c3, Avx.Multiply(Vector256.Create(*pA), b));
+                            c0 = Vector256.Add(c0, Vector256.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c1 = Vector256.Add(c1, Vector256.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c2 = Vector256.Add(c2, Vector256.Multiply(Vector256.Create(*pA), b)); pA += n;
+                            c3 = Vector256.Add(c3, Vector256.Multiply(Vector256.Create(*pA), b));
                             // Next.
                             pALine += 1;
                             pB += n;
