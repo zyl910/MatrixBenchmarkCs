@@ -55,6 +55,38 @@ namespace MatrixLib.Impl {
 #endif // NET10_0_OR_GREATER
         }
 
+        /// <summary>Computes (<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</summary>
+        /// <param name="left">The vector to be multiplied with <paramref name="right" />.</param>
+        /// <param name="right">The vector to be multiplied with <paramref name="left" />.</param>
+        /// <param name="addend">The vector to be added to the result of <paramref name="left" /> multiplied by <paramref name="right" />.</param>
+        /// <returns>(<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector512<float> MultiplyAdd(Vector512<float> left, Vector512<float> right, Vector512<float> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector512.IsHardwareAccelerated) {
+                return Vector512.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector512s.Add(addend, Vector512s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector512{float}, Vector512{float}, Vector512{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector512<double> MultiplyAdd(Vector512<double> left, Vector512<double> right, Vector512<double> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector512.IsHardwareAccelerated) {
+                return Vector512.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector512s.Add(addend, Vector512s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector512{float}, Vector512{float}, Vector512{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector512<T> MultiplyAdd<T>(Vector512<T> left, Vector512<T> right, Vector512<T> addend) {
+            return Vector512.Add(addend, Vector512.Multiply(left, right));
+        }
+
     }
 }
 

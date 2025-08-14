@@ -179,6 +179,38 @@ namespace MatrixLib.Impl {
 #endif // NET10_0_OR_GREATER
         }
 
+        /// <summary>Computes (<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</summary>
+        /// <param name="left">The vector to be multiplied with <paramref name="right" />.</param>
+        /// <param name="right">The vector to be multiplied with <paramref name="left" />.</param>
+        /// <param name="addend">The vector to be added to the result of <paramref name="left" /> multiplied by <paramref name="right" />.</param>
+        /// <returns>(<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<float> MultiplyAdd(Vector128<float> left, Vector128<float> right, Vector128<float> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector128.IsHardwareAccelerated) {
+                return Vector128.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector128s.Add(addend, Vector128s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector128{float}, Vector128{float}, Vector128{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<double> MultiplyAdd(Vector128<double> left, Vector128<double> right, Vector128<double> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector128.IsHardwareAccelerated) {
+                return Vector128.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector128s.Add(addend, Vector128s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector128{float}, Vector128{float}, Vector128{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<T> MultiplyAdd<T>(Vector128<T> left, Vector128<T> right, Vector128<T> addend) {
+            return Vector128.Add(addend, Vector128.Multiply(left, right));
+        }
+
     }
 }
 

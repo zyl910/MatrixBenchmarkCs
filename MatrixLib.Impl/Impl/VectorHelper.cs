@@ -172,5 +172,41 @@ namespace MatrixLib.Impl {
 #endif // NET8_0_OR_GREATER
         }
 
+        /// <summary>Computes (<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</summary>
+        /// <param name="left">The vector to be multiplied with <paramref name="right" />.</param>
+        /// <param name="right">The vector to be multiplied with <paramref name="left" />.</param>
+        /// <param name="addend">The vector to be added to the result of <paramref name="left" /> multiplied by <paramref name="right" />.</param>
+        /// <returns>(<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> MultiplyAdd(Vector<float> left, Vector<float> right, Vector<float> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector.IsHardwareAccelerated) {
+                return Vector.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector.Add(addend, Vector.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector{float}, Vector{float}, Vector{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<double> MultiplyAdd(Vector<double> left, Vector<double> right, Vector<double> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector.IsHardwareAccelerated) {
+                return Vector.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector.Add(addend, Vector.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector{float}, Vector{float}, Vector{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<T> MultiplyAdd<T>(Vector<T> left, Vector<T> right, Vector<T> addend)
+#if VECTOR_WHERE_STRUCT
+            where T : struct
+#endif // VECTOR_WHERE_STRUCT
+            {
+            return Vector.Add(addend, Vector.Multiply(left, right));
+        }
+
     }
 }

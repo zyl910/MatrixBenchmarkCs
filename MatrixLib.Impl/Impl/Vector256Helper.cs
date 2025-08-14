@@ -178,6 +178,39 @@ namespace MatrixLib.Impl {
             }
 #endif // NET10_0_OR_GREATER
         }
+
+        /// <summary>Computes (<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</summary>
+        /// <param name="left">The vector to be multiplied with <paramref name="right" />.</param>
+        /// <param name="right">The vector to be multiplied with <paramref name="left" />.</param>
+        /// <param name="addend">The vector to be added to the result of <paramref name="left" /> multiplied by <paramref name="right" />.</param>
+        /// <returns>(<paramref name="left"/> * <paramref name="right"/>) + <paramref name="addend"/>, rounded as one ternary operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<float> MultiplyAdd(Vector256<float> left, Vector256<float> right, Vector256<float> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector256.IsHardwareAccelerated) {
+                return Vector256.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector256s.Add(addend, Vector256s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector256{float}, Vector256{float}, Vector256{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<double> MultiplyAdd(Vector256<double> left, Vector256<double> right, Vector256<double> addend) {
+#if NET9_0_OR_GREATER
+            if (Vector256.IsHardwareAccelerated) {
+                return Vector256.FusedMultiplyAdd(left, right, addend);
+            }
+#endif // NET9_0_OR_GREATER
+            return Vector256s.Add(addend, Vector256s.Multiply(left, right));
+        }
+
+        /// <inheritdoc cref="MultiplyAdd(Vector256{float}, Vector256{float}, Vector256{float})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<T> MultiplyAdd<T>(Vector256<T> left, Vector256<T> right, Vector256<T> addend) {
+            return Vector256.Add(addend, Vector256.Multiply(left, right));
+        }
+
     }
 }
 
