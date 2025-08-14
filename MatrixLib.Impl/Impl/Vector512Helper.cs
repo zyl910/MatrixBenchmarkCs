@@ -63,22 +63,26 @@ namespace MatrixLib.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector512<float> MultiplyAdd(Vector512<float> left, Vector512<float> right, Vector512<float> addend) {
 #if NET9_0_OR_GREATER
-            if (Vector512.IsHardwareAccelerated) {
-                return Vector512.FusedMultiplyAdd(left, right, addend);
-            }
+            //if (Vector512.IsHardwareAccelerated) {
+            //    return Vector512.FusedMultiplyAdd(left, right, addend);
+            //}
+            return Vector512.FusedMultiplyAdd(left, right, addend);
+#else
+            return Vector512.Add(addend, Vector512.Multiply(left, right));
 #endif // NET9_0_OR_GREATER
-            return Vector512s.Add(addend, Vector512s.Multiply(left, right));
         }
 
         /// <inheritdoc cref="MultiplyAdd(Vector512{float}, Vector512{float}, Vector512{float})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector512<double> MultiplyAdd(Vector512<double> left, Vector512<double> right, Vector512<double> addend) {
 #if NET9_0_OR_GREATER
-            if (Vector512.IsHardwareAccelerated) {
-                return Vector512.FusedMultiplyAdd(left, right, addend);
-            }
+            //if (Vector512.IsHardwareAccelerated) {
+            //    return Vector512.FusedMultiplyAdd(left, right, addend);
+            //}
+            return Vector512.FusedMultiplyAdd(left, right, addend);
+#else
+            return Vector512.Add(addend, Vector512.Multiply(left, right));
 #endif // NET9_0_OR_GREATER
-            return Vector512s.Add(addend, Vector512s.Multiply(left, right));
         }
 
         /// <inheritdoc cref="MultiplyAdd(Vector512{float}, Vector512{float}, Vector512{float})"/>

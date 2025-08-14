@@ -538,7 +538,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-#if Tensor_Primitives_ALLOW_FMA
 #if NET9_0_OR_GREATER
         /// <summary>TileRow on SIMD Fma.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
@@ -568,13 +567,15 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     int pos = N - Vector<TMy>.Count;
                     ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
                     ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.FusedMultiplyAdd(vA, pBLast, pCLast);
+                    //Vector<TMy> vCLast = Vector.FusedMultiplyAdd(vA, pBLast, pCLast);
+                    Vector<TMy> vCLast = VectorHelper.MultiplyAdd(vA, pBLast, pCLast);
                     // SIMD for.
                     if (cntBlock >= 0) {
                         ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
                         ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
                         for (int j = 0; j < cntBlock; ++j) {
-                            pC = Vector.FusedMultiplyAdd(vA, pB, pC); // pC += vA * pB;
+                            //pC = Vector.FusedMultiplyAdd(vA, pB, pC); // pC += vA * pB;
+                            pC = VectorHelper.MultiplyAdd(vA, pB, pC); // pC += vA * pB;
                             pB = ref Unsafe.Add(ref pB, 1);
                             pC = ref Unsafe.Add(ref pC, 1);
                         }
@@ -591,6 +592,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
 #endif // NET9_0_OR_GREATER
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NETCOREAPP3_0_OR_GREATER
         /// <summary>TileRow on SIMD Fma X86.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>

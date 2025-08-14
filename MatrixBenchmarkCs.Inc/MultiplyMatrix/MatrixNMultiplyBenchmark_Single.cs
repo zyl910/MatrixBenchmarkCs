@@ -1,4 +1,4 @@
-﻿//#undef BENCHMARKS_OFF
+﻿#undef BENCHMARKS_OFF
 #define Tensor_Primitives_ALLOW_FMA
 #define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
@@ -300,7 +300,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-#if Tensor_Primitives_ALLOW_FMA
 #if NET9_0_OR_GREATER
         [Benchmark_D]
         public void TileRowSimdFma() {
@@ -312,6 +311,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 #endif // NET9_0_OR_GREATER
 
+#if Tensor_Primitives_ALLOW_FMA
 #if NETCOREAPP3_0_OR_GREATER
         [Benchmark_D]
         public void TileRowSimdFmaX86() {

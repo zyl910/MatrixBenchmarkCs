@@ -180,22 +180,26 @@ namespace MatrixLib.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> MultiplyAdd(Vector<float> left, Vector<float> right, Vector<float> addend) {
 #if NET9_0_OR_GREATER
-            if (Vector.IsHardwareAccelerated) {
-                return Vector.FusedMultiplyAdd(left, right, addend);
-            }
-#endif // NET9_0_OR_GREATER
+            //if (Vector.IsHardwareAccelerated) {
+            //    return Vector.FusedMultiplyAdd(left, right, addend);
+            //}
+            return Vector.FusedMultiplyAdd(left, right, addend);
+#else
             return Vector.Add(addend, Vector.Multiply(left, right));
+#endif // NET9_0_OR_GREATER
         }
 
         /// <inheritdoc cref="MultiplyAdd(Vector{float}, Vector{float}, Vector{float})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<double> MultiplyAdd(Vector<double> left, Vector<double> right, Vector<double> addend) {
 #if NET9_0_OR_GREATER
-            if (Vector.IsHardwareAccelerated) {
-                return Vector.FusedMultiplyAdd(left, right, addend);
-            }
-#endif // NET9_0_OR_GREATER
+            //if (Vector.IsHardwareAccelerated) {
+            //    return Vector.FusedMultiplyAdd(left, right, addend);
+            //}
+            return Vector.FusedMultiplyAdd(left, right, addend);
+#else
             return Vector.Add(addend, Vector.Multiply(left, right));
+#endif // NET9_0_OR_GREATER
         }
 
         /// <inheritdoc cref="MultiplyAdd(Vector{float}, Vector{float}, Vector{float})"/>
