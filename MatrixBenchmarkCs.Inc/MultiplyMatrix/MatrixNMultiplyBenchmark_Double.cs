@@ -333,44 +333,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        [Benchmark_C]
-        public void CallLib() {
-            MatrixMath.MultiplyMatrix(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("CallLib");
-            }
-        }
-
-#if USED_EXSPANS
-        [Benchmark_C]
-        public void CallLibSpan() {
-            MatrixMath.MultiplyMatrixSpan(MatrixM, MatrixN, MatrixK, arrayA.AsExSpan(), StrideA, arrayB.AsExSpan(), StrideB, arrayC.AsExSpan(), StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("CallLibSpan");
-            }
-        }
-#endif // USED_EXSPANS
-
-        [Benchmark_D]
-        public void CallLibSimd() {
-            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("CallLibSimd");
-            }
-        }
-
-        [Benchmark_B]
-        public void CallLibSimdParallel() {
-            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
-            if (CheckMode) {
-                dstTMy = GetCheckSum();
-                CheckResult("CallLibSimdParallel");
-            }
-        }
-
         [Benchmark_B]
         public void TileRowSimdParallel() {
             int M = MatrixM;
@@ -553,6 +515,46 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("BlockCopy2SimdParallel2");
             }
         }
+
+#if USE_MATRIX_LIB
+        [Benchmark_C]
+        public void CallLib() {
+            MatrixMath.MultiplyMatrix(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLib");
+            }
+        }
+
+#if USED_EXSPANS
+        [Benchmark_C]
+        public void CallLibSpan() {
+            MatrixMath.MultiplyMatrixSpan(MatrixM, MatrixN, MatrixK, arrayA.AsExSpan(), StrideA, arrayB.AsExSpan(), StrideB, arrayC.AsExSpan(), StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSpan");
+            }
+        }
+#endif // USED_EXSPANS
+
+        [Benchmark_D]
+        public void CallLibSimd() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimd(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimd");
+            }
+        }
+
+        [Benchmark_B]
+        public void CallLibSimdParallel() {
+            MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("CallLibSimdParallel");
+            }
+        }
+#endif // USE_MATRIX_LIB
 
         [Benchmark_B]
         public void UseMathNet() {
