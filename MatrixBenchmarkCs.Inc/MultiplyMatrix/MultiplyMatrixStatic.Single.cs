@@ -728,8 +728,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         public unsafe static void StaticOtherGemmAvxBlock(int M, int N, int K, TMy* A, int strideA, TMy* B, int strideB, TMy* C, int strideC, bool allowParallel = false) {
             const int UNROLL = 4;
             const int BLOCKSIZE = 32;
-            if (0 != (M % (BLOCKSIZE))) {
-                throw new NotSupportedException(string.Format("{0} is not an integer multiple of {1}!", M, BLOCKSIZE));
+            if (0 != (M % BLOCKSIZE)) {
+                throw new NotSupportedException(string.Format("The M({0}) is not an integer multiple of {1}!", M, BLOCKSIZE));
             }
             if (M != N || M != K) {
                 throw new NotSupportedException(string.Format("{0} is not equals {1} or {2}!", M, N, K));
@@ -1587,6 +1587,107 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 //} finally {
                 //    //ArrayPool<TMy>.Shared.Return(buf);
             } while (false);
+        }
+
+        /// <summary>GEMM block M is 4*Y, N is vectorWidth*1*X.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        private static void GemmBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+            const int blockM = 4;
+            int vectorWidth = Vector<TMy>.Count;
+            int blockN = vectorWidth * 1;
+            if (0 != (M % blockM)) {
+                throw new ArgumentException(string.Format("The M({0}) of block is not an integer multiple of {1}!", M, blockM));
+            }
+            if (0 != (N % blockN)) {
+                throw new ArgumentException(string.Format("The N({0}) of block is not an integer multiple of {1}!", N, blockN));
+            }
+            // Matrix multiply.
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; i += blockM) {
+                ref TMy pCLine = ref pC0;
+                for (int j = 0; j < N; j += blockN) {
+                    ref TMy pC = ref pCLine;
+                    Vector<TMy> c0;
+                    Vector<TMy> c1;
+                    Vector<TMy> c2;
+                    Vector<TMy> c3;
+                    c0 = VectorHelper.LoadUnsafe(ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    c1 = VectorHelper.LoadUnsafe(ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    c2 = VectorHelper.LoadUnsafe(ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    c3 = VectorHelper.LoadUnsafe(ref pC);
+                    // Add.
+                    ref TMy pALine = ref pA0;
+                    ref TMy pB = ref Unsafe.Add(ref pB0, j);
+                    for (int k = 0; k < K; ++k) {
+                        // pC += pA * pB;
+                        Vector<TMy> b = VectorHelper.LoadUnsafe(ref pB);
+                        ref TMy pA = ref pALine;
+                        c0 = VectorHelper.MultiplyAdd(new Vector<TMy>(pA), b, c0); pA = ref Unsafe.Add(ref pA, strideA);
+                        c1 = VectorHelper.MultiplyAdd(new Vector<TMy>(pA), b, c1); pA = ref Unsafe.Add(ref pA, strideA);
+                        c2 = VectorHelper.MultiplyAdd(new Vector<TMy>(pA), b, c2); pA = ref Unsafe.Add(ref pA, strideA);
+                        c3 = VectorHelper.MultiplyAdd(new Vector<TMy>(pA), b, c3);
+                        // Next.
+                        pALine = ref Unsafe.Add(ref pALine, 1);
+                        pB = ref Unsafe.Add(ref pB, strideB);
+                    }
+                    // Store.
+                    pC = ref pCLine;
+                    VectorHelper.StoreUnsafe(c0, ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreUnsafe(c1, ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreUnsafe(c2, ref pC); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreUnsafe(c3, ref pC);
+                    // Next.
+                    pCLine = ref Unsafe.Add(ref pCLine, blockN);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA * blockM);
+                pC0 = ref Unsafe.Add(ref pC0, strideC * blockM);
+            }
+        }
+
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - Block size custom - ijk.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal static void StaticBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
+            if (0 != (M % blockM)) {
+                throw new ArgumentException(string.Format("The M({0}) is not an integer multiple of {1}!", M, blockM));
+            }
+            if (0 != (N % blockN)) {
+                throw new ArgumentException(string.Format("The N({0}) is not an integer multiple of {1}!", N, blockN));
+            }
+            if (0 != (K % blockK)) {
+                throw new ArgumentException(string.Format("The K({0}) is not an integer multiple of {1}!", K, blockK));
+            }
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Body.
+            int strideB_blockK = strideB * blockK;
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            ref TMy pC0 = ref C;
+            for (int i = 0; i < M; i += blockM) {
+                ref TMy pCLine = ref pC0;
+                for (int j = 0; j < N; j += blockN) {
+                    ref TMy pALine = ref pA0;
+                    ref TMy pB = ref Unsafe.Add(ref pB0, j);
+                    for (int k = 0; k < K; k += blockK) {
+                        GemmBlockM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pCLine, strideC);
+                        // Next.
+                        pALine = ref Unsafe.Add(ref pALine, blockK);
+                        pB = ref Unsafe.Add(ref pB, strideB_blockK);
+                    }
+                    // Next.
+                    pCLine = ref Unsafe.Add(ref pCLine, blockN);
+                }
+                pA0 = ref Unsafe.Add(ref pA0, strideA * blockM);
+                pC0 = ref Unsafe.Add(ref pC0, strideC * blockM);
+            }
+        }
+
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - Block size is 32 * 32 * 32 - ijk.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal static void StaticBlockM4Nv1_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+            StaticBlockM4Nv1(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
         }
 
     }
