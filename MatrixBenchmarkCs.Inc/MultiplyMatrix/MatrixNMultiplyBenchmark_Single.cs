@@ -525,6 +525,15 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        [Benchmark]
+        public unsafe void BlockM4Nv1_32Parallel() {
+            StaticBlockM4Nv1_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_32Parallel");
+            }
+        }
+
 #if USE_MATRIX_LIB
         [Benchmark_C]
         public void CallLib() {

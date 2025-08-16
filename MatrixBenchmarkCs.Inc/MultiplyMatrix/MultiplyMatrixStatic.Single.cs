@@ -1648,7 +1648,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - Block size custom - ijk.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
+        internal unsafe static void StaticBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
             if (0 != (M % blockM)) {
                 throw new ArgumentException(string.Format("The M({0}) is not an integer multiple of {1}!", M, blockM));
             }
@@ -1664,12 +1664,32 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             int strideB_blockK = strideB * blockK;
             ref TMy pA0 = ref Unsafe.AsRef(in A);
             ref TMy pB0 = ref Unsafe.AsRef(in B);
-            ref TMy pC0 = ref C;
-            for (int i = 0; i < M; i += blockM) {
-                ref TMy pCLine = ref pC0;
+            if (allowParallel) {
+                fixed(TMy* pA = &pA0, pB = &pB0, pC = &C) {
+                    nint addressA = (nint)pA;
+                    nint addressB = (nint)pB;
+                    nint addressC = (nint)pC;
+                    int cnt = M / blockM;
+                    Parallel.For(0, cnt, idx => {
+                        int i = idx * blockM;
+                        ref TMy refA = ref Unsafe.AsRef<TMy>((void*)addressA);
+                        ref TMy refB = ref Unsafe.AsRef<TMy>((void*)addressB);
+                        ref TMy refC = ref Unsafe.AsRef<TMy>((void*)addressC);
+                        RunByI(M, N, K, ref refA, strideA, ref refB, strideB, ref refC, strideC, i);
+                    });
+                }
+            } else {
+                for (int i = 0; i < M; i += blockM) {
+                    RunByI(M, N, K, ref pA0, strideA, ref pB0, strideB, ref C, strideC, i);
+                }
+            }
+
+            void RunByI(int M, int N, int K, ref TMy A, int strideA, ref TMy B, int strideB, ref TMy C, int strideC, int i) {
+                ref TMy pA0 = ref Unsafe.Add(ref A, strideA * i);
+                ref TMy pCLine = ref Unsafe.Add(ref C, strideC * i);
                 for (int j = 0; j < N; j += blockN) {
                     ref TMy pALine = ref pA0;
-                    ref TMy pB = ref Unsafe.Add(ref pB0, j);
+                    ref TMy pB = ref Unsafe.Add(ref B, j);
                     for (int k = 0; k < K; k += blockK) {
                         GemmBlockM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pCLine, strideC);
                         // Next.
@@ -1679,8 +1699,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     // Next.
                     pCLine = ref Unsafe.Add(ref pCLine, blockN);
                 }
-                pA0 = ref Unsafe.Add(ref pA0, strideA * blockM);
-                pC0 = ref Unsafe.Add(ref pC0, strideC * blockM);
             }
         }
 
