@@ -27,7 +27,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>$(DefineConstants);BENCHMARKS_OFF;USE_MATRIX_LIB0;REDUCE_MEMORY_USAGE0;REDUCE_MEMORY_USAGE_D0;REDUCE_MEMORY_USAGE_C0;REDUCE_MEMORY_USAGE_B</DefineConstants>
+    <DefineConstants>$(DefineConstants);BENCHMARKS_OFF;USE_MATRIX_LIB;REDUCE_MEMORY_USAGE0;REDUCE_MEMORY_USAGE_D0;REDUCE_MEMORY_USAGE_C0;REDUCE_MEMORY_USAGE_B</DefineConstants>
 
       <PublishAot Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</PublishAot>
       <!--
@@ -78,23 +78,8 @@
         </Otherwise>
     </Choose>
 
-    <Choose>
-        <When Condition=" '$(TargetFramework)' == 'net9.0' ">
-            <PropertyGroup>
-                <ImplTargetFramework>net9.0</ImplTargetFramework>
-            </PropertyGroup>
-        </When>
-        <Otherwise>
-            <PropertyGroup>
-                <ImplTargetFramework>netstandard2.0</ImplTargetFramework>
-            </PropertyGroup>
-        </Otherwise>
-    </Choose>
-
     <ItemGroup>
-        <ProjectReference Include="..\MatrixLib.Impl\MatrixLib.Impl.csproj" >
-            <SetTargetFramework>TargetFramework=$(ImplTargetFramework)</SetTargetFramework>
-        </ProjectReference>
+        <ProjectReference Include="..\MatrixLib.Impl\MatrixLib.Impl.csproj" />
         <ProjectReference Include="..\MatrixLib\MatrixLib.csproj" />
     </ItemGroup>
 

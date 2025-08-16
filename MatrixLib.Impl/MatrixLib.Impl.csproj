@@ -22,7 +22,6 @@
   </Choose>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>MatrixLib</RootNamespace>
     <LangVersion>13.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
