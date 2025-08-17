@@ -14,6 +14,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Zyl.VectorTraits;
 
@@ -1770,6 +1771,17 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
         internal static void StaticBlockM4Nv1_ikj_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
             StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
+        }
+
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal static void StaticBlockM4Nv1_ikj_32K(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+            //int blockN = 32;
+            int blockN = Vector<TMy>.Count * 16;
+            if (blockN > N) {
+                blockN = N;
+            }
+            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 4, Vector<TMy>.Count * 16, 32, allowParallel);
         }
 
     }
