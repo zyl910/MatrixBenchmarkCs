@@ -1764,7 +1764,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ijk - Block size is 32 * 32 * 32.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv1_ijk_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+        internal static void StaticBlockM4Nv1_ijk_M32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
             StaticBlockM4Nv1_ijk(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
         }
 
@@ -1826,21 +1826,26 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * blockN * CommonBlockK.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv1_ikj_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
-            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
-        }
-
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
-        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv1_ikj_32K(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+        internal static void StaticBlockM4Nv1_ikj_M32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
             //int blockN = 32;
             int blockN = Vector<TMy>.Count * 16;
             if (blockN > N) {
                 blockN = N;
             }
-            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 4, blockN, 32, allowParallel);
+            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, blockN, CommonBlockK, allowParallel);
+        }
+
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 4 * blockN * CommonBlockK.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal static void StaticBlockM4Nv1_ikj_M4(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+            //int blockN = 32;
+            int blockN = Vector<TMy>.Count * 16;
+            if (blockN > N) {
+                blockN = N;
+            }
+            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 4, blockN, CommonBlockK, allowParallel);
         }
 
         /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*3*X - ikj - Block size custom.</summary>
@@ -1921,26 +1926,26 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * blockN * CommonBlockK.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv3_ikj_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+        internal static void StaticBlockM4Nv3_ikj_M32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
             //int blockN = 32;
             int blockN = Vector<TMy>.Count * 3 * 4;
             if (blockN > N) {
                 blockN = N;
             }
-            StaticBlockM4Nv3_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, blockN, 32, allowParallel);
+            StaticBlockM4Nv3_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, blockN, CommonBlockK, allowParallel);
         }
 
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 4 * blockN * CommonBlockK.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv3_ikj_32K(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+        internal static void StaticBlockM4Nv3_ikj_M4(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
             //int blockN = 32;
             int blockN = Vector<TMy>.Count * 3 * 4;
             if (blockN > N) {
                 blockN = N;
             }
-            StaticBlockM4Nv3_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 4, blockN, 32, allowParallel);
+            StaticBlockM4Nv3_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 4, blockN, CommonBlockK, allowParallel);
         }
 
     }

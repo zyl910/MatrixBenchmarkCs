@@ -517,92 +517,92 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public void BlockM4Nv1_ijk_32() {
-            StaticBlockM4Nv1_ijk_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv1_ijk_M32() {
+            StaticBlockM4Nv1_ijk_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ijk_32");
+                CheckResult("BlockM4Nv1_ijk_M32");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ijk_32Parallel() {
-            StaticBlockM4Nv1_ijk_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv1_ijk_M32Parallel() {
+            StaticBlockM4Nv1_ijk_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ijk_32Parallel");
+                CheckResult("BlockM4Nv1_ijk_M32Parallel");
             }
         }
 
         [Benchmark]
-        public void BlockM4Nv1_ikj_32() {
-            StaticBlockM4Nv1_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv1_ikj_M32() {
+            StaticBlockM4Nv1_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ikj_32");
+                CheckResult("BlockM4Nv1_ikj_M32");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ikj_32Parallel() {
-            StaticBlockM4Nv1_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv1_ikj_M32Parallel() {
+            StaticBlockM4Nv1_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ikj_32Parallel");
+                CheckResult("BlockM4Nv1_ikj_M32Parallel");
             }
         }
 
         [Benchmark]
-        public void BlockM4Nv1_ikj_32K() {
-            StaticBlockM4Nv1_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv1_ikj_M4() {
+            StaticBlockM4Nv1_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ikj_32K");
+                CheckResult("BlockM4Nv1_ikj_M4");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ikj_32KParallel() {
-            StaticBlockM4Nv1_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv1_ikj_M4Parallel() {
+            StaticBlockM4Nv1_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_ikj_32KParallel");
+                CheckResult("BlockM4Nv1_ikj_M4Parallel");
             }
         }
 
         [Benchmark]
-        public void BlockM4Nv3_ikj_32() {
-            StaticBlockM4Nv3_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv3_ikj_M4() {
+            StaticBlockM4Nv3_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv3_ikj_32");
+                CheckResult("BlockM4Nv3_ikj_M4");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv3_ikj_32Parallel() {
-            StaticBlockM4Nv3_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv3_ikj_M4Parallel() {
+            StaticBlockM4Nv3_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv3_ikj_32Parallel");
+                CheckResult("BlockM4Nv3_ikj_M4Parallel");
             }
         }
 
         [Benchmark]
-        public void BlockM4Nv3_ikj_32K() {
-            StaticBlockM4Nv3_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv3_ikj_M32() {
+            StaticBlockM4Nv3_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv3_ikj_32K");
+                CheckResult("BlockM4Nv3_ikj_M32");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv3_ikj_32KParallel() {
-            StaticBlockM4Nv3_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv3_ikj_M32Parallel() {
+            StaticBlockM4Nv3_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv3_ikj_32KParallel");
+                CheckResult("BlockM4Nv3_ikj_M32Parallel");
             }
         }
 
