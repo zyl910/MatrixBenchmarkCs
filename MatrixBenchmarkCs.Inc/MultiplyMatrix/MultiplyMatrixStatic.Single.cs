@@ -1646,9 +1646,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - Block size custom - ijk.</summary>
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ijk - Block size custom.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal unsafe static void StaticBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
+        internal unsafe static void StaticBlockM4Nv1_ijk(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
             if (0 != (M % blockM)) {
                 throw new ArgumentException(string.Format("The M({0}) is not an integer multiple of {1}!", M, blockM));
             }
@@ -1702,10 +1702,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - Block size is 32 * 32 * 32 - ijk.</summary>
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ijk - Block size is 32 * 32 * 32.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        internal static void StaticBlockM4Nv1_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
-            StaticBlockM4Nv1(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
+        internal static void StaticBlockM4Nv1_ijk_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+            StaticBlockM4Nv1_ijk(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
         }
 
     }

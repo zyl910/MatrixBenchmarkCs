@@ -517,20 +517,20 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public void BlockM4Nv1_32() {
-            StaticBlockM4Nv1_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+        public void BlockM4Nv1_ijk_32() {
+            StaticBlockM4Nv1_ijk_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_32");
+                CheckResult("BlockM4Nv1_ijk_32");
             }
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_32Parallel() {
-            StaticBlockM4Nv1_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+        public unsafe void BlockM4Nv1_ijk_32Parallel() {
+            StaticBlockM4Nv1_ijk_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("BlockM4Nv1_32Parallel");
+                CheckResult("BlockM4Nv1_ijk_32Parallel");
             }
         }
 
