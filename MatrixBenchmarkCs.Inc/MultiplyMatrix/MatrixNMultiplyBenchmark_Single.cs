@@ -570,6 +570,42 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        [Benchmark]
+        public void BlockM4Nv3_ikj_32() {
+            StaticBlockM4Nv3_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_32");
+            }
+        }
+
+        [Benchmark]
+        public unsafe void BlockM4Nv3_ikj_32Parallel() {
+            StaticBlockM4Nv3_ikj_32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_32Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3_ikj_32K() {
+            StaticBlockM4Nv3_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_32K");
+            }
+        }
+
+        [Benchmark]
+        public unsafe void BlockM4Nv3_ikj_32KParallel() {
+            StaticBlockM4Nv3_ikj_32K(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_32KParallel");
+            }
+        }
+
 #if USE_MATRIX_LIB
         [Benchmark_C]
         public void CallLib() {
