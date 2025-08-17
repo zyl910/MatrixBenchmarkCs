@@ -104,6 +104,27 @@ namespace MatrixLib.Impl {
         }
 
         /// <summary>
+        /// Loads 3 vector from the given source.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the vector.</typeparam>
+        /// <param name="source">The source from which the vector will be loaded.</param>
+        /// <param name="data0">The vector 0 loaded from <paramref name="source"/>.</param>
+        /// <param name="data1">The vector 1 loaded from <paramref name="source"/>.</param>
+        /// <param name="data2">The vector 2 loaded from <paramref name="source"/>.</param>
+        /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Load3Unsafe<T>(ref readonly T source, out Vector<T> data0, out Vector<T> data1, out Vector<T> data2)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+            ref Vector<T> p = ref Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in source));
+            data0 = p;
+            data1 = Unsafe.Add(ref p, 1);
+            data2 = Unsafe.Add(ref p, 2);
+        }
+
+        /// <summary>
         /// Loads a vector from the given source.
         /// </summary>
         /// <typeparam name="T">The type of the elements in the vector.</typeparam>
@@ -121,6 +142,27 @@ namespace MatrixLib.Impl {
 #else
             return Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in source));
 #endif // NET8_0_OR_GREATER
+        }
+
+        /// <summary>
+        /// Stores 3 vector at the given destination.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the vector.</typeparam>
+        /// <param name="destination">The destination at which source will be stored.</param>
+        /// <param name="data0">The vector 0 that will be stored.</param>
+        /// <param name="data1">The vector 1 that will be stored.</param>
+        /// <param name="data2">The vector 2 that will be stored.</param>
+        /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Store3Unsafe<T>(ref T destination, Vector<T> data0, Vector<T> data1, Vector<T> data2)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+            ref Vector<T> p = ref Unsafe.As<T, Vector<T>>(ref destination);
+            p = data0;
+            Unsafe.Add(ref p, 1) = data1;
+            Unsafe.Add(ref p, 2) = data2;
         }
 
         /// <summary>
