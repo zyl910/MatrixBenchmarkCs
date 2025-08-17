@@ -11,6 +11,7 @@ using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 #if USED_EXSPANS
 using Zyl.ExSpans;
@@ -526,7 +527,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ijk_M32Parallel() {
+        public void BlockM4Nv1_ijk_M32Parallel() {
             StaticBlockM4Nv1_ijk_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
@@ -544,7 +545,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ikj_M32Parallel() {
+        public void BlockM4Nv1_ikj_M32Parallel() {
             StaticBlockM4Nv1_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
@@ -562,7 +563,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv1_ikj_M4Parallel() {
+        public void BlockM4Nv1_ikj_M4Parallel() {
             StaticBlockM4Nv1_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
@@ -580,7 +581,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv3_ikj_M4Parallel() {
+        public void BlockM4Nv3_ikj_M4Parallel() {
             StaticBlockM4Nv3_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
@@ -598,13 +599,55 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
         [Benchmark]
-        public unsafe void BlockM4Nv3_ikj_M32Parallel() {
+        public void BlockM4Nv3_ikj_M32Parallel() {
             StaticBlockM4Nv3_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("BlockM4Nv3_ikj_M32Parallel");
             }
         }
+
+#if NET8_0_OR_GREATER
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M4() {
+            StaticBlockM4Nv3On512_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M4");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M4Parallel() {
+            StaticBlockM4Nv3On512_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M4Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M32() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            StaticBlockM4Nv3On512_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M32");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M32Parallel() {
+            StaticBlockM4Nv3On512_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M32Parallel");
+            }
+        }
+#endif // NET8_0_OR_GREATER
 
 #if USE_MATRIX_LIB
         [Benchmark_C]
