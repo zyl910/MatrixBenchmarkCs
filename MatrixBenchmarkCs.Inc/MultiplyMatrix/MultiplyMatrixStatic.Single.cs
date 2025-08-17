@@ -1708,5 +1708,69 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             StaticBlockM4Nv1_ijk(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
         }
 
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size custom.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal unsafe static void StaticBlockM4Nv1_ikj(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, int blockM, int blockN, int blockK, bool allowParallel = false) {
+            if (0 != (M % blockM)) {
+                throw new ArgumentException(string.Format("The M({0}) is not an integer multiple of {1}!", M, blockM));
+            }
+            if (0 != (N % blockN)) {
+                throw new ArgumentException(string.Format("The N({0}) is not an integer multiple of {1}!", N, blockN));
+            }
+            if (0 != (K % blockK)) {
+                throw new ArgumentException(string.Format("The K({0}) is not an integer multiple of {1}!", K, blockK));
+            }
+            // Clear matrix C.
+            MatrixUtil.Fill((TMy)0, M, N, ref C, strideC);
+            // Body.
+            int strideB_blockK = strideB * blockK;
+            ref TMy pA0 = ref Unsafe.AsRef(in A);
+            ref TMy pB0 = ref Unsafe.AsRef(in B);
+            if (allowParallel) {
+                fixed (TMy* pA = &pA0, pB = &pB0, pC = &C) {
+                    nint addressA = (nint)pA;
+                    nint addressB = (nint)pB;
+                    nint addressC = (nint)pC;
+                    int cnt = M / blockM;
+                    Parallel.For(0, cnt, idx => {
+                        int i = idx * blockM;
+                        ref TMy refA = ref Unsafe.AsRef<TMy>((void*)addressA);
+                        ref TMy refB = ref Unsafe.AsRef<TMy>((void*)addressB);
+                        ref TMy refC = ref Unsafe.AsRef<TMy>((void*)addressC);
+                        RunByI(M, N, K, ref refA, strideA, ref refB, strideB, ref refC, strideC, i);
+                    });
+                }
+            } else {
+                for (int i = 0; i < M; i += blockM) {
+                    RunByI(M, N, K, ref pA0, strideA, ref pB0, strideB, ref C, strideC, i);
+                }
+            }
+
+            void RunByI(int M, int N, int K, ref TMy A, int strideA, ref TMy B, int strideB, ref TMy C, int strideC, int i) {
+                ref TMy pALine = ref Unsafe.Add(ref A, strideA * i);
+                ref TMy pCLine = ref Unsafe.Add(ref C, strideC * i);
+                ref TMy pBLine = ref B;
+                for (int k = 0; k < K; k += blockK) {
+                    ref TMy pB = ref pBLine;
+                    ref TMy pC = ref pCLine;
+                    for (int j = 0; j < N; j += blockN) {
+                        GemmBlockM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        // Next.
+                        pB = ref Unsafe.Add(ref pB, blockN);
+                        pC = ref Unsafe.Add(ref pC, blockN);
+                    }
+                    // Next.
+                    pALine = ref Unsafe.Add(ref pALine, blockK);
+                    pBLine = ref Unsafe.Add(ref pBLine, strideB_blockK);
+                }
+            }
+        }
+
+        /// <summary>Multiply matrix by block - M is 4*Y, N is vectorWidth*1*X - ikj - Block size is 32 * 32 * 32.</summary>
+        /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
+        internal static void StaticBlockM4Nv1_ikj_32(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC, bool allowParallel = false) {
+            StaticBlockM4Nv1_ikj(M, N, K, in A, strideA, in B, strideB, ref C, strideC, 32, 32, 32, allowParallel);
+        }
+
     }
 }
