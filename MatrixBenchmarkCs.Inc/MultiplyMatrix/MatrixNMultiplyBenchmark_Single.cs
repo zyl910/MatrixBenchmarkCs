@@ -85,12 +85,22 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             return CheckSumUtil.Calculate2D(arrayC, MatrixN, MatrixM, StrideC);
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark(Baseline = true)]
+        public void Basic() {
+            StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                baselineTMy = dstTMy;
+                BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
+            }
+        }
+#else
         [Benchmark(Baseline = true)]
         public void TileRowRef() {
             StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                //CheckResult("TileRowRef");
                 baselineTMy = dstTMy;
                 BenchmarkUtil.WriteItem("# TileRowRef", string.Format("{0}", baselineTMy));
             }
@@ -101,11 +111,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                //baselineTMy = dstTMy;
-                //BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
                 CheckResult("Basic");
             }
         }
+#endif // BENCHMARK_ALLOW_BASIC
 
         [Benchmark_E]
         public void BasicSpan() {
@@ -216,7 +225,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark_C]
+#else
         [Benchmark_B]
+#endif // BENCHMARK_ALLOW_BASIC
         public unsafe void TransposeSimdParallelAlign() {
             const int alignment = 64;
             int M = MatrixM;
@@ -250,6 +263,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
+        [Benchmark_D]
+#endif // BENCHMARK_ALLOW_BASIC
         [Benchmark_D]
         public void TileRow() {
             StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
@@ -259,7 +277,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
         [Benchmark_E]
+#endif // BENCHMARK_ALLOW_BASIC
         public void TileRowSpan() {
             StaticTileRowSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
@@ -267,6 +289,17 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowSpan");
             }
         }
+
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+        public void TileRowRef() {
+            StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowRef");
+            }
+        }
+#endif // BENCHMARK_ALLOW_BASIC
 
 #if Tensor_Primitives_ALLOW_T
         [Benchmark_D]

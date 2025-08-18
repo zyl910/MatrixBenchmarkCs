@@ -27,7 +27,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>$(DefineConstants);BENCHMARKS_OFF;USE_MATRIX_LIB;REDUCE_MEMORY_USAGE0;REDUCE_MEMORY_USAGE_D0;REDUCE_MEMORY_USAGE_C0;REDUCE_MEMORY_USAGE_B</DefineConstants>
+    <DefineConstants>$(DefineConstants);BENCHMARKS_OFF;BENCHMARK_ALLOW_BASIC;USE_MATRIX_LIB;REDUCE_MEMORY_USAGE0;REDUCE_MEMORY_USAGE_D0;REDUCE_MEMORY_USAGE_C0;REDUCE_MEMORY_USAGE_B</DefineConstants>
 
       <PublishAot Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</PublishAot>
       <!--
