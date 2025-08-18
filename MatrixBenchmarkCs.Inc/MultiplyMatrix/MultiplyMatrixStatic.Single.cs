@@ -1590,9 +1590,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             } while (false);
         }
 
-        /// <summary>GEMM block M is 4*Y, N is vectorWidth*1*X.</summary>
+        /// <summary>GEMM kernel M is 4*Y, N is vectorWidth*1*X.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        private static void GemmBlockM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+        private static void GemmKernelM4Nv1(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             const int blockM = 4;
             int vectorWidth = Vector<TMy>.Count;
             int blockN = vectorWidth * 1;
@@ -1647,9 +1647,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
-        /// <summary>GEMM block M is 4*Y, N is vectorWidth*3*X.</summary>
+        /// <summary>GEMM kernel M is 4*Y, N is vectorWidth*3*X.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        private static void GemmBlockM4Nv3(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+        private static void GemmKernelM4Nv3(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             const int blockM = 4;
             int vectorWidth = Vector<TMy>.Count;
             int blockN = vectorWidth * 3;
@@ -1707,9 +1707,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
 #if NET8_0_OR_GREATER
-        /// <summary>GEMM block M is 4*Y, N is vectorWidth*3*X on Vector512.</summary>
+        /// <summary>GEMM kernel M is 4*Y, N is vectorWidth*3*X on Vector512.</summary>
         /// <inheritdoc cref="StaticBasic(int, int, int, TMy[], int, TMy[], int, TMy[], int)"/>
-        private static void GemmBlockM4Nv3On512(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
+        private static void GemmKernelM4Nv3On512(int M, int N, int K, ref readonly TMy A, int strideA, ref readonly TMy B, int strideB, ref TMy C, int strideC) {
             const int blockM = 4;
             int vectorWidth = Vector512<TMy>.Count;
             int blockN = vectorWidth * 3;
@@ -1817,7 +1817,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     ref TMy pALine = ref pA0;
                     ref TMy pB = ref Unsafe.Add(ref B, j);
                     for (int k = 0; k < K; k += blockK) {
-                        GemmBlockM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pCLine, strideC);
+                        GemmKernelM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pCLine, strideC);
                         // Next.
                         pALine = ref Unsafe.Add(ref pALine, blockK);
                         pB = ref Unsafe.Add(ref pB, strideB_blockK);
@@ -1880,7 +1880,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     ref TMy pB = ref pBLine;
                     ref TMy pC = ref pCLine;
                     for (int j = 0; j < N; j += blockN) {
-                        GemmBlockM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        GemmKernelM4Nv1(blockM, blockN, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
                         // Next.
                         pB = ref Unsafe.Add(ref pB, blockN);
                         pC = ref Unsafe.Add(ref pC, blockN);
@@ -1974,13 +1974,13 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     ref TMy pC = ref pCLine;
                     int j = 0;
                     for (; j < nEnd3; j += blockN3) {
-                        GemmBlockM4Nv3(blockM, blockN3, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        GemmKernelM4Nv3(blockM, blockN3, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
                         // Next.
                         pB = ref Unsafe.Add(ref pB, blockN3);
                         pC = ref Unsafe.Add(ref pC, blockN3);
                     }
                     for (; j < nEnd1; j += vectorWidth) {
-                        GemmBlockM4Nv1(blockM, vectorWidth, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        GemmKernelM4Nv1(blockM, vectorWidth, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
                         // Next.
                         pB = ref Unsafe.Add(ref pB, vectorWidth);
                         pC = ref Unsafe.Add(ref pC, vectorWidth);
@@ -2078,13 +2078,13 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     ref TMy pC = ref pCLine;
                     int j = 0;
                     for (; j < nEnd3; j += blockN3) {
-                        GemmBlockM4Nv3On512(blockM, blockN3, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        GemmKernelM4Nv3On512(blockM, blockN3, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
                         // Next.
                         pB = ref Unsafe.Add(ref pB, blockN3);
                         pC = ref Unsafe.Add(ref pC, blockN3);
                     }
                     for (; j < nEnd1; j += vectorWidth) {
-                        GemmBlockM4Nv1(blockM, vectorWidth, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
+                        GemmKernelM4Nv1(blockM, vectorWidth, blockK, in pALine, strideA, in pB, strideB, ref pC, strideC);
                         // Next.
                         pB = ref Unsafe.Add(ref pB, vectorWidth);
                         pC = ref Unsafe.Add(ref pC, vectorWidth);
