@@ -712,7 +712,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+#else
         [Benchmark_B]
+#endif
         public void CallLibSimdParallel() {
             MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {

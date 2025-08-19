@@ -43,7 +43,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 128, 256,
                 //512, 513,
                 //1024,
-                //2048, 4096,
+                //2048,
+                //4096,
             };
         }
 
