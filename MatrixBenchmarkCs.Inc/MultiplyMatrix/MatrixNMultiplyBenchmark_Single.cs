@@ -1,4 +1,4 @@
-﻿#undef BENCHMARKS_OFF
+﻿//#undef BENCHMARKS_OFF
 #define Tensor_Primitives_ALLOW_FMA
 #define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS

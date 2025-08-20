@@ -1,6 +1,8 @@
-﻿//#undef BENCHMARKS_OFF
+﻿#undef BENCHMARKS_OFF
 #define Tensor_Primitives_ALLOW_FMA
-//#define Tensor_Primitives_ALLOW_T
+#if NET8_0_OR_GREATER
+#define Tensor_Primitives_ALLOW_T
+#endif // NET8_0_OR_GREATER
 //#define USED_EXSPANS
 
 using BenchmarkDotNet.Attributes;
@@ -11,6 +13,7 @@ using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 #if USED_EXSPANS
 using Zyl.ExSpans;
@@ -84,12 +87,22 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             return CheckSumUtil.Calculate2D(arrayC, MatrixN, MatrixM, StrideC);
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark(Baseline = true)]
+        public void Basic() {
+            StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                baselineTMy = dstTMy;
+                BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
+            }
+        }
+#else
         [Benchmark(Baseline = true)]
         public void TileRowRef() {
             StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                //CheckResult("TileRowRef");
                 baselineTMy = dstTMy;
                 BenchmarkUtil.WriteItem("# TileRowRef", string.Format("{0}", baselineTMy));
             }
@@ -100,11 +113,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             StaticBasic(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                //baselineTMy = dstTMy;
-                //BenchmarkUtil.WriteItem("# Basic", string.Format("{0}", baselineTMy));
                 CheckResult("Basic");
             }
         }
+#endif // BENCHMARK_ALLOW_BASIC
 
         [Benchmark_E]
         public void BasicSpan() {
@@ -215,7 +227,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark_C]
+#else
         [Benchmark_B]
+#endif // BENCHMARK_ALLOW_BASIC
         public unsafe void TransposeSimdParallelAlign() {
             const int alignment = 64;
             int M = MatrixM;
@@ -249,6 +265,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
+        [Benchmark_D]
+#endif // BENCHMARK_ALLOW_BASIC
         [Benchmark_D]
         public void TileRow() {
             StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
@@ -258,7 +279,11 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
         [Benchmark_E]
+#endif // BENCHMARK_ALLOW_BASIC
         public void TileRowSpan() {
             StaticTileRowSpan(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
@@ -266,6 +291,17 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                 CheckResult("TileRowSpan");
             }
         }
+
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+        public void TileRowRef() {
+            StaticTileRowRef(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowRef");
+            }
+        }
+#endif // BENCHMARK_ALLOW_BASIC
 
 #if Tensor_Primitives_ALLOW_T
         [Benchmark_D]
@@ -516,6 +552,138 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+        [Benchmark]
+        public void BlockM4Nv1_ijk_M32() {
+            StaticBlockM4Nv1_ijk_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ijk_M32");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv1_ijk_M32Parallel() {
+            StaticBlockM4Nv1_ijk_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ijk_M32Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv1_ikj_M32() {
+            StaticBlockM4Nv1_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ikj_M32");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv1_ikj_M32Parallel() {
+            StaticBlockM4Nv1_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ikj_M32Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv1_ikj_M4() {
+            StaticBlockM4Nv1_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ikj_M4");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv1_ikj_M4Parallel() {
+            StaticBlockM4Nv1_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv1_ikj_M4Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3_ikj_M4() {
+            StaticBlockM4Nv3_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_M4");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3_ikj_M4Parallel() {
+            StaticBlockM4Nv3_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_M4Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3_ikj_M32() {
+            StaticBlockM4Nv3_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_M32");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3_ikj_M32Parallel() {
+            StaticBlockM4Nv3_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3_ikj_M32Parallel");
+            }
+        }
+
+#if NET8_0_OR_GREATER
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M4() {
+            StaticBlockM4Nv3On512_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M4");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M4Parallel() {
+            StaticBlockM4Nv3On512_ikj_M4(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M4Parallel");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M32() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            StaticBlockM4Nv3On512_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M32");
+            }
+        }
+
+        [Benchmark]
+        public void BlockM4Nv3On512_ikj_M32Parallel() {
+            StaticBlockM4Nv3On512_ikj_M32(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC, true);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("BlockM4Nv3On512_ikj_M32Parallel");
+            }
+        }
+#endif // NET8_0_OR_GREATER
+
 #if USE_MATRIX_LIB
         [Benchmark_C]
         public void CallLib() {
@@ -546,7 +714,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 
+#if BENCHMARK_ALLOW_BASIC
+#else
         [Benchmark_B]
+#endif
         public void CallLibSimdParallel() {
             MatrixMathImpl.Instance.MultiplyMatrix_TileRowSimdParallel(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {

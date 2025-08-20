@@ -40,9 +40,9 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             ValuesForN = new int[] {
                 //64,
                 //32, 64, 65,
-                128, 256,
+                //128, 256,
                 //512, 513,
-                //1024,
+                1024,
                 //2048,
                 //4096,
             };
