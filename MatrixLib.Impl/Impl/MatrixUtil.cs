@@ -168,6 +168,19 @@ namespace MatrixLib.Impl {
             return rt;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static T GetByDouble<T>(double src) where T : struct
+#if NET7_0_OR_GREATER
+            , INumber<T>
+#endif // NET7_0_OR_GREATER
+            {
+#if NET7_0_OR_GREATER
+            return T.CreateTruncating(src);
+#else
+            return Scalars.GetByDouble<T>(src);
+#endif // NET7_0_OR_GREATER
+        }
+
         /// <summary>
         /// Fill value (填充值).
         /// </summary>
@@ -223,6 +236,56 @@ namespace MatrixLib.Impl {
                         p = value;
                         p = ref Unsafe.Add(ref p, 1);
                     }
+                }
+                // Next.
+                p0 = ref Unsafe.Add(ref p0, stride);
+            }
+        }
+
+        /// <summary>
+        /// Fill random value (填充随机值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="random">The random (随机数).</param>
+        /// <param name="scale">The scale (缩放因子).</param>
+        /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
+        /// <param name="cols">The number of columns in matrix (矩阵的列数).</param>
+        /// <param name="matrix">The matrix (矩阵).</param>
+        /// <param name="stride">The stride of matrix. When it is 0, use cols (矩阵的跨距. 为 0 时 使用 cols).</param>
+        /// <param name="start">The start index of matrix (矩阵的开始索引).</param>
+        public static void FillRandom<T>(Random random, double scale, int rows, int cols, Span<T> matrix, int stride = 0, int start = 0) where T : struct
+#if NET7_0_OR_GREATER
+            , INumber<T>
+#endif // NET7_0_OR_GREATER
+            {
+            ref T p = ref Unsafe.Add(ref matrix.GetPinnableReference(), start);
+            FillRandom(random, scale, rows, cols, ref p, stride);
+        }
+
+        /// <summary>
+        /// Fill value (填充值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="random">The random (随机数).</param>
+        /// <param name="scale">The scale (缩放因子). Suggest set it as 1</param>
+        /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
+        /// <param name="cols">The number of columns in matrix (矩阵的列数).</param>
+        /// <param name="matrix">The matrix (矩阵).</param>
+        /// <param name="stride">The stride of matrix. When it is 0, use cols (矩阵的跨距. 为 0 时 使用 cols).</param>
+        public static void FillRandom<T>(Random random, double scale, nint rows, nint cols, ref T matrix, nint stride = 0) where T : struct
+#if NET7_0_OR_GREATER
+            , INumber<T>
+#endif // NET7_0_OR_GREATER
+            {
+            if (0 == stride) {
+                stride = cols;
+            }
+            ref T p0 = ref matrix;
+            for (nint i = 0; i < rows; i++) {
+                ref T p = ref p0;
+                for (nint j = 0; j < cols; j++) {
+                    p = GetByDouble<T>(random.NextDouble() * scale);
+                    p = ref Unsafe.Add(ref p, 1);
                 }
                 // Next.
                 p0 = ref Unsafe.Add(ref p0, stride);
