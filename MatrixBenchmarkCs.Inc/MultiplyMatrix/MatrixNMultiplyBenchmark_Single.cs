@@ -57,7 +57,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     using TMy = Single;
 
     /// <summary>
-    /// Matrix N*N multiply matrix N*N benchmark - Single.
+    /// Matrix(N*N) multiply matrix(N*N) benchmark - Single.
     /// </summary>
     public class MatrixNMultiplyBenchmark_Single : MatrixNMultiplyBenchmark<TMy> {
 
@@ -65,8 +65,8 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matB;
         protected MathNet.Numerics.LinearAlgebra.Matrix<TMy>? matC;
 
-        protected override void ArraySetup() {
-            base.ArraySetup();
+        protected override void GlobalSetupCore() {
+            base.GlobalSetupCore();
             try {
                 matA = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixM, MatrixK, arrayA);
                 matB = MathNet.Numerics.LinearAlgebra.Matrix<TMy>.Build.DenseOfRowMajor(MatrixK, MatrixN, arrayB);
