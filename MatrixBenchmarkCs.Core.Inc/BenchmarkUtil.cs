@@ -118,7 +118,7 @@ namespace MatrixBenchmarkCs {
         /// <returns>Returns MOPS(Million operations per second).</returns>
         public static double RunTest(IBenchmarkWriter writer, string name, Action action, int srcCount, double mopsBaseline, ILoopCountGetter? loopCountGetter = null) {
             double us;
-            int loopCount = loopCountGetter?.LoopCount ?? 0;
+            long loopCount = loopCountGetter?.LoopCount ?? 0;
             double rt = RunTestCore(action, srcCount, mopsBaseline, out us, loopCount);
             if (mopsBaseline>0) {
                 double scale = rt / mopsBaseline;
@@ -138,7 +138,7 @@ namespace MatrixBenchmarkCs {
         /// <param name="us">Run time ms.</param>
         /// <returns>Returns MOPS(Million operations per second).</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
-        public static double RunTestCore(Action action, int srcCount, double mopsBaseline, out double us, int loopCount = 0) {
+        public static double RunTestCore(Action action, int srcCount, double mopsBaseline, out double us, long loopCount = 0) {
             double rt;
             const int aMillion = 1000 * 1000;
             const int usPerSecond = 1000 * 1000;

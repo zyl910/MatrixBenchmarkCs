@@ -10,6 +10,6 @@ namespace MatrixBenchmarkCs {
         /// <summary>
         /// Property LoopCount.
         /// </summary>
-        int LoopCount { get; }
+        long LoopCount { get; }
     }
 }
