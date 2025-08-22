@@ -65,7 +65,7 @@ namespace MatrixLib.Impl {
         /// <param name="data2">The vector 2 loaded from <paramref name="source"/>.</param>
         /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Load3Unsafe<T>(ref readonly T source, out Vector512<T> data0, out Vector512<T> data1, out Vector512<T> data2)
+        public static void LoadX3Unsafe<T>(ref readonly T source, out Vector512<T> data0, out Vector512<T> data1, out Vector512<T> data2)
 #if VECTOR_WHERE_STRUCT
                 where T : struct
 #endif // VECTOR_WHERE_STRUCT
@@ -86,7 +86,7 @@ namespace MatrixLib.Impl {
         /// <param name="data2">The vector 2 that will be stored.</param>
         /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Store3Unsafe<T>(ref T destination, Vector512<T> data0, Vector512<T> data1, Vector512<T> data2)
+        public static void StoreX3Unsafe<T>(ref T destination, Vector512<T> data0, Vector512<T> data1, Vector512<T> data2)
 #if VECTOR_WHERE_STRUCT
                 where T : struct
 #endif // VECTOR_WHERE_STRUCT

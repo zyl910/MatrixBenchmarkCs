@@ -1671,10 +1671,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     Vector<TMy> c1_0, c1_1, c1_2;
                     Vector<TMy> c2_0, c2_1, c2_2;
                     Vector<TMy> c3_0, c3_1, c3_2;
-                    VectorHelper.Load3Unsafe(ref pC, out c0_0, out c0_1, out c0_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Load3Unsafe(ref pC, out c1_0, out c1_1, out c1_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Load3Unsafe(ref pC, out c2_0, out c2_1, out c2_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Load3Unsafe(ref pC, out c3_0, out c3_1, out c3_2);
+                    VectorHelper.LoadX3Unsafe(ref pC, out c0_0, out c0_1, out c0_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.LoadX3Unsafe(ref pC, out c1_0, out c1_1, out c1_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.LoadX3Unsafe(ref pC, out c2_0, out c2_1, out c2_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.LoadX3Unsafe(ref pC, out c3_0, out c3_1, out c3_2);
                     // Add.
                     ref TMy pALine = ref pA0;
                     ref TMy pB = ref Unsafe.Add(ref pB0, j);
@@ -1682,7 +1682,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         // pC += pA * pB;
                         Vector<TMy> b0, b1, b2;
                         Vector<TMy> va;
-                        VectorHelper.Load3Unsafe(ref pB, out b0, out b1, out b2);
+                        VectorHelper.LoadX3Unsafe(ref pB, out b0, out b1, out b2);
                         ref TMy pA = ref pALine;
                         va = new Vector<TMy>(pA); c0_0 = VectorHelper.MultiplyAdd(va, b0, c0_0); c0_1 = VectorHelper.MultiplyAdd(va, b1, c0_1); c0_2 = VectorHelper.MultiplyAdd(va, b2, c0_2); pA = ref Unsafe.Add(ref pA, strideA);
                         va = new Vector<TMy>(pA); c1_0 = VectorHelper.MultiplyAdd(va, b0, c1_0); c1_1 = VectorHelper.MultiplyAdd(va, b1, c1_1); c1_2 = VectorHelper.MultiplyAdd(va, b2, c1_2); pA = ref Unsafe.Add(ref pA, strideA);
@@ -1694,10 +1694,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     }
                     // Store.
                     pC = ref pCLine;
-                    VectorHelper.Store3Unsafe(ref pC, c0_0, c0_1, c0_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Store3Unsafe(ref pC, c1_0, c1_1, c1_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Store3Unsafe(ref pC, c2_0, c2_1, c2_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    VectorHelper.Store3Unsafe(ref pC, c3_0, c3_1, c3_2);
+                    VectorHelper.StoreX3Unsafe(ref pC, c0_0, c0_1, c0_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreX3Unsafe(ref pC, c1_0, c1_1, c1_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreX3Unsafe(ref pC, c2_0, c2_1, c2_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    VectorHelper.StoreX3Unsafe(ref pC, c3_0, c3_1, c3_2);
                     // Next.
                     pCLine = ref Unsafe.Add(ref pCLine, blockN);
                 }
@@ -1736,10 +1736,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     Vector512<TMy> c1_0, c1_1, c1_2;
                     Vector512<TMy> c2_0, c2_1, c2_2;
                     Vector512<TMy> c3_0, c3_1, c3_2;
-                    Vector512Helper.Load3Unsafe(ref pC, out c0_0, out c0_1, out c0_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Load3Unsafe(ref pC, out c1_0, out c1_1, out c1_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Load3Unsafe(ref pC, out c2_0, out c2_1, out c2_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Load3Unsafe(ref pC, out c3_0, out c3_1, out c3_2);
+                    Vector512Helper.LoadX3Unsafe(ref pC, out c0_0, out c0_1, out c0_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.LoadX3Unsafe(ref pC, out c1_0, out c1_1, out c1_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.LoadX3Unsafe(ref pC, out c2_0, out c2_1, out c2_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.LoadX3Unsafe(ref pC, out c3_0, out c3_1, out c3_2);
                     // Add.
                     ref TMy pALine = ref pA0;
                     ref TMy pB = ref Unsafe.Add(ref pB0, j);
@@ -1747,7 +1747,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         // pC += pA * pB;
                         Vector512<TMy> b0, b1, b2;
                         Vector512<TMy> va;
-                        Vector512Helper.Load3Unsafe(ref pB, out b0, out b1, out b2);
+                        Vector512Helper.LoadX3Unsafe(ref pB, out b0, out b1, out b2);
                         ref TMy pA = ref pALine;
                         va = Vector512.Create(pA); c0_0 = Vector512Helper.MultiplyAdd(va, b0, c0_0); c0_1 = Vector512Helper.MultiplyAdd(va, b1, c0_1); c0_2 = Vector512Helper.MultiplyAdd(va, b2, c0_2); pA = ref Unsafe.Add(ref pA, strideA);
                         va = Vector512.Create(pA); c1_0 = Vector512Helper.MultiplyAdd(va, b0, c1_0); c1_1 = Vector512Helper.MultiplyAdd(va, b1, c1_1); c1_2 = Vector512Helper.MultiplyAdd(va, b2, c1_2); pA = ref Unsafe.Add(ref pA, strideA);
@@ -1759,10 +1759,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     }
                     // Store.
                     pC = ref pCLine;
-                    Vector512Helper.Store3Unsafe(ref pC, c0_0, c0_1, c0_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Store3Unsafe(ref pC, c1_0, c1_1, c1_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Store3Unsafe(ref pC, c2_0, c2_1, c2_2); pC = ref Unsafe.Add(ref pC, strideC);
-                    Vector512Helper.Store3Unsafe(ref pC, c3_0, c3_1, c3_2);
+                    Vector512Helper.StoreX3Unsafe(ref pC, c0_0, c0_1, c0_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.StoreX3Unsafe(ref pC, c1_0, c1_1, c1_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.StoreX3Unsafe(ref pC, c2_0, c2_1, c2_2); pC = ref Unsafe.Add(ref pC, strideC);
+                    Vector512Helper.StoreX3Unsafe(ref pC, c3_0, c3_1, c3_2);
                     // Next.
                     pCLine = ref Unsafe.Add(ref pCLine, blockN);
                 }
