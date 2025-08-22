@@ -18,7 +18,7 @@ namespace MatrixBenchmarkCs {
             // 1: Benchmark all with BenchmarkDotNet.
             // 2: Benchmark item with BenchmarkDotNet.
             // 3: Running special method (AloneTest).
-            int benchmarkMode = 0;
+            int benchmarkMode = 1;
             if (args.Length >= 1) {
                 if (!int.TryParse(args[0], out benchmarkMode)) {
                     benchmarkMode = 1;
