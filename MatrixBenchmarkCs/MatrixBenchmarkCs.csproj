@@ -44,8 +44,11 @@
         <PackageReference Include="VectorTraits" Version="$(VectorTraitsPackageVersion)" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(ExUseNativeDll)' == ''">
+    <PropertyGroup Condition=" '$(ExUseNativeDll)' == '' AND '$(TargetFramework)' == 'net9.0' AND '$(OS)' == 'Windows_NT' ">
         <ExUseNativeDll>true</ExUseNativeDll>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(ExUseNativeDll)' == ''">
+        <ExUseNativeDll>false</ExUseNativeDll>
     </PropertyGroup>
     <PropertyGroup Condition="'$(ExUseNativeDll)' == 'true'">
         <DefineConstants>$(DefineConstants);USE_NATIVE_DLL</DefineConstants>
