@@ -1,4 +1,4 @@
-﻿//#undef BENCHMARKS_OFF
+﻿#undef BENCHMARKS_OFF
 #define Tensor_Primitives_ALLOW_FMA
 #define Tensor_Primitives_ALLOW_T
 //#define USED_EXSPANS
@@ -335,17 +335,20 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
         }
 
 #if NET9_0_OR_GREATER
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
         [Benchmark_D]
-        public void TileRowSimdFma() {
-            StaticTileRowSimdFma(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+#endif // BENCHMARK_ALLOW_BASIC
+        public void TileRowSimdFmaBcl() {
+            StaticTileRowSimdFmaBcl(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();
-                CheckResult("TileRowSimdFma");
+                CheckResult("TileRowSimdFmaBcl");
             }
         }
 #endif // NET9_0_OR_GREATER
 
-#if Tensor_Primitives_ALLOW_FMA
 #if NETCOREAPP3_0_OR_GREATER
         [Benchmark_D]
         public void TileRowSimdFmaX86() {
@@ -356,7 +359,19 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             }
         }
 #endif // NETCOREAPP3_0_OR_GREATER
-#endif // Tensor_Primitives_ALLOW_FMA
+
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
+        [Benchmark_D]
+#endif // BENCHMARK_ALLOW_BASIC
+        public void TileRowSimdFma() {
+            StaticTileRowSimdFma(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdFma");
+            }
+        }
 
         [Benchmark_D]
         public void TileRowSimdLU4() {
@@ -407,6 +422,27 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             if (CheckMode) {
                 dstTMy = GetCheckSum();
                 CheckResult("TileRowSimdParallel2");
+            }
+        }
+
+#if BENCHMARK_ALLOW_BASIC
+        [Benchmark]
+#else
+        [Benchmark_C]
+#endif // BENCHMARK_ALLOW_BASIC
+        public void TileRowSimdFmaParallel() {
+            int M = MatrixM;
+            bool allowParallel = (M >= 16) && (Environment.ProcessorCount > 1);
+            if (allowParallel) {
+                Parallel.For(0, M, i => {
+                    StaticTileRowSimdFma(1, MatrixN, MatrixK, ref arrayA![StrideA * i], StrideA, ref arrayB![0], StrideB, ref arrayC![StrideC * i], StrideC);
+                });
+            } else {
+                StaticTileRowSimdFma(MatrixM, MatrixN, MatrixK, ref arrayA![0], StrideA, ref arrayB![0], StrideB, ref arrayC![0], StrideC);
+            }
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("TileRowSimdParallel");
             }
         }
 
