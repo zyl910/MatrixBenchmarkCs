@@ -268,7 +268,6 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 #else
         [Benchmark_D]
 #endif // BENCHMARK_ALLOW_BASIC
-        [Benchmark_D]
         public void TileRow() {
             StaticTileRow(MatrixM, MatrixN, MatrixK, arrayA!, StrideA, arrayB!, StrideB, arrayC!, StrideC);
             if (CheckMode) {
@@ -763,6 +762,17 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
 
         [Benchmark_B]
         public void UseMathNet() {
+            //MathNet.Numerics.Control.UseMultiThreading(); // Default is UseMultiThreading.
+            matA!.Multiply(matB, matC);
+            if (CheckMode) {
+                dstTMy = GetCheckSum();
+                CheckResult("UseMathNet");
+            }
+        }
+
+        //[Benchmark]
+        public void UseMathNetSingleThread() {
+            MathNet.Numerics.Control.UseSingleThread();
             matA!.Multiply(matB, matC);
             if (CheckMode) {
                 dstTMy = GetCheckSum();

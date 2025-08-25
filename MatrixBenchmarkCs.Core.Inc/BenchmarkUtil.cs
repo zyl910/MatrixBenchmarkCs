@@ -73,6 +73,16 @@ namespace MatrixBenchmarkCs {
         public static void OutputEnvironment(TextWriter writer, string? indent = null) {
             EnvironmentOutput.OutputEnvironment(writer, indent);
             //writer.WriteLine(indent + string.Format("Vectors.BaseInstance:\t{0}", Vectors.BaseInstance.GetType().Name));
+            // -- MKL.
+#if USE_NATIVE_DLL
+            if (true) {
+                try {
+                    writer.WriteLine(indent + string.Format("MKL.get_version_string:\t{0}", MKLNET.MKL.get_version_string()));
+                } catch (Exception ex) {
+                    writer.WriteLine(indent + string.Format("MKL load fail! {0}", ex.ToString()));
+                }
+            }
+#endif // USE_NATIVE_DLL
             // -- OpenBLAS.
 #if USE_NATIVE_DLL
             if (true) {
@@ -86,6 +96,8 @@ namespace MatrixBenchmarkCs {
                 }
             }
 #endif // USE_NATIVE_DLL
+            // -- MathNet.
+            writer.WriteLine(indent + string.Format("MathNet:\t{0}", MathNet.Numerics.Control.Describe()));
         }
 
         /// <summary>
