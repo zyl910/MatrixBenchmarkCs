@@ -17,7 +17,6 @@ using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using System.Threading.Tasks;
-using Zyl.VectorTraits;
 
 namespace MatrixBenchmarkCs.MultiplyMatrix {
 
@@ -215,7 +214,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
             for (int k = 0; k < K; ++k) {
                 //cur += pA * pB;
                 Vector<TMy> vA = new Vector<TMy>(pA);
-                cur = Vector.Add(Vectors.Multiply(vA, Unsafe.As<TMy, Vector<TMy>>(ref pB)), cur); // pC += vA * pB;
+                cur = Vector.Add(Vector.Multiply(vA, Unsafe.As<TMy, Vector<TMy>>(ref pB)), cur); // pC += vA * pB;
                 pA = ref Unsafe.Add(ref pA, 1);
                 pB = ref Unsafe.Add(ref pB, strideB);
             }
@@ -301,10 +300,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                         //cur += pA * pB;
                         Vector<TMy> vA = new Vector<TMy>(pA);
                         ref Vector<TMy> pBCur = ref Unsafe.As<TMy, Vector<TMy>>(ref pB);
-                        cur = Vector.Add(Vectors.Multiply(vA, pBCur), cur);
-                        cur1 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 1)), cur1);
-                        cur2 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 2)), cur2);
-                        cur3 = Vector.Add(Vectors.Multiply(vA, Unsafe.Add(ref pBCur, 3)), cur3);
+                        cur = Vector.Add(Vector.Multiply(vA, pBCur), cur);
+                        cur1 = Vector.Add(Vector.Multiply(vA, Unsafe.Add(ref pBCur, 1)), cur1);
+                        cur2 = Vector.Add(Vector.Multiply(vA, Unsafe.Add(ref pBCur, 2)), cur2);
+                        cur3 = Vector.Add(Vector.Multiply(vA, Unsafe.Add(ref pBCur, 3)), cur3);
                         pA = ref Unsafe.Add(ref pA, 1);
                         pB = ref Unsafe.Add(ref pB, strideB);
                     }
@@ -519,13 +518,13 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     int pos = N - Vector<TMy>.Count;
                     ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
                     ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.Add(Vectors.Multiply(vA, pBLast), pCLast);
+                    Vector<TMy> vCLast = Vector.Add(Vector.Multiply(vA, pBLast), pCLast);
                     // SIMD for.
                     if (cntBlock >= 0) {
                         ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
                         ref Vector<TMy> pC = ref Unsafe.As<TMy, Vector<TMy>>(ref pC0);
                         for (int j = 0; j < cntBlock; ++j) {
-                            pC = Vector.Add(Vectors.Multiply(vA, pB), pC); // pC += vA * pB;
+                            pC = Vector.Add(Vector.Multiply(vA, pB), pC); // pC += vA * pB;
                             pB = ref Unsafe.Add(ref pB, 1);
                             pC = ref Unsafe.Add(ref pC, 1);
                         }
@@ -624,7 +623,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     int pos = N - Vector<TMy>.Count;
                     ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
                     ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.Add(Vectors.Multiply(vA, pBLast), pCLast);
+                    Vector<TMy> vCLast = Vector.Add(Vector.Multiply(vA, pBLast), pCLast);
                     // SIMD for.
                     if (cntBlock >= 0) {
                         ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
@@ -636,7 +635,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                             } else if (Vector<byte>.Count == Vector256<byte>.Count) {
                                 pC = Fma.MultiplyAdd(vA.AsVector128(), pB.AsVector128(), pC.AsVector128()).AsVector();
                             } else {
-                                pC = Vector.Add(Vectors.Multiply(vA, pB), pC);
+                                pC = Vector.Add(Vector.Multiply(vA, pB), pC);
                             }
                             pB = ref Unsafe.Add(ref pB, 1);
                             pC = ref Unsafe.Add(ref pC, 1);
@@ -688,7 +687,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                     int pos = N - Vector<TMy>.Count;
                     ref Vector<TMy> pBLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pB0, pos));
                     ref Vector<TMy> pCLast = ref Unsafe.As<TMy, Vector<TMy>>(ref Unsafe.Add(ref pC0, pos));
-                    Vector<TMy> vCLast = Vector.Add(Vectors.Multiply(vA, pBLast), pCLast);
+                    Vector<TMy> vCLast = Vector.Add(Vector.Multiply(vA, pBLast), pCLast);
                     // SIMD for.
                     if (cntBlock >= 0) {
                         ref Vector<TMy> pB = ref Unsafe.As<TMy, Vector<TMy>>(ref pB0);
@@ -702,10 +701,10 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                             //ref Vector<TMy> pC2 = ref Unsafe.Add(ref pC, 2);
                             //ref Vector<TMy> pC3 = ref Unsafe.Add(ref pC, 3);
                             // pC += vA * pB;
-                            pC = Vector.Add(Vectors.Multiply(vA, vB0), pC);
-                            pC1 = Vector.Add(Vectors.Multiply(vA, vB1), pC1);
-                            //pC2 = Vector.Add(Vectors.Multiply(vA, vB2), pC2);
-                            //pC3 = Vector.Add(Vectors.Multiply(vA, vB3), pC3);
+                            pC = Vector.Add(Vector.Multiply(vA, vB0), pC);
+                            pC1 = Vector.Add(Vector.Multiply(vA, vB1), pC1);
+                            //pC2 = Vector.Add(Vector.Multiply(vA, vB2), pC2);
+                            //pC3 = Vector.Add(Vector.Multiply(vA, vB3), pC3);
                             pB = ref Unsafe.Add(ref pB, LU);
                             pC = ref Unsafe.Add(ref pC, LU);
                         }
@@ -1135,7 +1134,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                     //for (int j = 0; j < BLOCK_SIZE; j++) {
                                     //    //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
                                     //}
-                                    pCCore0 = Vector.Add(Vectors.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
+                                    pCCore0 = Vector.Add(Vector.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
                                     pACore = ref Unsafe.Add(ref pACore, 1);
                                     pBCore = ref Unsafe.Add(ref pBCore, 1);
                                 }
@@ -1239,14 +1238,14 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                 //    //for (int j = 0; j < BLOCK_SIZE; j++) {
                                 //    //    //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
                                 //    //}
-                                //    pCCore0 = Vector.Add(Vectors.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
+                                //    pCCore0 = Vector.Add(Vector.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
                                 //    pACore = ref Unsafe.Add(ref pACore, 1);
                                 //    pBCore = ref Unsafe.Add(ref pBCore, 1);
                                 //}
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
                                 // Next.
                                 pCCore0 = ref Unsafe.Add(ref pCCore0, 1);
                             }
@@ -1335,18 +1334,18 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                 //    //for (int j = 0; j < BLOCK_SIZE; j++) {
                                 //    //    //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
                                 //    //}
-                                //    pCCore0 = Vector.Add(Vectors.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
+                                //    pCCore0 = Vector.Add(Vector.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
                                 //    pACore = ref Unsafe.Add(ref pACore, 1);
                                 //    pBCore = ref Unsafe.Add(ref pBCore, 1);
                                 //}
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b4), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b5), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b6), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b7), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b4), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b5), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b6), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b7), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
                                 // Next.
                                 pCCore0 = ref Unsafe.Add(ref pCCore0, 1);
                             }
@@ -1450,14 +1449,14 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                 //    //for (int j = 0; j < BLOCK_SIZE; j++) {
                                 //    //    //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
                                 //    //}
-                                //    pCCore0 = Vector.Add(Vectors.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
+                                //    pCCore0 = Vector.Add(Vector.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
                                 //    pACore = ref Unsafe.Add(ref pACore, 1);
                                 //    pBCore = ref Unsafe.Add(ref pBCore, 1);
                                 //}
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
                                 // Next.
                                 pACore0 = ref Unsafe.Add(ref pACore0, strideA);
                                 pCCore0 = ref Unsafe.Add(ref pCCore0, 1);
@@ -1550,18 +1549,18 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
                                 //    //for (int j = 0; j < BLOCK_SIZE; j++) {
                                 //    //    //localC[i * BLOCK_SIZE + j] += localA[i * BLOCK_SIZE + k] * localB[k * BLOCK_SIZE + j];
                                 //    //}
-                                //    pCCore0 = Vector.Add(Vectors.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
+                                //    pCCore0 = Vector.Add(Vector.Multiply(vA, pBCore), pCCore0); // pC += vA * pB;
                                 //    pACore = ref Unsafe.Add(ref pACore, 1);
                                 //    pBCore = ref Unsafe.Add(ref pBCore, 1);
                                 //}
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b4), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b5), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b6), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
-                                pCCore0 = Vector.Add(Vectors.Multiply(new Vector<TMy>(pACore), b7), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b0), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b1), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b2), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b3), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b4), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b5), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b6), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
+                                pCCore0 = Vector.Add(Vector.Multiply(new Vector<TMy>(pACore), b7), pCCore0); pACore = ref Unsafe.Add(ref pACore, 1);
                                 // Next.
                                 pACore0 = ref Unsafe.Add(ref pACore0, strideA);
                                 pCCore0 = ref Unsafe.Add(ref pCCore0, 1);
