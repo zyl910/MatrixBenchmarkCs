@@ -66,13 +66,11 @@ namespace MatrixBenchmarkCs {
         }
 
         /// <summary>
-        /// Output Environment.
+        /// Output Environment - MKL.
         /// </summary>
         /// <param name="writer">Output <see cref="TextWriter"/>.</param>
         /// <param name="indent">The indent.</param>
-        public static void OutputEnvironment(TextWriter writer, string? indent = null) {
-            EnvironmentOutput.OutputEnvironment(writer, indent);
-            //writer.WriteLine(indent + string.Format("Vectors.BaseInstance:\t{0}", Vectors.BaseInstance.GetType().Name));
+        public static void OutputEnvironment_MKL(TextWriter writer, string? indent = null) {
             // -- MKL.
 #if USE_NATIVE_DLL
             if (true) {
@@ -83,6 +81,14 @@ namespace MatrixBenchmarkCs {
                 }
             }
 #endif // USE_NATIVE_DLL
+        }
+
+        /// <summary>
+        /// Output Environment - OpenBlas.
+        /// </summary>
+        /// <param name="writer">Output <see cref="TextWriter"/>.</param>
+        /// <param name="indent">The indent.</param>
+        public static void OutputEnvironment_OpenBlas(TextWriter writer, string? indent = null) {
             // -- OpenBLAS.
 #if USE_NATIVE_DLL
             if (true) {
@@ -96,8 +102,34 @@ namespace MatrixBenchmarkCs {
                 }
             }
 #endif // USE_NATIVE_DLL
+        }
+
+        /// <summary>
+        /// Output Environment.
+        /// </summary>
+        /// <param name="writer">Output <see cref="TextWriter"/>.</param>
+        /// <param name="indent">The indent.</param>
+        public static void OutputEnvironment(TextWriter writer, string? indent = null) {
+            EnvironmentOutput.OutputEnvironment(writer, indent);
+            //writer.WriteLine(indent + string.Format("Vectors.BaseInstance:\t{0}", Vectors.BaseInstance.GetType().Name));
+#if USE_NATIVE_DLL
+            if (true) {
+                try {
+                    // -- MKL.
+                    OutputEnvironment_MKL(writer, indent);
+                    // -- OpenBLAS.
+                    OutputEnvironment_OpenBlas(writer, indent);
+                } catch (Exception ex) {
+                    writer.WriteLine(indent + string.Format("Native dll load fail! {0}", ex.ToString()));
+                }
+            }
+#endif // USE_NATIVE_DLL
             // -- MathNet.
-            writer.WriteLine(indent + string.Format("MathNet:\t{0}", MathNet.Numerics.Control.Describe()));
+            try {
+                writer.WriteLine(indent + string.Format("MathNet:\t{0}", MathNet.Numerics.Control.Describe()));
+            } catch (Exception ex) {
+                writer.WriteLine(indent + string.Format("MathNet load fail! {0}", ex.ToString()));
+            }
         }
 
         /// <summary>
