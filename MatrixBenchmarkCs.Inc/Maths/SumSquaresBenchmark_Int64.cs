@@ -24,6 +24,10 @@ namespace MatrixBenchmarkCs.Maths {
 
         private static TMy StaticSumScalar(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
+            ref TMy p = ref src[0];
+            for(int i=0; i<srcCount; ++i) {
+                rt += p * p;
+            }
             return rt;
         }
 
