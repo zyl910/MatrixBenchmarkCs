@@ -1,9 +1,13 @@
 ﻿#undef BENCHMARKS_OFF
 
 using BenchmarkDotNet.Attributes;
+using MatrixLib.MathTraits;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.ExSpans;
 
 namespace MatrixBenchmarkCs.Maths {
 #if BENCHMARKS_OFF
@@ -27,6 +31,8 @@ namespace MatrixBenchmarkCs.Maths {
             ref TMy p = ref src[0];
             for(int i=0; i<srcCount; ++i) {
                 rt += p * p;
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
             }
             return rt;
         }
@@ -40,6 +46,25 @@ namespace MatrixBenchmarkCs.Maths {
                 BenchmarkUtil.WriteItem("# SumScalar", string.Format("{0}", baselineTMy));
             }
         }
+
+#if NET7_0_OR_GREATER
+
+        private static TMy StaticSumGenericOp(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumGenericOp<TMy>(src.AsSpan(0, srcCount)); // OK.
+            //return MathTraitsUtil.SumGenericOp((ReadOnlySpan<TMy>) src.AsSpan(0, srcCount)); // OK.
+            //return MathTraitsUtil.SumGenericOp(new ReadOnlySpan<TMy>(src, 0, srcCount)); //OK.
+            //return MathTraitsUtil.SumGenericOp(new ReadOnlySpan<TMy>(src).Slice(0, srcCount)); //OK.
+            //return MathTraitsUtil.SumGenericOp(src.AsSpan().Slice(0, srcCount)); // C#13: CS0411 The type arguments for method SumGenericOp cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        }
+
+        [Benchmark]
+        public void SumGenericOp() {
+            //Debugger.Break();
+            dstTMy = StaticSumGenericOp(srcArray, srcArray.Length);
+            CheckResult("SumGenericOp");
+        }
+
+#endif // NET7_0_OR_GREATER
 
     }
 }

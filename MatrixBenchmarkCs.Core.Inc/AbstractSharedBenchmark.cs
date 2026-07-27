@@ -50,6 +50,7 @@ namespace MatrixBenchmarkCs {
         /// </summary>
         protected AbstractSharedBenchmark() : base() {
             ValuesForN = new int[] {
+                //4,
                 //4096,
                 256 * 1024,
             };
