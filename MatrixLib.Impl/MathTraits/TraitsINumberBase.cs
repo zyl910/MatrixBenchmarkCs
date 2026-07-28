@@ -72,7 +72,7 @@ namespace MatrixLib.MathTraits {
         public T Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if (typeof(T).IsValueType) {
+                if (default(T) is not null) {
                     return default!;
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));

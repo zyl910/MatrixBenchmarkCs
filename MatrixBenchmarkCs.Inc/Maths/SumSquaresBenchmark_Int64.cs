@@ -101,7 +101,7 @@ namespace MatrixBenchmarkCs.Maths {
         public void SumTraitsRaw() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
-                Debugger.Break();
+                //Debugger.Break();
             }
             dstTMy = StaticSumTraitsRaw(srcArray, srcArray.Length);
             CheckResult("SumTraitsRaw");
