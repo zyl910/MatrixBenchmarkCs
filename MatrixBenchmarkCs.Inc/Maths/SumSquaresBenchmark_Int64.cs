@@ -77,5 +77,16 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumRawTypeOf");
         }
 
+        private static TMy StaticSumRawTypeOfAs(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumRawTypeOfAs<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumRawTypeOfAs() {
+            //Debugger.Break();
+            dstTMy = StaticSumRawTypeOfAs(srcArray, srcArray.Length);
+            CheckResult("SumRawTypeOfAs");
+        }
+
     }
 }

@@ -68,6 +68,58 @@ namespace MatrixLib.MathTraits {
             throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T TypeOfAs_Addition<T>(T left, T right) {
+            if (typeof(T) == typeof(float)) {
+                UnsafeAs<T, float> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else if (typeof(T) == typeof(double)) {
+                UnsafeAs<T, double> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else if (typeof(T) == typeof(sbyte)) {
+                UnsafeAs<T, sbyte> AsT; return AsT.From((sbyte)(AsT.To(left) + AsT.To(right)));
+            } else if (typeof(T) == typeof(byte)) {
+                UnsafeAs<T, byte> AsT; return AsT.From((byte)(AsT.To(left) + AsT.To(right)));
+            } else if (typeof(T) == typeof(short)) {
+                UnsafeAs<T, short> AsT; return AsT.From((short)(AsT.To(left) + AsT.To(right)));
+            } else if (typeof(T) == typeof(ushort)) {
+                UnsafeAs<T, ushort> AsT; return AsT.From((ushort)(AsT.To(left) + AsT.To(right)));
+            } else if (typeof(T) == typeof(int)) {
+                UnsafeAs<T, int> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else if (typeof(T) == typeof(uint)) {
+                UnsafeAs<T, uint> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else if (typeof(T) == typeof(long)) {
+                UnsafeAs<T, long> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else if (typeof(T) == typeof(ulong)) {
+                UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            }
+            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T TypeOfAs_Multiply<T>(T left, T right) {
+            if (typeof(T) == typeof(float)) {
+                UnsafeAs<T, float> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else if (typeof(T) == typeof(double)) {
+                UnsafeAs<T, double> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else if (typeof(T) == typeof(sbyte)) {
+                UnsafeAs<T, sbyte> AsT; return AsT.From((sbyte)(AsT.To(left) * AsT.To(right)));
+            } else if (typeof(T) == typeof(byte)) {
+                UnsafeAs<T, byte> AsT; return AsT.From((byte)(AsT.To(left) * AsT.To(right)));
+            } else if (typeof(T) == typeof(short)) {
+                UnsafeAs<T, short> AsT; return AsT.From((short)(AsT.To(left) * AsT.To(right)));
+            } else if (typeof(T) == typeof(ushort)) {
+                UnsafeAs<T, ushort> AsT; return AsT.From((ushort)(AsT.To(left) * AsT.To(right)));
+            } else if (typeof(T) == typeof(int)) {
+                UnsafeAs<T, int> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else if (typeof(T) == typeof(uint)) {
+                UnsafeAs<T, uint> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else if (typeof(T) == typeof(long)) {
+                UnsafeAs<T, long> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else if (typeof(T) == typeof(ulong)) {
+                UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            }
+            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
+        }
+
 #if NET7_0_OR_GREATER
 
         /// <summary>
@@ -122,6 +174,25 @@ namespace MatrixLib.MathTraits {
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TypeOf_Multiply(p, p);
                 rt = TypeOf_Addition(rt, temp);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 计算平方和, 使用 TypeOfAs_Addition 等函数.
+        /// </summary>
+        /// <typeparam name="T">元素的类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T? SumRawTypeOfAs<T>(ReadOnlySpan<T> src) {
+            T? rt = default; // Result.
+            int srcCount = src.Length;
+            ref T p = ref Unsafe.AsRef(in src[0]);
+            for (int i = 0; i < srcCount; ++i) {
+                var temp = TypeOfAs_Multiply(p, p);
+                rt = TypeOfAs_Addition(rt, temp);
                 // Next.
                 p = ref Unsafe.Add(ref p, 1);
             }
