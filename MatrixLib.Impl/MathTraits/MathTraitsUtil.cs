@@ -199,5 +199,25 @@ namespace MatrixLib.MathTraits {
             return rt;
         }
 
+        /// <summary>
+        /// 计算平方和, 直接使用 <see cref="TraitsINumberBase{T}"/> 来计算.
+        /// </summary>
+        /// <typeparam name="T">元素的类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumTraitsRaw<T>(ReadOnlySpan<T> src) {
+            TraitsINumberBase<T> TT;
+            T rt = TT.Zero; // Result.
+            int srcCount = src.Length;
+            ref T p = ref Unsafe.AsRef(in src[0]);
+            for (int i = 0; i < srcCount; ++i) {
+                var temp = TT.Multiply(p, p);
+                rt = TT.Addition(rt, temp);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            return rt;
+        }
+
     }
 }

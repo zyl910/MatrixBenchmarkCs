@@ -87,10 +87,24 @@ namespace MatrixBenchmarkCs.Maths {
         public void SumRawTypeOfAs() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
-                Debugger.Break();
+                //Debugger.Break();
             }
             dstTMy = StaticSumRawTypeOfAs(srcArray, srcArray.Length);
             CheckResult("SumRawTypeOfAs");
+        }
+
+        private static TMy StaticSumTraitsRaw(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumTraitsRaw<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumTraitsRaw() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsRaw(srcArray, srcArray.Length);
+            CheckResult("SumTraitsRaw");
         }
 
     }
