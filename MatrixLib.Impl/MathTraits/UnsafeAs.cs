@@ -30,13 +30,11 @@ namespace MatrixLib.MathTraits {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref TFrom RefFrom(ref TTo source) {
-            // 类似 Unsafe.BitCast<TFrom,TTo>(TFrom source)
             return ref Unsafe.As<TTo, TFrom>(ref source);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref TTo RefTo(ref TFrom source) {
-            // 类似 Unsafe.BitCast<TFrom,TTo>(TFrom source)
             return ref Unsafe.As<TFrom, TTo>(ref source);
         }
 

@@ -4,9 +4,11 @@ using BenchmarkDotNet.Attributes;
 using MatrixLib.MathTraits;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using Zyl.ExSpans;
 
 namespace MatrixBenchmarkCs.Maths {
@@ -83,7 +85,10 @@ namespace MatrixBenchmarkCs.Maths {
 
         [Benchmark]
         public void SumRawTypeOfAs() {
-            //Debugger.Break();
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                Debugger.Break();
+            }
             dstTMy = StaticSumRawTypeOfAs(srcArray, srcArray.Length);
             CheckResult("SumRawTypeOfAs");
         }
