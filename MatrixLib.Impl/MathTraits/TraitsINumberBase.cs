@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// <see cref="INumberBase{TSelf}"/> 的类型萃取.
+    /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public readonly struct TraitsINumberBase<T>

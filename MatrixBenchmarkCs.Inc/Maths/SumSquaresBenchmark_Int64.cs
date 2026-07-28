@@ -107,5 +107,19 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsRaw");
         }
 
+        private static TMy StaticSumTraitsOut(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumTraitsOut<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumTraitsOut() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsOut(srcArray, srcArray.Length);
+            CheckResult("SumTraitsOut");
+        }
+
     }
 }

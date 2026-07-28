@@ -207,6 +207,27 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回结算结果.</returns>
         public static T SumTraitsRaw<T>(ReadOnlySpan<T> src) {
             TraitsINumberBase<T> TT;
+            MathTrait.OutINumberBase(out var TT1, default(T));
+            T rt = TT.Zero; // Result.
+            int srcCount = src.Length;
+            ref T p = ref Unsafe.AsRef(in src[0]);
+            for (int i = 0; i < srcCount; ++i) {
+                var temp = TT.Multiply(p, p);
+                rt = TT.Addition(rt, temp);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 计算平方和, 使用 OutINumberBase 来计算.
+        /// </summary>
+        /// <typeparam name="T">元素的类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumTraitsOut<T>(ReadOnlySpan<T> src) {
+            MathTrait.OutINumberBase(out var TT, default(T)!);
             T rt = TT.Zero; // Result.
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
