@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MatrixLib.MathTraits.Numbers;
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -41,6 +42,17 @@ namespace MatrixLib.MathTraits {
             traits = new HasWhere.TraitsINumberBase<T>();
         }
 #endif // NET7_0_OR_GREATER
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static INumberBaseVisitor<T> GetVisitorItf<T>() {
+            if (false) {
+            } else if (typeof(T) == typeof(long)) {
+                return (INumberBaseVisitor<T>)(object)(INumberBaseVisitor<long>)(new NumberVisitorInt64());
+            } else if (typeof(T) == typeof(ulong)) {
+                return (INumberBaseVisitor<T>)(object)(INumberBaseVisitor<ulong>)(new NumberVisitorUInt64());
+            }
+            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
+        }
     }
 
 }

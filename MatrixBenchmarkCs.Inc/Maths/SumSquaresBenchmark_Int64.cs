@@ -150,5 +150,21 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumVisitorIn");
         }
 
+        private static TMy StaticSumVisitorGetItf(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumVisitorGetItf<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumVisitorGetItf() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumVisitorGetItf(srcArray, srcArray.Length);
+            CheckResult("SumVisitorGetItf");
+            // 性能差, 没有内联.
+            // SumVisitorGetItf        1268.844        206.601 0.089479
+        }
+
     }
 }
