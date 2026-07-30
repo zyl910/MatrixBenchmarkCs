@@ -323,5 +323,29 @@ using NumberNS = MatrixLib.MathTraits;
 			return rt;
 		}
 
+		/// <summary>
+		/// 计算平方和, 使用 OutVisitor  来计算.
+		/// </summary>
+		/// <typeparam name="T">元素类型.</typeparam>
+		/// <param name="src">源数据.</param>
+		/// <returns>返回结算结果.</returns>
+		public static T SumVisitorOut<T>(ReadOnlySpan<T> src)
+#if NET7_0_OR_GREATER
+			where T : INumberBase<T>
+#endif // NET7_0_OR_GREATER
+		{
+			MathTrait.OutVisitor<T, INumberBaseVisitor<T>>(out var TV);
+			T rt = TV.Zero; // Result.
+			int srcCount = src.Length;
+			ref T p = ref Unsafe.AsRef(in src[0]);
+			for (int i = 0; i < srcCount; ++i) {
+				var temp = TV.Multiply(p, p);
+				rt = TV.Addition(rt, temp);
+				// Next.
+				p = ref Unsafe.Add(ref p, 1);
+			}
+			return rt;
+		}
+
 	}
 }

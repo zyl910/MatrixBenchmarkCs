@@ -53,6 +53,21 @@ namespace MatrixLib.MathTraits {
             }
             throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void OutVisitor<T, TVisitor>(out TVisitor visitor)
+            where TVisitor : INumberBaseVisitor<T> {
+            if (false) {
+            } else if (typeof(T) == typeof(long)) {
+                visitor = (TVisitor)(object)(new NumberVisitorInt64());
+                return;
+            } else if (typeof(T) == typeof(ulong)) {
+                visitor = (TVisitor)(object)(new NumberVisitorUInt64());
+                return;
+            }
+            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
+        }
+
     }
 
 }

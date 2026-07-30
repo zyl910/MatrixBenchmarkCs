@@ -166,5 +166,19 @@ namespace MatrixBenchmarkCs.Maths {
             // SumVisitorGetItf        1268.844        206.601 0.089479
         }
 
+        private static TMy StaticSumVisitorOut(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumVisitorOut<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumVisitorOut() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumVisitorOut(srcArray, srcArray.Length);
+            CheckResult("SumVisitorOut");
+        }
+
     }
 }
