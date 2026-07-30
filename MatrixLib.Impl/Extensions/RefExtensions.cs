@@ -29,7 +29,7 @@ namespace MatrixLib.Extensions {
         /// <summary>
         /// Adds 1 offset to the given reference.
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="source">The source.</param>
         /// <returns>The added.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

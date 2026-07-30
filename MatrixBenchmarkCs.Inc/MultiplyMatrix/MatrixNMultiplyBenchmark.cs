@@ -13,7 +13,7 @@ namespace MatrixBenchmarkCs.MultiplyMatrix {
     /// <summary>
     /// Matrix(N*N) multiply matrix(N*N) benchmark.
     /// </summary>
-    /// <typeparam name="T">The element type (元素的类型).</typeparam>
+    /// <typeparam name="T">The element type (元素类型).</typeparam>
     public abstract class MatrixNMultiplyBenchmark<
 #if NET6_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]

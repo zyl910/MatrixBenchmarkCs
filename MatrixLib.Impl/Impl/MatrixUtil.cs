@@ -184,7 +184,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Fill value (填充值).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="value">The value (值).</param>
         /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
         /// <param name="cols">The number of columns in matrix (矩阵的列数).</param>
@@ -207,7 +207,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Fill value (填充值).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="value">The value (值).</param>
         /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
         /// <param name="cols">The number of columns in matrix (矩阵的列数).</param>
@@ -245,7 +245,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Fill random value (填充随机值).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="random">The random (随机数).</param>
         /// <param name="scale">The scale (缩放因子).</param>
         /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
@@ -265,7 +265,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Fill value (填充值).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="random">The random (随机数).</param>
         /// <param name="scale">The scale (缩放因子). Suggest set it as 1</param>
         /// <param name="rows">The number of rows in matrix (矩阵的行数).</param>
@@ -295,7 +295,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Matrix transpose (矩阵转置).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="rows">The number of rows in source matrix (源矩阵的行数).</param>
         /// <param name="cols">The number of columns in source matrix (源矩阵的列数).</param>
         /// <param name="source">The source matrix (源矩阵).</param>
@@ -313,7 +313,7 @@ namespace MatrixLib.Impl {
         /// <summary>
         /// Matrix transpose (矩阵转置).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="rows">The number of rows in source matrix (源矩阵的行数).</param>
         /// <param name="cols">The number of columns in source matrix (源矩阵的列数).</param>
         /// <param name="source">The source matrix (源矩阵).</param>

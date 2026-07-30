@@ -2,6 +2,7 @@
 
 using BenchmarkDotNet.Attributes;
 using MatrixLib.MathTraits;
+using MatrixLib.MathTraits.Numbers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -133,6 +134,20 @@ namespace MatrixBenchmarkCs.Maths {
             }
             dstTMy = StaticSumTraitsUsing(srcArray, srcArray.Length);
             CheckResult("SumTraitsUsing");
+        }
+
+        private static TMy StaticSumVisitorIn(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumVisitorIn<TMy, NumberVisitorInt64>(default, src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumVisitorIn() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumVisitorIn(srcArray, srcArray.Length);
+            CheckResult("SumVisitorIn");
         }
 
     }
