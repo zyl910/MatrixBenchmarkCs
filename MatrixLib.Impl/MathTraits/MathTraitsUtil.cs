@@ -275,13 +275,37 @@ using NumberNS = MatrixLib.MathTraits;
             return rt;
         }
 
-		/// <summary>
-		/// 计算平方和, 使用 INumberBaseVisitor 来计算.
-		/// </summary>
-		/// <typeparam name="T">元素类型.</typeparam>
-		/// <param name="src">源数据.</param>
-		/// <returns>返回结算结果.</returns>
-		public static T SumVisitorIn<T, TVisitor>(TVisitor TV, ReadOnlySpan<T> src)
+        /// <summary>
+        /// 计算平方和, 使用 using  来计算.
+        /// </summary>
+        /// <typeparam name="T">元素类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumTraitsV2Using<T>(ReadOnlySpan<T> src)
+#if NET7_0_OR_GREATER
+            where T : INumberBase<T>
+#endif // NET7_0_OR_GREATER
+        {
+            var TT = NumberNS.TraitsINumberBaseV2<T>.Instance;
+            T rt = TT.Zero; // Result.
+            int srcCount = src.Length;
+            ref T p = ref Unsafe.AsRef(in src[0]);
+            for (int i = 0; i < srcCount; ++i) {
+                var temp = TT.Multiply(p, p);
+                rt = TT.Addition(rt, temp);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 计算平方和, 使用 INumberBaseVisitor 来计算.
+        /// </summary>
+        /// <typeparam name="T">元素类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumVisitorIn<T, TVisitor>(TVisitor TV, ReadOnlySpan<T> src)
             where TVisitor: INumberBaseVisitor<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.

@@ -140,6 +140,20 @@ namespace MatrixBenchmarkCs.Maths {
             return MathTraitsUtil.SumVisitorIn<TMy, NumberVisitorInt64>(default, src.AsSpan(0, srcCount)); // OK.
         }
 
+        private static TMy StaticSumTraitsV2Using(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumTraitsV2Using<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumTraitsV2Using() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV2Using(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV2Using");
+        }
+
         [Benchmark]
         public void SumVisitorIn() {
             if (BenchmarkUtil.IsLastRun) {
