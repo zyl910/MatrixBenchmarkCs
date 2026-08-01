@@ -19,7 +19,7 @@ namespace MatrixLib.MathTraits {
         /// <summary>
         /// 实例.
         /// </summary>
-        public static readonly TraitsINumberBaseV2<T> Instance = new();
+        public static TraitsINumberBaseV2<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Addition(T left, T right) {
