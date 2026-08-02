@@ -290,6 +290,10 @@ using NumberNS = MatrixLib.MathTraits;
             T rt = TT.Zero; // Result.
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
+            //if (true) {
+            //    bool flag = (p is INumberBaseVisitor<T>);
+            //    Console.WriteLine("Is INumberBaseVisitor: {0}", flag);
+            //}
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TT.Multiply(p, p);
                 rt = TT.Addition(rt, temp);

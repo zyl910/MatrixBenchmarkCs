@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Zyl.ExSpans;
@@ -152,6 +153,30 @@ namespace MatrixBenchmarkCs.Maths {
             }
             dstTMy = StaticSumTraitsV2Using(srcArray, srcArray.Length);
             CheckResult("SumTraitsV2Using");
+        }
+
+        private static TMy StaticSumTraitsV2UsingStruct(TMy[] src, int srcCount) {
+            var span1 = src.AsSpan(0, srcCount);
+            var span2 = MemoryMarshal.Cast<TMy, NumberStruct<TMy>>(span1);
+            //ReadOnlySpan<NumberStruct<TMy>> span3 = span2;
+            //var rt = MathTraitsUtil.SumTraitsV2Using(span3);
+            //if (true) {
+            //    NumberStruct<TMy> num = default;
+            //    bool flag = (num is INumberBaseVisitor<TMy>);
+            //    Console.WriteLine("Out Is INumberBaseVisitor: {0}", flag);
+            //}
+            var rt = MathTraitsUtil.SumTraitsV2Using<NumberStruct<TMy>>(span2);
+            return rt.Value;
+        }
+
+        [Benchmark]
+        public void SumTraitsV2UsingStruct() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV2UsingStruct(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV2UsingStruct");
         }
 
         [Benchmark]

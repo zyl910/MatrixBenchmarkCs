@@ -101,13 +101,8 @@ namespace MatrixLib.MathTraits {
             get {
                 if (default(T) is not null) {
                     return default!;
-                } else {
-                    T caller = ZeroOfTypes<T>.Zero;
-                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.CallZero;
-                    }
-                    throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
                 }
+                throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
         }
 

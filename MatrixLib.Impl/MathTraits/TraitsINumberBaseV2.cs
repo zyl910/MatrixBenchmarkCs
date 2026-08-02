@@ -13,7 +13,7 @@ namespace MatrixLib.MathTraits {
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     public class TraitsINumberBaseV2<T>
 #if NET9_0_OR_GREATER
-        where T : allows ref struct
+        //where T : allows ref struct
 #endif // NET9_0_OR_GREATER
     {
         /// <summary>
@@ -43,8 +43,20 @@ namespace MatrixLib.MathTraits {
                 UnsafeAs<T, long> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
             } else if (typeof(T) == typeof(ulong)) {
                 UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
+            } else {
+                if (default(T) is not null) {
+                    T caller = default!;
+                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                        return CT.CallAddition(left, right);
+                    }
+                } else {
+                    T caller = ZeroOfTypes<T>.Zero;
+                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                        return CT.CallAddition(left, right);
+                    }
+                }
+                throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
-            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,8 +81,20 @@ namespace MatrixLib.MathTraits {
                 UnsafeAs<T, long> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
             } else if (typeof(T) == typeof(ulong)) {
                 UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
+            } else {
+                if (default(T) is not null) {
+                    T caller = default!;
+                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                        return CT.CallMultiply(left, right);
+                    }
+                } else {
+                    T caller = ZeroOfTypes<T>.Zero;
+                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                        return CT.CallMultiply(left, right);
+                    }
+                }
+                throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
-            throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
 
         public T Zero {
@@ -78,8 +102,13 @@ namespace MatrixLib.MathTraits {
             get {
                 if (default(T) is not null) {
                     return default!;
+                } else {
+                    T caller = ZeroOfTypes<T>.Zero;
+                    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                        return CT.CallZero;
+                    }
+                    throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
                 }
-                throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
         }
 
