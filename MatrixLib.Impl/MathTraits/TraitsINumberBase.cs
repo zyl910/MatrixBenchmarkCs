@@ -43,12 +43,12 @@ namespace MatrixLib.MathTraits {
                 if (default(T) is not null) {
                     T caller = default!;
                     if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.Addition(left, right);
+                        return CT.CallAddition(left, right);
                     }
                 } else {
                     T caller = ZeroOfTypes<T>.Zero;
                     if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.Addition(left, right);
+                        return CT.CallAddition(left, right);
                     }
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -81,12 +81,12 @@ namespace MatrixLib.MathTraits {
                 if (default(T) is not null) {
                     T caller = default!;
                     if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.Multiply(left, right);
+                        return CT.CallMultiply(left, right);
                     }
                 } else {
                     T caller = ZeroOfTypes<T>.Zero;
                     if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.Multiply(left, right);
+                        return CT.CallMultiply(left, right);
                     }
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -104,7 +104,7 @@ namespace MatrixLib.MathTraits {
                 } else {
                     T caller = ZeroOfTypes<T>.Zero;
                     if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                        return CT.Zero;
+                        return CT.CallZero;
                     }
                     throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
                 }

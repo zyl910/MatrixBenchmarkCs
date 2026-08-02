@@ -9,18 +9,18 @@ namespace MatrixLib.MathTraits.Numbers {
     /// </summary>
     public readonly struct NumberVisitorInt64 : INumberBaseVisitor<TMy> {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TMy Addition(TMy left, TMy right) {
+        public TMy CallAddition(TMy left, TMy right) {
             return left + right;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TMy Multiply(TMy left, TMy right) {
+        public TMy CallMultiply(TMy left, TMy right) {
             return left * right;
         }
 
-        public Type ElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(TMy); } }
+        public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(TMy); } }
 
-        public TMy Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return default; } }
+        public TMy CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return default; } }
 
     }
 }

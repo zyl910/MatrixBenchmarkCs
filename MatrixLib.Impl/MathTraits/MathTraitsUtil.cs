@@ -311,12 +311,12 @@ using NumberNS = MatrixLib.MathTraits;
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
 		{
-			T rt = TV.Zero; // Result.
+			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.CallMultiply(p, p);
+				rt = TV.CallAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
@@ -335,12 +335,12 @@ using NumberNS = MatrixLib.MathTraits;
 #endif // NET7_0_OR_GREATER
 		{
 			var TV = MathTrait.GetVisitorItf<T>();
-			T rt = TV.Zero; // Result.
+			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.CallMultiply(p, p);
+				rt = TV.CallAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
@@ -359,12 +359,12 @@ using NumberNS = MatrixLib.MathTraits;
 #endif // NET7_0_OR_GREATER
 		{
 			MathTrait.OutVisitor<T, INumberBaseVisitor<T>>(out var TV);
-			T rt = TV.Zero; // Result.
+			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.CallMultiply(p, p);
+				rt = TV.CallAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
