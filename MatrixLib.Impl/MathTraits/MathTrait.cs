@@ -27,7 +27,7 @@ namespace MatrixLib.MathTraits {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void OutINumberBase<T>(out TraitsINumberBase<T> traits, T dummy)
 #if NET9_0_OR_GREATER
-        where T : allows ref struct
+        //where T : allows ref struct
 #endif // NET9_0_OR_GREATER
         {
             _ = dummy;

@@ -9,7 +9,7 @@ namespace MatrixLib.MathTraits.HasWhere {
     /// <summary>
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 有约束.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Element type (元素类型).</typeparam>
     public class TraitsINumberBaseV2<T>
         where T : INumberBase<T>
 #if NET9_0_OR_GREATER
