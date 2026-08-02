@@ -30,13 +30,15 @@ namespace MatrixLib.MathTraits {
             set { m_value = value; }
         }
 
-        static NumberStruct() {
-            try {
-                ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
-            } catch(Exception ex) {
-                Debug.WriteLine("NumberStruct<" + typeof(T).Name + "> register fail! " + ex.ToString());
-            }
-        }
+        // 实测无效.
+        //static NumberStruct() {
+        //    try {
+        //        Debugger.Break();
+        //        ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
+        //    } catch(Exception ex) {
+        //        Debug.WriteLine("NumberStruct<" + typeof(T).Name + "> register fail! " + ex.ToString());
+        //    }
+        //}
 
         public NumberStruct(): this(default!) {
         }

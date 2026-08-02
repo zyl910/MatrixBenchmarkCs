@@ -201,7 +201,7 @@ namespace MatrixBenchmarkCs.Maths {
             }
             dstTMy = StaticSumVisitorGetItf(srcArray, srcArray.Length);
             CheckResult("SumVisitorGetItf");
-            // 性能差, 没有内联.
+            // 性能差, .NET Framework 没有内联.
             // SumVisitorGetItf        1268.844        206.601 0.089479
         }
 
