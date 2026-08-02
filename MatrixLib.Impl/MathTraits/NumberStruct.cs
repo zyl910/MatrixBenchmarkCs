@@ -32,9 +32,9 @@ namespace MatrixLib.MathTraits {
 
         static NumberStruct() {
             try {
-                ZeroOfTypes<NumberStruct<T>>.Zero = new NumberStruct<T>();
+                ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
             } catch(Exception ex) {
-                Debug.WriteLine("NumberStruct<T> init fail! " + ex.ToString());
+                Debug.WriteLine("NumberStruct<" + typeof(T).Name + "> register fail! " + ex.ToString());
             }
         }
 

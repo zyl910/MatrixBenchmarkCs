@@ -13,7 +13,16 @@ namespace MatrixLib.MathTraits {
     public class ZeroOfTypes<T> {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         //[MaybeNull]
-        public static T Zero { get; set; }
+        public static T Zero { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+        /// <summary>
+        /// 注册.
+        /// </summary>
+        /// <param name="zero"></param>
+        public static void Register(T zero) {
+            Zero = zero;
+        }
+
     }
 }
