@@ -18,7 +18,10 @@ namespace MatrixLib.MathTraits {
         public static T Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = default!;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public static int RegisterHash { get; private set; } = 0;
+        
         public static INumberBaseVisitor<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
+        public static Func<T, T, T>? CallAddition { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
+        public static Func<T, T, T>? CallMultiply { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
 
         static ZeroOfTypes() {
             Register(default!);
@@ -29,12 +32,15 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         /// <param name="zero"></param>
         public static void Register(T zero) {
-            Zero = zero;
+            Zero = zero; // 未来 它应改名 Instance. ZeroOfTypes 应改名 NumberTraitsCache.
             RegisterHash = 0;
             if (zero is null) return;
-            if (zero is INumberBaseVisitor<T> caller) {
+            if (zero is INumberBaseVisitor<T> itf) {
                 //Debugger.Break();
-                NumberBase = caller;
+                NumberBase = itf;
+                Zero = itf.CallZero; // Instance 、Zero 未来应拆开.
+                CallAddition = itf.CallAddition;
+                CallMultiply = itf.CallMultiply;
                 // 预热.
                 try {
                     var TT = TraitsINumberBaseV2<T>.Instance;
