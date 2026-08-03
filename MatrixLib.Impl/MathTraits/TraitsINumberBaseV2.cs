@@ -1,4 +1,4 @@
-﻿#define USE_DELEGATE // 是否使用委托来转发.
+﻿//#define USE_DELEGATE // 是否使用委托来转发.
 
 using System;
 using System.Collections.Generic;
