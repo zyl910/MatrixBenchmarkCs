@@ -276,7 +276,32 @@ using NumberNS = MatrixLib.MathTraits;
         }
 
         /// <summary>
-        /// 计算平方和, 使用 using  来计算.
+        /// 计算平方和, 使用 TraitsINumberBaseV2 来计算.
+        /// </summary>
+        /// <typeparam name="T">元素类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumTraitsV2Raw<T>(ReadOnlySpan<T> src)
+        {
+            var TT = TraitsINumberBaseV2<T>.Instance;
+            T rt = TT.Zero; // Result.
+            int srcCount = src.Length;
+            ref T p = ref Unsafe.AsRef(in src[0]);
+            //if (true) {
+            //    bool flag = (p is INumberBaseVisitor<T>);
+            //    Console.WriteLine("Is INumberBaseVisitor: {0}", flag);
+            //}
+            for (int i = 0; i < srcCount; ++i) {
+                var temp = TT.Multiply(p, p);
+                rt = TT.Addition(rt, temp);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 计算平方和, 使用 using TraitsINumberBaseV2 来计算.
         /// </summary>
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>

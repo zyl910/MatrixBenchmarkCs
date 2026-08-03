@@ -179,6 +179,23 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV2UsingStruct");
         }
 
+        private static TMy StaticSumTraitsV2RawStruct(TMy[] src, int srcCount) {
+            var span1 = src.AsSpan(0, srcCount);
+            var span2 = MemoryMarshal.Cast<TMy, NumberStruct<TMy>>(span1);
+            var rt = MathTraitsUtil.SumTraitsV2Raw<NumberStruct<TMy>>(span2);
+            return rt.Value;
+        }
+
+        [Benchmark]
+        public void SumTraitsV2RawStruct() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV2RawStruct(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV2RawStruct");
+        }
+
         [Benchmark]
         public void SumVisitorIn() {
             if (BenchmarkUtil.IsLastRun) {
