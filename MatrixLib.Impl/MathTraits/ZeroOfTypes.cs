@@ -15,9 +15,10 @@ namespace MatrixLib.MathTraits {
     public class ZeroOfTypes<T> {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         //[MaybeNull]
-        public static T Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; }
+        public static T Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = default!;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        public static INumberBaseVisitor<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; }
+        public static int RegisterHash { get; private set; } = 0;
+        public static INumberBaseVisitor<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
 
         static ZeroOfTypes() {
             Register(default!);
@@ -29,10 +30,20 @@ namespace MatrixLib.MathTraits {
         /// <param name="zero"></param>
         public static void Register(T zero) {
             Zero = zero;
+            RegisterHash = 0;
             if (zero is null) return;
             if (zero is INumberBaseVisitor<T> caller) {
                 //Debugger.Break();
                 NumberBase = caller;
+                // 预热.
+                try {
+                    var TT = TraitsINumberBaseV2<T>.Instance;
+                    var t1 = TT.Addition(zero, zero);
+                    t1 = TT.Multiply(t1, zero);
+                    RegisterHash ^= t1?.GetHashCode() ?? 1;
+                } catch (Exception ex) {
+                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseVisitor fail! " + ex.ToString());
+                }
             }
         }
 
