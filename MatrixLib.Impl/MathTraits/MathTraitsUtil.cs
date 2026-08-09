@@ -213,7 +213,11 @@ using NumberNS = MatrixLib.MathTraits;
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumTraitsRaw<T>(ReadOnlySpan<T> src) {
+        public static T SumTraitsRaw<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T>(ReadOnlySpan<T> src) {
             TraitsINumberBase<T> TT;
             MathTrait.OutINumberBase(out var TT1, default(T));
             T rt = TT.Zero; // Result.
@@ -234,7 +238,11 @@ using NumberNS = MatrixLib.MathTraits;
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumTraitsOut<T>(ReadOnlySpan<T> src)
+        public static T SumTraitsOut<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T>(ReadOnlySpan<T> src)
 #if NET7_0_OR_GREATER
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER

@@ -15,7 +15,11 @@ namespace MatrixLib.MathTraits {
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct NumberStruct<T>: IEquatable<NumberStruct<T>>
+    public partial struct NumberStruct<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+    T> : IEquatable<NumberStruct<T>>
 #if NET7_0_OR_GREATER
         , INumberBase<NumberStruct<T>> where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER

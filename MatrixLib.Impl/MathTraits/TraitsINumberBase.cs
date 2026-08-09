@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,11 @@ namespace MatrixLib.MathTraits {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public readonly struct TraitsINumberBase<T>
+    public readonly struct TraitsINumberBase<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+    T>
 //#if NET9_0_OR_GREATER
 //        where T : allows ref struct // 因为泛型数学也不支持 ref struct，而且 ZeroOfTypes 不支持ref struct （它需要静态字段，而 ref struct 不能做成静态字段）.
 //#endif // NET9_0_OR_GREATER

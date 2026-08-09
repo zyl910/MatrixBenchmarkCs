@@ -1,5 +1,6 @@
 ﻿using MatrixLib.MathTraits.Numbers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -25,7 +26,11 @@ namespace MatrixLib.MathTraits {
         //#endif // NET7_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void OutINumberBase<T>(out TraitsINumberBase<T> traits, T dummy)
+        public static void OutINumberBase<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T>(out TraitsINumberBase<T> traits, T dummy)
 #if NET9_0_OR_GREATER
         //where T : allows ref struct
 #endif // NET9_0_OR_GREATER
