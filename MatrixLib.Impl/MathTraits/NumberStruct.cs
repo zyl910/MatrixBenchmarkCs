@@ -37,9 +37,10 @@ namespace MatrixLib.MathTraits {
         // 实测无效.
         //static NumberStruct() {
         //    try {
-        //        Debugger.Break();
-        //        ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
-        //    } catch(Exception ex) {
+        //        //Debugger.Break();
+        //        //ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
+        //        NumberTraitsCache<NumberStruct<T>>.Register();
+        //    } catch (Exception ex) {
         //        Debug.WriteLine("NumberStruct<" + typeof(T).Name + "> register fail! " + ex.ToString());
         //    }
         //}
