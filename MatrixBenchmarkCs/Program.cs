@@ -4,6 +4,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using MatrixBenchmarkCs.MultiplyMatrix;
 using MatrixLib;
+using MatrixLib.MathTraits;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -13,6 +14,9 @@ namespace MatrixBenchmarkCs {
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
             writer.WriteLine("MatrixBenchmarkCs");
+            // init.
+            NumberTraitsCache<NumberStruct<Int64>>.Register();
+            ZeroOfTypes<NumberStruct<Int64>>.Register(default);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.
