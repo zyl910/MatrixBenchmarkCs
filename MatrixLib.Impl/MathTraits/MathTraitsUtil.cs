@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -281,7 +282,11 @@ using NumberNS = MatrixLib.MathTraits;
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumTraitsV2Raw<T>(ReadOnlySpan<T> src)
+        public static T SumTraitsV2Raw<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T>(ReadOnlySpan<T> src)
         {
             var TT = TraitsINumberBaseV2<T>.Instance;
             T rt = TT.Zero; // Result.

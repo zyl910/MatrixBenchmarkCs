@@ -1,10 +1,12 @@
 ﻿//#define USE_DELEGATE // 是否使用委托来转发.
+//#define USE_ZERO_OF_TYPES // 是否使用 ZeroOfTypes.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +15,11 @@ namespace MatrixLib.MathTraits {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public class TraitsINumberBaseV2<T>
+    public class TraitsINumberBaseV2<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+    T>
 #if NET9_0_OR_GREATER
         //where T : allows ref struct
 #endif // NET9_0_OR_GREATER
@@ -46,28 +52,36 @@ namespace MatrixLib.MathTraits {
             } else if (typeof(T) == typeof(ulong)) {
                 UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
             } else {
-                //if (default(T) is not null) {
-                //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                //        return CT.CallAddition(left, right);
-                //    }
-                //} else {
-                //    T caller = ZeroOfTypes<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-                //        return CT.CallAddition(left, right);
-                //    }
-                //}
+            //if (default(T) is not null) {
+            //    T caller = default!;
+            //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+            //        return CT.CallAddition(left, right);
+            //    }
+            //} else {
+            //    T caller = ZeroOfTypes<T>.Zero;
+            //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+            //        return CT.CallAddition(left, right);
+            //    }
+            //}
 #if USE_DELEGATE
+#if USE_ZERO_OF_TYPES
                 var func = ZeroOfTypes<T>.CallAddition;
+#else
+                var func = NumberTraitsCache<T>.CallAddition;
+#endif // USE_ZERO_OF_TYPES
                 if (func is not null) {
                     return func(left, right);
                 }
+#else // USE_DELEGATE
+#if USE_ZERO_OF_TYPES
+            var CT = ZeroOfTypes<T>.NumberBase;
 #else
-                var CT = ZeroOfTypes<T>.NumberBase;
-                if (CT is not null) {
+            var CT = NumberTraitsCache<T>.NumberBase;
+#endif // USE_ZERO_OF_TYPES
+            if (CT is not null) {
                     return CT.CallAddition(left, right);
                 }
-#endif
+#endif // USE_DELEGATE
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
         }
