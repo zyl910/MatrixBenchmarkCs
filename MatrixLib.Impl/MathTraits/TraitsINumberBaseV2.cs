@@ -1,5 +1,6 @@
 ﻿//#define USE_DELEGATE // 是否使用委托来转发.
 //#define USE_ZERO_OF_TYPES // 是否使用 ZeroOfTypes.
+//#define USE_IS_NOT_NULL // 是否使用 `is not null` 来分支处理结构体.
 
 using System;
 using System.Collections.Generic;
@@ -52,17 +53,25 @@ namespace MatrixLib.MathTraits {
             } else if (typeof(T) == typeof(ulong)) {
                 UnsafeAs<T, ulong> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
             } else {
-            //if (default(T) is not null) {
-            //    T caller = default!;
-            //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-            //        return CT.CallAddition(left, right);
-            //    }
-            //} else {
-            //    T caller = ZeroOfTypes<T>.Zero;
-            //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
-            //        return CT.CallAddition(left, right);
-            //    }
-            //}
+                //if (default(T) is not null) {
+                //    T caller = default!;
+                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //        return CT.CallAddition(left, right);
+                //    }
+                //} else {
+                //    T caller = ZeroOfTypes<T>.Zero;
+                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //        return CT.CallAddition(left, right);
+                //    }
+                //}
+#if USE_IS_NOT_NULL
+                if (default(T) is not null) {
+                    T caller = default!;
+                    if (caller is INumberBaseVisitor<T> CT2) {
+                        return CT2.CallAddition(left, right);
+                    }
+                }
+#endif // USE_IS_NOT_NULL
 #if USE_DELEGATE
 #if USE_ZERO_OF_TYPES
                 var func = ZeroOfTypes<T>.CallAddition;
@@ -76,7 +85,7 @@ namespace MatrixLib.MathTraits {
 #if USE_ZERO_OF_TYPES
             var CT = ZeroOfTypes<T>.NumberBase;
 #else
-            var CT = NumberTraitsCache<T>.NumberBase;
+                var CT = NumberTraitsCache<T>.NumberBase;
 #endif // USE_ZERO_OF_TYPES
             if (CT is not null) {
                     return CT.CallAddition(left, right);
@@ -120,6 +129,14 @@ namespace MatrixLib.MathTraits {
                 //        return CT.CallMultiply(left, right);
                 //    }
                 //}
+#if USE_IS_NOT_NULL
+                if (default(T) is not null) {
+                    T caller = default!;
+                    if (caller is INumberBaseVisitor<T> CT2) {
+                        return CT2.CallMultiply(left, right);
+                    }
+                }
+#endif // USE_IS_NOT_NULL
 #if USE_DELEGATE
                 var func = ZeroOfTypes<T>.CallMultiply;
                 if (func is not null) {
