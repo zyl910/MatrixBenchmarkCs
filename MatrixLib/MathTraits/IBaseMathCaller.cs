@@ -9,7 +9,7 @@ namespace MatrixLib.MathTraits {
     /// <summary>
     /// 基本数学访问器接口.
     /// </summary>
-    public interface IBaseMathVisitor {
+    public interface IBaseMathCaller {
         /// <summary>
         /// Element type (元素类型).
         /// </summary>

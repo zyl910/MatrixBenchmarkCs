@@ -8,6 +8,7 @@
         <BenchmarkDotNetPackageVersion>0.15.2</BenchmarkDotNetPackageVersion>
         <ExSpansVersion>1.0.0</ExSpansVersion>
         <MathNetNumericsVersion>6.0.0-beta2</MathNetNumericsVersion>
+        <SystemRuntimeCompilerServicesUnsafePackageVersion>5.0.0</SystemRuntimeCompilerServicesUnsafePackageVersion>
         <SystemNumericsTensorsVersion>9.0.7</SystemNumericsTensorsVersion>
         <VectorTraitsPackageVersion>3.1.0</VectorTraitsPackageVersion>
 

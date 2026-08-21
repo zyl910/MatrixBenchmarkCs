@@ -1,4 +1,4 @@
-﻿using MatrixLib.MathTraits.Numbers;
+﻿using MatrixLib.MathTraits.CallerNumbers;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -49,25 +49,25 @@ namespace MatrixLib.MathTraits {
 #endif // NET7_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static INumberBaseVisitor<T> GetVisitorItf<T>() {
+        public static INumberBaseCaller<T> GetVisitorItf<T>() {
             if (false) {
             } else if (typeof(T) == typeof(long)) {
-                return (INumberBaseVisitor<T>)(object)(INumberBaseVisitor<long>)(new NumberVisitorInt64());
+                return (INumberBaseCaller<T>)(object)(INumberBaseCaller<long>)(new CallerInt64());
             } else if (typeof(T) == typeof(ulong)) {
-                return (INumberBaseVisitor<T>)(object)(INumberBaseVisitor<ulong>)(new NumberVisitorUInt64());
+                return (INumberBaseCaller<T>)(object)(INumberBaseCaller<ulong>)(new CallerUInt64());
             }
             throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void OutVisitor<T, TVisitor>(out TVisitor visitor)
-            where TVisitor : INumberBaseVisitor<T> {
+            where TVisitor : INumberBaseCaller<T> {
             if (false) {
             } else if (typeof(T) == typeof(long)) {
-                visitor = (TVisitor)(object)(new NumberVisitorInt64());
+                visitor = (TVisitor)(object)(new CallerInt64());
                 return;
             } else if (typeof(T) == typeof(ulong)) {
-                visitor = (TVisitor)(object)(new NumberVisitorUInt64());
+                visitor = (TVisitor)(object)(new CallerUInt64());
                 return;
             }
             throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));

@@ -2,7 +2,7 @@
 
 using BenchmarkDotNet.Attributes;
 using MatrixLib.MathTraits;
-using MatrixLib.MathTraits.Numbers;
+using MatrixLib.MathTraits.CallerNumbers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -138,7 +138,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumVisitorIn(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumVisitorIn<TMy, NumberVisitorInt64>(default, src.AsSpan(0, srcCount)); // OK.
+            return MathTraitsUtil.SumVisitorIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
         }
 
         private static TMy StaticSumTraitsV2Using(TMy[] src, int srcCount) {
@@ -162,8 +162,8 @@ namespace MatrixBenchmarkCs.Maths {
             //var rt = MathTraitsUtil.SumTraitsV2Using(span3);
             //if (true) {
             //    NumberStruct<TMy> num = default;
-            //    bool flag = (num is INumberBaseVisitor<TMy>);
-            //    Console.WriteLine("Out Is INumberBaseVisitor: {0}", flag);
+            //    bool flag = (num is INumberBaseCaller<TMy>);
+            //    Console.WriteLine("Out Is INumberBaseCaller: {0}", flag);
             //}
             var rt = MathTraitsUtil.SumTraitsV2Using<NumberStruct<TMy>>(span2);
             return rt.Value;

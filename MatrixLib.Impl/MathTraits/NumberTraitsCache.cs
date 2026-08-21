@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// 数值类型萃取缓存. 元素类型 <typeparamref name="T"/> 必须有无参构造函数, 且可实现 INumberBaseVisitor 等接口. 当没有 INumberBaseVisitor 等接口时. One 等静态属性会是 Zero 或 default .
+    /// 数值类型萃取缓存. 元素类型 <typeparamref name="T"/> 必须有无参构造函数, 且可实现 INumberBaseCaller 等接口. 当没有 INumberBaseCaller 等接口时. One 等静态属性会是 Zero 或 default .
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     public class NumberTraitsCache<
@@ -24,7 +24,7 @@ namespace MatrixLib.MathTraits {
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public static int RegisterHash { get; } = 0;
 
-        public static INumberBaseVisitor<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
+        public static INumberBaseCaller<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
         public static Func<T, T, T>? CallAddition { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
         public static Func<T, T, T>? CallMultiply { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
 
@@ -36,7 +36,7 @@ namespace MatrixLib.MathTraits {
             }
             Zero = instance;
             RegisterHash = instance.GetHashCode();
-            if (instance is INumberBaseVisitor<T> itf) {
+            if (instance is INumberBaseCaller<T> itf) {
                 //Debugger.Break();
                 NumberBase = itf;
                 Zero = itf.CallZero;
@@ -50,7 +50,7 @@ namespace MatrixLib.MathTraits {
                     t1 = TT.Multiply(t1, instance);
                     RegisterHash ^= t1?.GetHashCode() ?? 1;
                 } catch (Exception ex) {
-                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseVisitor fail! " + ex.ToString());
+                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseCaller fail! " + ex.ToString());
                 }
             }
         }

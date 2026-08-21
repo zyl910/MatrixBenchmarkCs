@@ -9,6 +9,6 @@ namespace MatrixLib.MathTraits {
     /// 基本数学访问器泛型接口.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public interface IBaseMathVisitor<T>: IBaseMathVisitor {
+    public interface IBaseMathCaller<T>: IBaseMathCaller {
     }
 }

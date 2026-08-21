@@ -301,8 +301,8 @@ using NumberNS = MatrixLib.MathTraits;
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
             //if (true) {
-            //    bool flag = (p is INumberBaseVisitor<T>);
-            //    Console.WriteLine("Is INumberBaseVisitor: {0}", flag);
+            //    bool flag = (p is INumberBaseCaller<T>);
+            //    Console.WriteLine("Is INumberBaseCaller: {0}", flag);
             //}
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TT.Multiply(p, p);
@@ -329,8 +329,8 @@ using NumberNS = MatrixLib.MathTraits;
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
             //if (true) {
-            //    bool flag = (p is INumberBaseVisitor<T>);
-            //    Console.WriteLine("Is INumberBaseVisitor: {0}", flag);
+            //    bool flag = (p is INumberBaseCaller<T>);
+            //    Console.WriteLine("Is INumberBaseCaller: {0}", flag);
             //}
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TT.Multiply(p, p);
@@ -342,13 +342,13 @@ using NumberNS = MatrixLib.MathTraits;
         }
 
         /// <summary>
-        /// 计算平方和, 使用 INumberBaseVisitor 来计算.
+        /// 计算平方和, 使用 INumberBaseCaller 来计算.
         /// </summary>
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
         public static T SumVisitorIn<T, TVisitor>(TVisitor TV, ReadOnlySpan<T> src)
-            where TVisitor: INumberBaseVisitor<T>
+            where TVisitor: INumberBaseCaller<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
@@ -400,7 +400,7 @@ using NumberNS = MatrixLib.MathTraits;
 			where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
 		{
-			MathTrait.OutVisitor<T, INumberBaseVisitor<T>>(out var TV);
+			MathTrait.OutVisitor<T, INumberBaseCaller<T>>(out var TV);
 			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
-    partial struct NumberStruct<T> : INumberBaseVisitor<NumberStruct<T>> {
+    partial struct NumberStruct<T> : INumberBaseCaller<NumberStruct<T>> {
         public NumberStruct<T> CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ZeroOfTypes<T>.Zero; } }
 
         public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(T); } }

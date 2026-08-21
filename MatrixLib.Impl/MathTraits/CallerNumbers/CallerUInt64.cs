@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MatrixLib.MathTraits.Numbers {
+namespace MatrixLib.MathTraits.CallerNumbers {
     using TMy = UInt64;
 
     /// <summary>
     /// <see cref="TMy"/> 的数值访问器.
     /// </summary>
     [CLSCompliant(false)]
-    public readonly struct NumberVisitorUInt64 : INumberBaseVisitor<TMy> {
+    public readonly struct CallerUInt64 : INumberBaseCaller<TMy> {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TMy CallAddition(TMy left, TMy right) {
             return left + right;

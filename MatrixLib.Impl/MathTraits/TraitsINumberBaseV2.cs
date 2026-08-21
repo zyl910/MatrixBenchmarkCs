@@ -55,12 +55,12 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
                 //        return CT.CallAddition(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
                 //        return CT.CallAddition(left, right);
                 //    }
                 //}
@@ -120,12 +120,12 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
                 //        return CT.CallMultiply(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
                 //        return CT.CallMultiply(left, right);
                 //    }
                 //}
@@ -159,7 +159,7 @@ namespace MatrixLib.MathTraits {
                     return default!;
                 } else {
                     T caller = ZeroOfTypes<T>.Zero;
-                    //if ((caller is not null) && (caller is INumberBaseVisitor<T> CT)) {
+                    //if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
                     //    return CT.CallZero;
                     //}
                     throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
