@@ -12,15 +12,13 @@ namespace MatrixLib.MathTraits.Providers {
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-    T> {
-        /// <summary>
-        /// 零值.
-        /// </summary>
-        public T Zero { get; set; } = default!;
+    T>: INumberTraitsDefine {
+        public Type? CallElementType { get; set; }
 
-        /// <summary>
-        /// 数值基础调用者.
-        /// </summary>
+        // /// <summary>零值.</summary>
+        //public T Zero { get; set; } = default!;
+
+        /// <summary>数值基础调用者.</summary>
         public INumberBaseCaller<T>? NumberBase { get; set; }
     }
 }

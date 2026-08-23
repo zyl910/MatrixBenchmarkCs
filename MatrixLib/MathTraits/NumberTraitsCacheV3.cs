@@ -39,21 +39,20 @@ namespace MatrixLib.MathTraits {
                 throw new NotSupportedException(string.Format("Not supported type {0}! Please check if the Add methods of NumberTraitsManager have been called.", typeof(T).FullName));
             }
             InitHash = define.GetHashCode();
-            Zero = define.Zero;
             NumberBase = define.NumberBase;
             if (NumberBase is not null) {
                 Zero = NumberBase.CallZero;
                 CallAddition = NumberBase.CallAddition;
                 CallMultiply = NumberBase.CallMultiply;
                 // 预热.
-                //try {
-                //    var TT = TraitsINumberBaseV3<T>.Instance;
-                //    var t1 = TT.Addition(instance, instance);
-                //    t1 = TT.Multiply(t1, instance);
-                //    InitHash ^= t1?.GetHashCode() ?? 1;
-                //} catch (Exception ex) {
-                //    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseCaller fail! " + ex.ToString());
-                //}
+                try {
+                    var TT = TraitsINumberBaseV3<T>.Instance;
+                    var t1 = TT.Addition(Zero, Zero);
+                    t1 = TT.Multiply(t1, Zero);
+                    InitHash ^= t1?.GetHashCode() ?? 1;
+                } catch (Exception ex) {
+                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseCaller fail! " + ex.ToString());
+                }
             }
         }
 
