@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib {
     /// <summary>
     /// 将 TFrom 类型的给定值 重新解释为 TTo 类型的值。
     /// </summary>

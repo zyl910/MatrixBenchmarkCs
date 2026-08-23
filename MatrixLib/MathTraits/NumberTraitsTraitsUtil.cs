@@ -1,4 +1,4 @@
-﻿using MatrixLib.MathTraits.Managers;
+﻿using MatrixLib.MathTraits.Providers;
 using System;
 using System.Collections.Generic;
 using System.Text;

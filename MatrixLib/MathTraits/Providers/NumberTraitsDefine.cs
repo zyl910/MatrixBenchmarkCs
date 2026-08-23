@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace MatrixLib.MathTraits.Managers {
+namespace MatrixLib.MathTraits.Providers {
     /// <summary>
     /// 数值类型萃取定义。
     /// </summary>

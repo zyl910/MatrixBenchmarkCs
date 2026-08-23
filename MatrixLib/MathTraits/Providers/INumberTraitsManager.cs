@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MatrixLib.MathTraits.Managers {
+namespace MatrixLib.MathTraits.Providers {
     /// <summary>
     /// 数值类型萃取管理器接口.
     /// </summary>
