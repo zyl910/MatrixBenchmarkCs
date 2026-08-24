@@ -137,10 +137,6 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsUsing");
         }
 
-        private static TMy StaticSumCallerIn(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
-        }
-
         private static TMy StaticSumTraitsV2Using(TMy[] src, int srcCount) {
             return MathTraitsUtil.SumTraitsV2Using<TMy>(src.AsSpan(0, srcCount)); // OK.
         }
@@ -196,6 +192,10 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV2RawStruct");
         }
 
+        private static TMy StaticSumCallerIn(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
+        }
+
         [Benchmark]
         public void SumCallerIn() {
             if (BenchmarkUtil.IsLastRun) {
@@ -234,6 +234,20 @@ namespace MatrixBenchmarkCs.Maths {
             }
             dstTMy = StaticSumCallerOut(srcArray, srcArray.Length);
             CheckResult("SumCallerOut");
+        }
+
+        private static TMy StaticSumV3CallerIn(TMy[] src, int srcCount) {
+            return DemoTraitsUtilCommon.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumV3CallerIn() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumV3CallerIn(srcArray, srcArray.Length);
+            CheckResult("SumV3CallerIn");
         }
 
     }

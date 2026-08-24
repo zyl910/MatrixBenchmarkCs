@@ -32,4 +32,8 @@
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServicesUnsafePackageVersion)" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="ExSpans.Core" Version="$(ExSpansVersion)" />
+    </ItemGroup>
+
 </Project>
