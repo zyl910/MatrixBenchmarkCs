@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
 #if NET7_0_OR_GREATER
-using NumberNS = MatrixLib.MathTraits.GenericMaths;
+using TraitsNS = MatrixLib.MathTraits.GenericMaths;
 #else
-using NumberNS = MatrixLib.MathTraits;
+using TraitsNS = MatrixLib.MathTraits;
 //using TraitsINumberBase_Where<T> = TraitsINumberBase<T>; // 语法不支持.
 #endif // NET7_0_OR_GREATER
 
@@ -271,7 +271,7 @@ using NumberNS = MatrixLib.MathTraits;
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
         {
-            NumberNS.TraitsINumberBase<T> TT;
+            TraitsNS.TraitsINumberBase<T> TT;
             T rt = TT.Zero; // Result.
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
@@ -324,7 +324,7 @@ using NumberNS = MatrixLib.MathTraits;
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
         {
-            var TT = NumberNS.TraitsINumberBaseV2<T>.Instance;
+            var TT = TraitsNS.TraitsINumberBaseV2<T>.Instance;
             T rt = TT.Zero; // Result.
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
