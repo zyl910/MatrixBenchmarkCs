@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
 #if NET7_0_OR_GREATER
-using NumberNS = MatrixLib.MathTraits.HasWhere;
+using NumberNS = MatrixLib.MathTraits.GenericMaths;
 #else
 using NumberNS = MatrixLib.MathTraits;
 //using TraitsINumberBase_Where<T> = TraitsINumberBase<T>; // 语法不支持.

@@ -1,4 +1,4 @@
-﻿using MatrixLib.MathTraits.HasWhere;
+﻿using MatrixLib.MathTraits.GenericMaths;
 using System;
 using System.Collections.Generic;
 using System.Linq;

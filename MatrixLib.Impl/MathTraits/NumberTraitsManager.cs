@@ -27,7 +27,7 @@ namespace MatrixLib.MathTraits {
         /// Static create NumberTraitsManager.
         /// </summary>
         static NumberTraitsManager() {
-            NumberTraitsTraitsUtil.TraitsManager = Instance;
+            NumberTraitsUtil.TraitsManager = Instance;
         }
 
         /// <summary>

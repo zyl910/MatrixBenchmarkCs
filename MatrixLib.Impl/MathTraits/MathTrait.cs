@@ -42,9 +42,9 @@ namespace MatrixLib.MathTraits {
 #if NET7_0_OR_GREATER
         [OverloadResolutionPriority(1)] // 即使用了该特性, 但是 net9 点击进入依然不是它, 这种办法的可行性存疑. 故更推荐 Using 方案.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetINumberBase<T>(out HasWhere.TraitsINumberBase<T> traits, T dummy) where T : INumberBase<T> {
+        public static void GetINumberBase<T>(out GenericMaths.TraitsINumberBase<T> traits, T dummy) where T : INumberBase<T> {
             _ = dummy;
-            traits = new HasWhere.TraitsINumberBase<T>();
+            traits = new GenericMaths.TraitsINumberBase<T>();
         }
 #endif // NET7_0_OR_GREATER
 

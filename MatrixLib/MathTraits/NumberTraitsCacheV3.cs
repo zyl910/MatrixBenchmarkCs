@@ -33,7 +33,7 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         /// <exception cref="NotSupportedException">Not supported type! Please check if the Add methods of NumberTraitsManager have been called. (请检查是否已调用了 MathTraitsManager 的 Add 方法)</exception>
         static NumberTraitsCacheV3() {
-            NumberTraitsDefine<T>? define = NumberTraitsTraitsUtil.GetDefine<T>();
+            NumberTraitsDefine<T>? define = NumberTraitsUtil.GetDefine<T>();
             if (define is null) {
                 _ = define; // To ignore the `IDE0270 Null check can be simplified` message on `if (define is null)`.
                 throw new NotSupportedException(string.Format("Not supported type {0}! Please check if the Add methods of NumberTraitsManager have been called.", typeof(T).FullName));

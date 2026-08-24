@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace MatrixLib.MathTraits.HasWhere {
+namespace MatrixLib.MathTraits.GenericMaths {
 
 #if NET7_0_OR_GREATER
     /// <summary>
