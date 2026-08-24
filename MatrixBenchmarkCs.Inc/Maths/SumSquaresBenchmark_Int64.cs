@@ -250,5 +250,19 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumV3CallerIn");
         }
 
+        private static TMy StaticSumTraitsV3Using(TMy[] src, int srcCount) {
+            return DemoTraitsUtil.SumTraitsUsing<TMy>(src.AsSpan(0, srcCount)); // OK.
+        }
+
+        [Benchmark]
+        public void SumTraitsV3Using() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3Using(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3Using");
+        }
+
     }
 }

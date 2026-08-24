@@ -10,11 +10,30 @@ namespace MatrixLib.MathTraits {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public class TraitsINumberBaseV3<T> {
+    public class TraitsINumberBaseV3<T>: INumberBaseCaller<T> {
         /// <summary>
         /// 实例.
         /// </summary>
         public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
+
+        T INumberBaseCaller<T>.CallZero {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get {
+                return Zero;
+            }
+        }
+
+        Type IBaseMathCaller.CallElementType => typeof(T);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        T INumberBaseCaller<T>.CallAddition(T left, T right) {
+            return Addition(left, right);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        T INumberBaseCaller<T>.CallMultiply(T left, T right) {
+            return Multiply(left, right);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Addition(T left, T right) {
