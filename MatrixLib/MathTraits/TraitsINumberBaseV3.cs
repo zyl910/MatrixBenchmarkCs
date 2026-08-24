@@ -10,7 +10,7 @@ namespace MatrixLib.MathTraits {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public class TraitsINumberBaseV3<T>: INumberBaseCaller<T> {
+    public struct TraitsINumberBaseV3<T>: INumberBaseCaller<T> {
         /// <summary>
         /// 实例.
         /// </summary>
