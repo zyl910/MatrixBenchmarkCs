@@ -347,8 +347,8 @@ using NumberNS = MatrixLib.MathTraits;
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumVisitorIn<T, TVisitor>(TVisitor TV, ReadOnlySpan<T> src)
-            where TVisitor: INumberBaseCaller<T>
+        public static T SumCallerIn<T, TCaller>(TCaller TV, ReadOnlySpan<T> src)
+            where TCaller: INumberBaseCaller<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
@@ -366,17 +366,17 @@ using NumberNS = MatrixLib.MathTraits;
 		}
 
 		/// <summary>
-		/// 计算平方和, 使用 GetVisitorItf  来计算.
+		/// 计算平方和, 使用 GetCallerItf  来计算.
 		/// </summary>
 		/// <typeparam name="T">元素类型.</typeparam>
 		/// <param name="src">源数据.</param>
 		/// <returns>返回结算结果.</returns>
-		public static T SumVisitorGetItf<T>(ReadOnlySpan<T> src)
+		public static T SumCallerGetItf<T>(ReadOnlySpan<T> src)
 #if NET7_0_OR_GREATER
 			where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
 		{
-			var TV = MathTrait.GetVisitorItf<T>();
+			var TV = MathTrait.GetCallerItf<T>();
 			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
@@ -390,17 +390,17 @@ using NumberNS = MatrixLib.MathTraits;
 		}
 
 		/// <summary>
-		/// 计算平方和, 使用 OutVisitor  来计算.
+		/// 计算平方和, 使用 OutCaller  来计算.
 		/// </summary>
 		/// <typeparam name="T">元素类型.</typeparam>
 		/// <param name="src">源数据.</param>
 		/// <returns>返回结算结果.</returns>
-		public static T SumVisitorOut<T>(ReadOnlySpan<T> src)
+		public static T SumCallerOut<T>(ReadOnlySpan<T> src)
 #if NET7_0_OR_GREATER
 			where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
 		{
-			MathTrait.OutVisitor<T, INumberBaseCaller<T>>(out var TV);
+			MathTrait.OutCaller<T, INumberBaseCaller<T>>(out var TV);
 			T rt = TV.CallZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);

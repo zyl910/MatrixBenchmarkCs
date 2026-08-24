@@ -137,8 +137,8 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsUsing");
         }
 
-        private static TMy StaticSumVisitorIn(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumVisitorIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
+        private static TMy StaticSumCallerIn(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
         }
 
         private static TMy StaticSumTraitsV2Using(TMy[] src, int srcCount) {
@@ -197,43 +197,43 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         [Benchmark]
-        public void SumVisitorIn() {
+        public void SumCallerIn() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumVisitorIn(srcArray, srcArray.Length);
-            CheckResult("SumVisitorIn");
+            dstTMy = StaticSumCallerIn(srcArray, srcArray.Length);
+            CheckResult("SumCallerIn");
         }
 
-        private static TMy StaticSumVisitorGetItf(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumVisitorGetItf<TMy>(src.AsSpan(0, srcCount)); // OK.
+        private static TMy StaticSumCallerGetItf(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumCallerGetItf<TMy>(src.AsSpan(0, srcCount)); // OK.
         }
 
         [Benchmark]
-        public void SumVisitorGetItf() {
+        public void SumCallerGetItf() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumVisitorGetItf(srcArray, srcArray.Length);
-            CheckResult("SumVisitorGetItf");
+            dstTMy = StaticSumCallerGetItf(srcArray, srcArray.Length);
+            CheckResult("SumCallerGetItf");
             // 性能差, .NET Framework 没有内联.
-            // SumVisitorGetItf        1268.844        206.601 0.089479
+            // SumCallerGetItf        1268.844        206.601 0.089479
         }
 
-        private static TMy StaticSumVisitorOut(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumVisitorOut<TMy>(src.AsSpan(0, srcCount)); // OK.
+        private static TMy StaticSumCallerOut(TMy[] src, int srcCount) {
+            return MathTraitsUtil.SumCallerOut<TMy>(src.AsSpan(0, srcCount)); // OK.
         }
 
         [Benchmark]
-        public void SumVisitorOut() {
+        public void SumCallerOut() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumVisitorOut(srcArray, srcArray.Length);
-            CheckResult("SumVisitorOut");
+            dstTMy = StaticSumCallerOut(srcArray, srcArray.Length);
+            CheckResult("SumCallerOut");
         }
 
     }

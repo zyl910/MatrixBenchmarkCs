@@ -67,7 +67,7 @@ namespace MatrixLib.MathTraits {
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
-                    if (caller is INumberBaseVisitor<T> CT2) {
+                    if (caller is INumberBaseCaller<T> CT2) {
                         return CT2.CallAddition(left, right);
                     }
                 }
@@ -132,7 +132,7 @@ namespace MatrixLib.MathTraits {
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
-                    if (caller is INumberBaseVisitor<T> CT2) {
+                    if (caller is INumberBaseCaller<T> CT2) {
                         return CT2.CallMultiply(left, right);
                     }
                 }
