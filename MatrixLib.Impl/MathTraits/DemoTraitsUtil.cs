@@ -18,18 +18,18 @@ using TraitsNS = MatrixLib.MathTraits;
     public abstract class DemoTraitsUtil: DemoTraitsUtilCommon {
 
         /// <summary>
-        /// 计算平方和, 使用 using  来计算.
+        /// 计算平方和.
         /// </summary>
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumTraitsUsing<T>(ReadOnlySpan<T> src)
+        public static T SumSquares<T>(ReadOnlySpan<T> src)
 #if NET7_0_OR_GREATER
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
         {
             var TT = TraitsNS.TraitsINumberBaseV3<T>.Instance;
-            return SumCallerIn(TT, src);
+            return SumSquaresCall(TT, src);
         }
 
     }

@@ -237,7 +237,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumV3CallerIn(TMy[] src, int srcCount) {
-            return DemoTraitsUtilCommon.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
+            return DemoTraitsUtilCommon.SumSquaresCall<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
         }
 
         [Benchmark]
@@ -251,7 +251,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumTraitsV3Using(TMy[] src, int srcCount) {
-            return DemoTraitsUtil.SumTraitsUsing<TMy>(src.AsSpan(0, srcCount)); // OK.
+            return DemoTraitsUtil.SumSquares<TMy>(src.AsSpan(0, srcCount)); // OK.
         }
 
         [Benchmark]

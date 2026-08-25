@@ -10,12 +10,12 @@ namespace MatrixLib.MathTraits {
     public abstract class DemoTraitsUtilCommon {
 
         /// <summary>
-        /// 计算平方和, 使用 INumberBaseCaller 来计算.
+        /// 计算平方和, 带有 <typeparamref name="TCaller"/> 泛型参数.
         /// </summary>
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumCallerIn<T, TCaller>(TCaller TC, ReadOnlySpan<T> src)
+        public static T SumSquaresCall<T, TCaller>(TCaller TC, ReadOnlySpan<T> src)
             where TCaller : INumberBaseCaller<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.
