@@ -207,7 +207,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumCallerGetItf(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumCallerGetItf<TMy>(src.AsSpan(0, srcCount)); // OK.
+            return MathTraitsUtil.SumCallerGetItf<TMy>(src.AsSpan(0, srcCount));
         }
 
         [Benchmark]
@@ -223,7 +223,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumCallerOut(TMy[] src, int srcCount) {
-            return MathTraitsUtil.SumCallerOut<TMy>(src.AsSpan(0, srcCount)); // OK.
+            return MathTraitsUtil.SumCallerOut<TMy>(src.AsSpan(0, srcCount));
         }
 
         [Benchmark]
@@ -237,7 +237,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumV3CallerIn(TMy[] src, int srcCount) {
-            return DemoTraitsUtilCommon.SumSquaresCall<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
+            return DemoTraitsUtilCommon.SumSquaresCall<TMy, CallerInt64>(default, src.AsSpan(0, srcCount));
         }
 
         [Benchmark]
@@ -251,7 +251,7 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumTraitsV3Using(TMy[] src, int srcCount) {
-            return DemoTraitsUtil.SumSquares<TMy>(src.AsSpan(0, srcCount)); // OK.
+            return DemoTraitsUtil.SumSquares<TMy>(src.AsSpan(0, srcCount));
         }
 
         [Benchmark]
@@ -262,6 +262,20 @@ namespace MatrixBenchmarkCs.Maths {
             }
             dstTMy = StaticSumTraitsV3Using(srcArray, srcArray.Length);
             CheckResult("SumTraitsV3Using");
+        }
+
+        private static TMy StaticSumTraitsV3UsingOld(TMy[] src, int srcCount) {
+            return DemoTraitsUtilCommon.SumSquares<TMy>(src.AsSpan(0, srcCount));
+        }
+
+        [Benchmark]
+        public void SumTraitsV3UsingOld() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3UsingOld(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3UsingOld");
         }
 
     }

@@ -23,7 +23,7 @@ using TraitsNS = MatrixLib.MathTraits;
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
-        public static T SumSquares<T>(ReadOnlySpan<T> src)
+        new public static T SumSquares<T>(ReadOnlySpan<T> src)
 #if NET7_0_OR_GREATER
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
