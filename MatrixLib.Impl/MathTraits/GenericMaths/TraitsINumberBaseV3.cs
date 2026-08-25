@@ -28,7 +28,9 @@ namespace MatrixLib.MathTraits.GenericMaths {
             }
         }
 
+#pragma warning disable IDE0251 // Make member 'readonly'
         Type IBaseMathCaller.CallElementType => typeof(T);
+#pragma warning restore IDE0251 // Make member 'readonly'
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         T INumberBaseCaller<T>.CallAddition(T left, T right) {

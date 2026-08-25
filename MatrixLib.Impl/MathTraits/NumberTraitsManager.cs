@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,9 @@ namespace MatrixLib.MathTraits {
     public sealed class NumberTraitsManager : INumberTraitsManager {
         /// <summary>Instance (实例).</summary>
         public static NumberTraitsManager Instance { get; } = new();
+
+        /// <summary>调用者的类型萃取提供者.</summary>
+        internal CallerTraitsProvider CallerProvider { get; } = new();
 
         /// <summary>添加后的 Hash.</summary>
         public int AddedHash { get; internal set; } = 0;
@@ -31,13 +35,38 @@ namespace MatrixLib.MathTraits {
         }
 
         /// <summary>
+        /// Create NumberTraitsManager.
+        /// </summary>
+        public NumberTraitsManager() {
+            RegisterProvider(new SelfTraitsProvider());
+            //RegisterProvider(CallerProvider);
+        }
+
+        /// <summary>
         /// 添加类型. Add 成功后, 才能调用 GetDefine. 若返回false, 请检查是否已调用了 RegisterCaller, RegisterProvider .
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
         /// <returns>返回是否成功.</returns>
-        public bool Add<T>() {
+        public bool Add<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif // NET5_0_OR_GREATER
+        T>() {
+            return Add(default(T)!);
+        }
+
+        /// <inheritdoc cref="Add{T}()"/>
+        /// <param name="instance">实例. 它为 null 时, 会尝试调用 <see cref="Activator.CreateInstance"/> 创建实例, 可能会有异常.</param>
+        public bool Add<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif // NET5_0_OR_GREATER
+        T>(T instance) {
             if (TypeMap.ContainsKey(typeof(T))) return true;
-            NumberTraitsDefine<T>? define = MakeDefine<T>();
+            if (instance == null) {
+                instance = Activator.CreateInstance<T>();
+            }
+            NumberTraitsDefine<T>? define = MakeDefine(instance);
             if (define is not null) {
                 TypeMap.TryAdd(typeof(T), define);
                 // 预热.
@@ -81,7 +110,11 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
         /// <returns>返回已构造的类型萃取项目. 失败时返回 null.</returns>
-        public NumberTraitsDefine<T>? MakeDefine<T>() {
+        internal NumberTraitsDefine<T>? MakeDefine<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif // NET5_0_OR_GREATER
+        T>(T instance) {
             NumberTraitsDefine<T> define = new();
             bool hasFill = false;
             List<INumberTraitsProvider> list;
@@ -90,7 +123,7 @@ namespace MatrixLib.MathTraits {
             }
             foreach (var p in list) {
                 if (p is null) continue;
-                if (p.FillDefine(define)) {
+                if (p.FillDefine(define, instance)) {
                     hasFill = true;
                 }
             }

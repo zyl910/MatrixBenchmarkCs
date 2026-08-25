@@ -13,6 +13,6 @@ namespace MatrixLib.MathTraits {
         /// <summary>
         /// Element type (元素类型).
         /// </summary>
-        Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; }
+        Type CallElementType { get; }
     }
 }
