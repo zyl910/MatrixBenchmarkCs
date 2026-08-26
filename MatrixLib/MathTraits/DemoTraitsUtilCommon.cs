@@ -4,28 +4,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MatrixLib.MathTraits {
-using TraitsNS = MatrixLib.MathTraits;
 
     /// <summary>
     /// 演示-类型萃取工具-公共.
     /// </summary>
-    public abstract class DemoTraitsUtilCommon {
-
-        /// <summary>
-        /// 计算平方和.
-        /// </summary>
-        /// <typeparam name="T">元素类型.</typeparam>
-        /// <param name="src">源数据.</param>
-        /// <returns>返回结算结果.</returns>
-        [Obsolete("It is recommended to replace it with same methods of DemoTraitsUtil, which has better performanc. Except it is a scenario that does not support DemoTraitsUtil (建议用性能更好的 DemoTraitsUtil 来替代. 除非是不支持 DemoTraitsUtil的场景).")]
-        public static T SumSquares<T>(ReadOnlySpan<T> src)
-#if NET7_0_OR_GREATER
-            where T : INumberBase<T>
-#endif // NET7_0_OR_GREATER
-        {
-            var TT = TraitsNS.TraitsINumberBaseV3<T>.Instance;
-            return SumSquaresCall(TT, src);
-        }
+    public abstract partial class DemoTraitsUtilCommon {
 
         /// <summary>
         /// 计算平方和, 带有 <typeparamref name="TCaller"/> 泛型参数.
