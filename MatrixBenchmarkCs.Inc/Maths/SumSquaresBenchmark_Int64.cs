@@ -264,18 +264,50 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV3Using");
         }
 
-        private static TMy StaticSumTraitsV3UsingOld(TMy[] src, int srcCount) {
-            return DemoTraitsUtilCommon.SumSquares<TMy>(src.AsSpan(0, srcCount));
+        //private static TMy StaticSumTraitsV3UsingOld(TMy[] src, int srcCount) {
+        //    return DemoTraitsUtilCommon.SumSquares<TMy>(src.AsSpan(0, srcCount));
+        //}
+
+        //[Benchmark] // Same SumTraitsV3Using
+        //public void SumTraitsV3UsingOld() {
+        //    if (BenchmarkUtil.IsLastRun) {
+        //        Volatile.Write(ref dstTMy, 0);
+        //        //Debugger.Break();
+        //    }
+        //    dstTMy = StaticSumTraitsV3UsingOld(srcArray, srcArray.Length);
+        //    CheckResult("SumTraitsV3UsingOld");
+        //}
+
+        private static TMy StaticSumTraitsV3Struct(TMy[] src, int srcCount) {
+            var span2 = MemoryMarshal.Cast<TMy, NumberStruct<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtil.SumSquares<NumberStruct<TMy>>(span2);
+            return rt.Value;
         }
 
         [Benchmark]
-        public void SumTraitsV3UsingOld() {
+        public void SumTraitsV3Struct() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV3UsingOld(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV3UsingOld");
+            dstTMy = StaticSumTraitsV3Struct(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3Struct");
+        }
+
+        private static TMy StaticSumTraitsV3StructOld(TMy[] src, int srcCount) {
+            var span2 = MemoryMarshal.Cast<TMy, NumberStruct<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtilCommon.SumSquares<NumberStruct<TMy>>(span2);
+            return rt.Value;
+        }
+
+        [Benchmark]
+        public void SumTraitsV3StructOld() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3StructOld(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3StructOld");
         }
 
     }
