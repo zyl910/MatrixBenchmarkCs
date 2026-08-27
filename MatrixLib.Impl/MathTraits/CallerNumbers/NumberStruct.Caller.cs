@@ -6,19 +6,19 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits {
-    partial struct NumberStruct<T> : INumberBaseCaller<NumberStruct<T>> {
-        public NumberStruct<T> CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ZeroOfTypes<T>.Zero; } }
+namespace MatrixLib.MathTraits.CallerNumbers {
+    partial struct StructNumberBase<T> : INumberBaseCaller<StructNumberBase<T>> {
+        public StructNumberBase<T> CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ZeroOfTypes<T>.Zero; } }
 
         public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(T); } }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public NumberStruct<T> CallAddition(NumberStruct<T> left, NumberStruct<T> right) {
+        public StructNumberBase<T> CallAddition(StructNumberBase<T> left, StructNumberBase<T> right) {
             return TraitsINumberBaseV2<T>.Instance.Addition(left.Value, right.Value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public NumberStruct<T> CallMultiply(NumberStruct<T> left, NumberStruct<T> right) {
+        public StructNumberBase<T> CallMultiply(StructNumberBase<T> left, StructNumberBase<T> right) {
             return TraitsINumberBaseV2<T>.Instance.Multiply(left.Value, right.Value);
         }
     }

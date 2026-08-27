@@ -9,19 +9,19 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib.MathTraits.CallerNumbers {
     /// <summary>
     /// 数值结构体.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct NumberStruct<
+    public partial struct StructNumberBase<
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-    T> : IEquatable<NumberStruct<T>>
+    T> : IEquatable<StructNumberBase<T>>
 #if NET7_0_OR_GREATER
-        , INumberBase<NumberStruct<T>> where T : INumberBase<T>
+        , INumberBase<StructNumberBase<T>> where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
     {
         private T m_value;
@@ -35,194 +35,194 @@ namespace MatrixLib.MathTraits {
         }
 
         // 实测无效.
-        //static NumberStruct() {
+        //static StructNumberBase() {
         //    try {
         //        //Debugger.Break();
-        //        //ZeroOfTypes<NumberStruct<T>>.Register(new NumberStruct<T>());
-        //        NumberTraitsCache<NumberStruct<T>>.Register();
+        //        //ZeroOfTypes<StructNumberBase<T>>.Register(new StructNumberBase<T>());
+        //        NumberTraitsCache<StructNumberBase<T>>.Register();
         //    } catch (Exception ex) {
-        //        Debug.WriteLine("NumberStruct<" + typeof(T).Name + "> register fail! " + ex.ToString());
+        //        Debug.WriteLine("StructNumberBase<" + typeof(T).Name + "> register fail! " + ex.ToString());
         //    }
         //}
 
-        public NumberStruct(): this(default!) {
+        public StructNumberBase(): this(default!) {
         }
 
-        public NumberStruct(T value) {
+        public StructNumberBase(T value) {
             //if (value is null) throw new ArgumentNullException(nameof(value));
             m_value = value;
         }
 
 #if NET7_0_OR_GREATER
-        public static NumberStruct<T> One => T.One;
+        public static StructNumberBase<T> One => T.One;
 
         public static int Radix => T.Radix;
 
-        public static NumberStruct<T> Zero => T.Zero;
+        public static StructNumberBase<T> Zero => T.Zero;
 
-        public static NumberStruct<T> AdditiveIdentity => T.AdditiveIdentity;
+        public static StructNumberBase<T> AdditiveIdentity => T.AdditiveIdentity;
 
-        public static NumberStruct<T> MultiplicativeIdentity => T.MultiplicativeIdentity;
+        public static StructNumberBase<T> MultiplicativeIdentity => T.MultiplicativeIdentity;
 
-        public static NumberStruct<T> Abs(NumberStruct<T> value) {
+        public static StructNumberBase<T> Abs(StructNumberBase<T> value) {
             return T.Abs(value.Value);
         }
 
-        public static bool IsCanonical(NumberStruct<T> value) {
+        public static bool IsCanonical(StructNumberBase<T> value) {
             return T.IsCanonical(value.Value);
         }
 
-        public static bool IsComplexNumber(NumberStruct<T> value) {
+        public static bool IsComplexNumber(StructNumberBase<T> value) {
             return T.IsComplexNumber(value.Value);
         }
 
-        public static bool IsEvenInteger(NumberStruct<T> value) {
+        public static bool IsEvenInteger(StructNumberBase<T> value) {
             return T.IsEvenInteger(value.Value);
         }
 
-        public static bool IsFinite(NumberStruct<T> value) {
+        public static bool IsFinite(StructNumberBase<T> value) {
             return T.IsFinite(value.Value);
         }
 
-        public static bool IsImaginaryNumber(NumberStruct<T> value) {
+        public static bool IsImaginaryNumber(StructNumberBase<T> value) {
             return T.IsImaginaryNumber(value.Value);
         }
 
-        public static bool IsInfinity(NumberStruct<T> value) {
+        public static bool IsInfinity(StructNumberBase<T> value) {
             return T.IsInfinity(value.Value);
         }
 
-        public static bool IsInteger(NumberStruct<T> value) {
+        public static bool IsInteger(StructNumberBase<T> value) {
             return T.IsInteger(value.Value);
         }
 
-        public static bool IsNaN(NumberStruct<T> value) {
+        public static bool IsNaN(StructNumberBase<T> value) {
             return T.IsNaN(value.Value);
         }
 
-        public static bool IsNegative(NumberStruct<T> value) {
+        public static bool IsNegative(StructNumberBase<T> value) {
             return T.IsNegative(value.Value);
         }
 
-        public static bool IsNegativeInfinity(NumberStruct<T> value) {
+        public static bool IsNegativeInfinity(StructNumberBase<T> value) {
             return T.IsNegativeInfinity(value.Value);
         }
 
-        public static bool IsNormal(NumberStruct<T> value) {
+        public static bool IsNormal(StructNumberBase<T> value) {
             return T.IsNormal(value.Value);
         }
 
-        public static bool IsOddInteger(NumberStruct<T> value) {
+        public static bool IsOddInteger(StructNumberBase<T> value) {
             return T.IsOddInteger(value.Value);
         }
 
-        public static bool IsPositive(NumberStruct<T> value) {
+        public static bool IsPositive(StructNumberBase<T> value) {
             return T.IsPositive(value.Value);
         }
 
-        public static bool IsPositiveInfinity(NumberStruct<T> value) {
+        public static bool IsPositiveInfinity(StructNumberBase<T> value) {
             return T.IsPositiveInfinity(value.Value);
         }
 
-        public static bool IsRealNumber(NumberStruct<T> value) {
+        public static bool IsRealNumber(StructNumberBase<T> value) {
             return T.IsRealNumber(value.Value);
         }
 
-        public static bool IsSubnormal(NumberStruct<T> value) {
+        public static bool IsSubnormal(StructNumberBase<T> value) {
             return T.IsSubnormal(value.Value);
         }
 
-        public static bool IsZero(NumberStruct<T> value) {
+        public static bool IsZero(StructNumberBase<T> value) {
             return T.IsZero(value.Value);
         }
 
-        public static NumberStruct<T> MaxMagnitude(NumberStruct<T> x, NumberStruct<T> y) {
+        public static StructNumberBase<T> MaxMagnitude(StructNumberBase<T> x, StructNumberBase<T> y) {
             return T.MaxMagnitude(x.Value, y.Value);
         }
 
-        public static NumberStruct<T> MaxMagnitudeNumber(NumberStruct<T> x, NumberStruct<T> y) {
+        public static StructNumberBase<T> MaxMagnitudeNumber(StructNumberBase<T> x, StructNumberBase<T> y) {
             return T.MaxMagnitudeNumber(x.Value, y.Value);
         }
 
-        public static NumberStruct<T> MinMagnitude(NumberStruct<T> x, NumberStruct<T> y) {
+        public static StructNumberBase<T> MinMagnitude(StructNumberBase<T> x, StructNumberBase<T> y) {
             return T.MinMagnitude(x.Value, y.Value);
         }
 
-        public static NumberStruct<T> MinMagnitudeNumber(NumberStruct<T> x, NumberStruct<T> y) {
+        public static StructNumberBase<T> MinMagnitudeNumber(StructNumberBase<T> x, StructNumberBase<T> y) {
             return T.MinMagnitudeNumber(x.Value, y.Value);
         }
 
-        public static NumberStruct<T> Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider) {
+        public static StructNumberBase<T> Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider) {
             return T.Parse(s, style, provider);
         }
 
-        public static NumberStruct<T> Parse(string s, NumberStyles style, IFormatProvider? provider) {
+        public static StructNumberBase<T> Parse(string s, NumberStyles style, IFormatProvider? provider) {
             return T.Parse(s, style, provider);
         }
 
-        public static NumberStruct<T> Parse(ReadOnlySpan<char> s, IFormatProvider? provider) {
+        public static StructNumberBase<T> Parse(ReadOnlySpan<char> s, IFormatProvider? provider) {
             return T.Parse(s, provider);
         }
 
-        public static NumberStruct<T> Parse(string s, IFormatProvider? provider) {
+        public static StructNumberBase<T> Parse(string s, IFormatProvider? provider) {
             return T.Parse(s, provider);
         }
 
-        public static bool TryConvertFromChecked<TOther>(TOther value, [MaybeNullWhen(false)] out NumberStruct<T> result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertFromChecked<TOther>(TOther value, [MaybeNullWhen(false)] out StructNumberBase<T> result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertFromChecked(value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryConvertFromSaturating<TOther>(TOther value, [MaybeNullWhen(false)] out NumberStruct<T> result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertFromSaturating<TOther>(TOther value, [MaybeNullWhen(false)] out StructNumberBase<T> result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertFromSaturating(value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryConvertFromTruncating<TOther>(TOther value, [MaybeNullWhen(false)] out NumberStruct<T> result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertFromTruncating<TOther>(TOther value, [MaybeNullWhen(false)] out StructNumberBase<T> result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertFromTruncating(value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryConvertToChecked<TOther>(NumberStruct<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertToChecked<TOther>(StructNumberBase<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertToChecked<TOther>(value.Value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryConvertToSaturating<TOther>(NumberStruct<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertToSaturating<TOther>(StructNumberBase<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertToSaturating<TOther>(value.Value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryConvertToTruncating<TOther>(NumberStruct<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        public static bool TryConvertToTruncating<TOther>(StructNumberBase<T> value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
             bool flag = T.TryConvertToTruncating<TOther>(value.Value, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out NumberStruct<T> result) {
+        public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out StructNumberBase<T> result) {
             bool flag = T.TryParse(s, style, provider, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out NumberStruct<T> result) {
+        public static bool TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out StructNumberBase<T> result) {
             bool flag = T.TryParse(s, style, provider, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out NumberStruct<T> result) {
+        public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out StructNumberBase<T> result) {
             bool flag = T.TryParse(s, provider, out var temp);
             result = temp!;
             return flag;
         }
 
-        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out NumberStruct<T> result) {
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out StructNumberBase<T> result) {
             bool flag = T.TryParse(s, provider, out var temp);
             result = temp!;
             return flag;
@@ -236,45 +236,45 @@ namespace MatrixLib.MathTraits {
             throw new NotImplementedException();
         }
 
-        public static NumberStruct<T> operator +(NumberStruct<T> value) {
+        public static StructNumberBase<T> operator +(StructNumberBase<T> value) {
             return +value.Value;
         }
 
-        public static NumberStruct<T> operator +(NumberStruct<T> left, NumberStruct<T> right) {
+        public static StructNumberBase<T> operator +(StructNumberBase<T> left, StructNumberBase<T> right) {
             return left.Value + right.Value;
         }
 
-        public static NumberStruct<T> operator -(NumberStruct<T> value) {
+        public static StructNumberBase<T> operator -(StructNumberBase<T> value) {
             return -value.Value;
         }
 
-        public static NumberStruct<T> operator -(NumberStruct<T> left, NumberStruct<T> right) {
+        public static StructNumberBase<T> operator -(StructNumberBase<T> left, StructNumberBase<T> right) {
             return left.Value - right.Value;
         }
 
-        public static NumberStruct<T> operator ++(NumberStruct<T> value) {
+        public static StructNumberBase<T> operator ++(StructNumberBase<T> value) {
             return value.Value + T.One;
         }
 
-        public static NumberStruct<T> operator --(NumberStruct<T> value) {
+        public static StructNumberBase<T> operator --(StructNumberBase<T> value) {
             return value.Value - T.One;
         }
 
-        public static NumberStruct<T> operator *(NumberStruct<T> left, NumberStruct<T> right) {
+        public static StructNumberBase<T> operator *(StructNumberBase<T> left, StructNumberBase<T> right) {
             return left.Value * right.Value;
         }
 
-        public static NumberStruct<T> operator /(NumberStruct<T> left, NumberStruct<T> right) {
+        public static StructNumberBase<T> operator /(StructNumberBase<T> left, StructNumberBase<T> right) {
             return left.Value / right.Value;
         }
 
 #endif // NET7_0_OR_GREATER
 
-        public static implicit operator NumberStruct<T>(T src) {
-            return new NumberStruct<T>(src);
+        public static implicit operator StructNumberBase<T>(T src) {
+            return new StructNumberBase<T>(src);
         }
 
-        public bool Equals(NumberStruct<T> other) {
+        public bool Equals(StructNumberBase<T> other) {
             if (Value is null) {
                 if (other.Value is null) {
                     return true;
@@ -286,18 +286,18 @@ namespace MatrixLib.MathTraits {
         }
 
         public override bool Equals(object? obj) {
-            return obj is NumberStruct<T> temp && Equals(temp);
+            return obj is StructNumberBase<T> temp && Equals(temp);
         }
 
         public override int GetHashCode() {
             return (Value is null) ? 0 : Value.GetHashCode();
         }
 
-        public static bool operator ==(NumberStruct<T> left, NumberStruct<T> right) {
+        public static bool operator ==(StructNumberBase<T> left, StructNumberBase<T> right) {
             return left.Equals(right);
         }
 
-        public static bool operator !=(NumberStruct<T> left, NumberStruct<T> right) {
+        public static bool operator !=(StructNumberBase<T> left, StructNumberBase<T> right) {
             return !left.Equals(right);
         }
 
