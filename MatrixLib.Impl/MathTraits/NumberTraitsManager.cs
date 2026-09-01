@@ -22,7 +22,10 @@ namespace MatrixLib.MathTraits {
         public int AddedHash { get; internal set; } = 0;
 
         /// <summary>Provider list (提供者列表).</summary>
-        internal List<INumberTraitsProvider> ProviderList { get; } = [];
+        internal List<INumberTraitsProvider> ProviderList { get; private set; } = [];
+
+        /// <summary>Provider list of work (工作中的提供者列表).</summary>
+        private List<INumberTraitsProvider> ProviderListWork { get; } = [];
 
         /// <summary>Type map (类型的映射表).</summary>
         internal ConcurrentDictionary<Type, INumberTraitsDefine> TypeMap { get; } = new();
@@ -90,9 +93,10 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回是否成功.</returns>
         public bool RegisterProvider(INumberTraitsProvider provider) {
             if (provider == null) return false;
-            lock(ProviderList) {
-                if (ProviderList.Contains(provider)) return true;
-                ProviderList.Add(provider);
+            lock(ProviderListWork) {
+                if (ProviderListWork.Contains(provider)) return true;
+                ProviderListWork.Add(provider);
+                ProviderList = [.. ProviderListWork];
             }
             return true;
         }
@@ -117,14 +121,13 @@ namespace MatrixLib.MathTraits {
         T>(T instance) {
             NumberTraitsDefine<T> define = new();
             bool hasFill = false;
-            List<INumberTraitsProvider> list;
-            lock(ProviderList) {
-                list = [.. ProviderList];
-            }
-            foreach (var p in list) {
-                if (p is null) continue;
-                if (p.FillDefine(define, instance)) {
-                    hasFill = true;
+            List<INumberTraitsProvider> list = ProviderList;
+            lock(list) {
+                foreach (var p in list) {
+                    if (p is null) continue;
+                    if (p.FillDefine(define, instance)) {
+                        hasFill = true;
+                    }
                 }
             }
             if (!hasFill) return null;
