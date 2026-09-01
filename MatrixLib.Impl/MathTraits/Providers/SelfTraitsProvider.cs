@@ -18,10 +18,8 @@ namespace MatrixLib.MathTraits.Providers {
 #endif // NET5_0_OR_GREATER
         T>(NumberTraitsDefine<T> define, T instance) {
             bool rt = false;
-            if (instance is not IBaseMathCaller<T>) return rt;
-            if (define.NumberBase is null && instance is INumberBaseCaller<T> itf) {
-                define.NumberBase = itf;
-                rt = true;
+            if (instance is IBaseMathCaller caller) {
+                rt = TraitsProviderUtil.FillDefine(define, instance, caller);
             }
             return rt;
         }
