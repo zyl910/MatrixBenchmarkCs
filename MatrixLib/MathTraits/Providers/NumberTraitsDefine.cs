@@ -15,8 +15,8 @@ namespace MatrixLib.MathTraits.Providers {
     T>: INumberTraitsDefine {
         public Type? CallElementType { get; set; }
 
-        // /// <summary>零值.</summary>
-        //public T Zero { get; set; } = default!;
+        /// <summary>零值.</summary>
+        public T Zero { get; set; } = default!;
 
         /// <summary>数值基础调用者.</summary>
         public INumberBaseCaller<T>? NumberBase { get; set; }

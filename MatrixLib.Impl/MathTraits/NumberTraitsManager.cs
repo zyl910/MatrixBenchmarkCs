@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -15,17 +16,8 @@ namespace MatrixLib.MathTraits {
         /// <summary>Instance (实例).</summary>
         public static NumberTraitsManager Instance { get; } = new();
 
-        /// <summary>调用者的类型萃取提供者.</summary>
-        internal CallerTraitsProvider CallerProvider { get; } = new();
-
         /// <summary>添加后的 Hash.</summary>
         public int AddedHash { get; internal set; } = 0;
-
-        /// <summary>Provider list (提供者列表).</summary>
-        internal List<INumberTraitsProvider> ProviderList { get; private set; } = [];
-
-        /// <summary>Provider list of work (工作中的提供者列表).</summary>
-        private List<INumberTraitsProvider> ProviderListWork { get; } = [];
 
         /// <summary>Type map (类型的映射表).</summary>
         internal ConcurrentDictionary<Type, INumberTraitsDefine> TypeMap { get; } = new();
@@ -38,48 +30,44 @@ namespace MatrixLib.MathTraits {
         }
 
         /// <summary>
-        /// Create NumberTraitsManager.
-        /// </summary>
-        public NumberTraitsManager() {
-            RegisterProvider(new SelfTraitsProvider());
-            //RegisterProvider(CallerProvider);
-        }
-
-        /// <summary>
-        /// 添加类型. Add 成功后, 才能调用 GetDefine. 若返回false, 请检查是否已调用了 RegisterCaller, RegisterProvider .
+        /// 添加类型. Add 成功后, 才能调用 GetDefine.
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
-        /// <returns>返回是否成功.</returns>
+        /// <param name="caller">调用者. 若该类型具有 IBaseMathCaller 系列接口时, 可空.</param>
+        /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
+        /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
+        /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
         public bool Add<
 #if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-        T>() {
-            return Add(default(T)!);
+        T>(IBaseMathCaller? caller = null) {
+            return Add(caller, default(T)!);
         }
 
-        /// <inheritdoc cref="Add{T}()"/>
-        /// <param name="instance">实例. 它为 null 时, 会尝试调用 <see cref="Activator.CreateInstance"/> 创建实例, 可能会有异常.</param>
+        /// <inheritdoc cref="Add{T}(IBaseMathCaller?)"/>
+        /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值. 它为 null 时, 会尝试调用 <see cref="Activator.CreateInstance"/> 创建实例, 可能会有异常.</param>
         public bool Add<
 #if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-        T>(T instance) {
-            if (TypeMap.ContainsKey(typeof(T))) return true;
+        T>(IBaseMathCaller? caller, T instance) {
+            if (TypeMap.ContainsKey(typeof(T))) return false;
             if (instance == null) {
                 instance = Activator.CreateInstance<T>();
             }
-            NumberTraitsDefine<T>? define = MakeDefine(instance);
+            // Make.
+            NumberTraitsDefine<T> define = TraitsProviderUtil.GetDefine(caller, instance);
+            // Add.
             if (define is not null) {
+                if (define.Zero is null) {
+                    // 当 Zero 为 null 时, 设为 instance.
+                    define.Zero = instance;
+                }
                 TypeMap.TryAdd(typeof(T), define);
                 // 预热.
                 if (true) {
-                    int hash = 0;
-                    var itf = NumberTraitsCacheV3<T>.NumberBase;
-                    if (itf is not null) {
-                        hash = itf.GetHashCode();
-                    }
-                    AddedHash ^= hash;
+                    Preheat<T>();
                 }
                 return true;
             }
@@ -87,18 +75,20 @@ namespace MatrixLib.MathTraits {
         }
 
         /// <summary>
-        /// 注册提供者.
+        /// Preheat (预热).
         /// </summary>
-        /// <param name="provider">提供者.</param>
-        /// <returns>返回是否成功.</returns>
-        public bool RegisterProvider(INumberTraitsProvider provider) {
-            if (provider == null) return false;
-            lock(ProviderListWork) {
-                if (ProviderListWork.Contains(provider)) return true;
-                ProviderListWork.Add(provider);
-                ProviderList = [.. ProviderListWork];
+        /// <typeparam name="T">Element type (元素类型).</typeparam>
+        private void Preheat<T>() {
+            int hash = 0;
+            try {
+                var itf = NumberTraitsCacheV3<T>.NumberBase;
+                if (itf is not null) {
+                    hash = itf.GetHashCode();
+                }
+            } catch (Exception ex) {
+                Debug.WriteLine("Preheat fail!" + ex);
             }
-            return true;
+            AddedHash ^= hash;
         }
 
         public NumberTraitsDefine<T>? GetDefine<T>() {
@@ -109,29 +99,5 @@ namespace MatrixLib.MathTraits {
             return null;
         }
 
-        /// <summary>
-        /// 构造类型萃取定义.
-        /// </summary>
-        /// <typeparam name="T">Element type (元素类型).</typeparam>
-        /// <returns>返回已构造的类型萃取项目. 失败时返回 null.</returns>
-        internal NumberTraitsDefine<T>? MakeDefine<
-#if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-#endif // NET5_0_OR_GREATER
-        T>(T instance) {
-            NumberTraitsDefine<T> define = new();
-            bool hasFill = false;
-            List<INumberTraitsProvider> list = ProviderList;
-            lock(list) {
-                foreach (var p in list) {
-                    if (p is null) continue;
-                    if (p.FillDefine(define, instance)) {
-                        hasFill = true;
-                    }
-                }
-            }
-            if (!hasFill) return null;
-            return define;
-        }
     }
 }

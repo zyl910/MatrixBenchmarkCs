@@ -35,19 +35,12 @@ namespace MatrixLib.MathTraits.Providers {
         /// 取得定义.
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
-        /// <param name="caller">调用者. 若该类型具有 IBaseMathCaller 系列接口时可空.</param>
-        /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值. 若为 null, 会尝试用 <see cref="Activator.CreateInstance{T}()"/> 创建. </param>
+        /// <param name="caller">调用者. 若该类型具有 IBaseMathCaller 系列接口时, 可空.</param>
+        /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值.</param>
         /// <returns>返回是否成功.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
-        public static NumberTraitsDefine<T> GetDefine<
-#if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-#endif // NET5_0_OR_GREATER
-        T>(IBaseMathCaller? caller, T instance = default!) {
-            if (instance == null) {
-                instance = Activator.CreateInstance<T>();
-            }
+        public static NumberTraitsDefine<T> GetDefine<T>(IBaseMathCaller? caller, T instance = default!) {
             if (caller is null) {
                 if (instance is IBaseMathCaller) {
                     var callerT = instance as IBaseMathCaller<T>;
