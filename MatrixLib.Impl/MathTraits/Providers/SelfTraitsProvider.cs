@@ -19,7 +19,7 @@ namespace MatrixLib.MathTraits.Providers {
         T>(NumberTraitsDefine<T> define, T instance) {
             bool rt = false;
             if (instance is IBaseMathCaller caller) {
-                rt = TraitsProviderUtil.FillDefine(define, instance, caller);
+                rt = TraitsProviderUtil.FillDefine(define, caller, instance);
             }
             return rt;
         }

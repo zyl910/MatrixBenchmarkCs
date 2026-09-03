@@ -18,6 +18,7 @@ namespace MatrixBenchmarkCs {
             // init.
             NumberTraitsCache<StructNumberBase<Int64>>.Register();
             ZeroOfTypes<StructNumberBase<Int64>>.Register(default);
+            // NumberTraitsManager.
             NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>();
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
