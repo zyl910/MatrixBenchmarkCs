@@ -79,15 +79,7 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
         private void Preheat<T>() {
-            int hash = 0;
-            try {
-                var itf = NumberTraitsCacheV3<T>.NumberBase;
-                if (itf is not null) {
-                    hash = itf.GetHashCode();
-                }
-            } catch (Exception ex) {
-                Debug.WriteLine("Preheat fail!" + ex);
-            }
+            int hash = TraitsProviderUtil.Preheat<T>();
             AddedHash ^= hash;
         }
 

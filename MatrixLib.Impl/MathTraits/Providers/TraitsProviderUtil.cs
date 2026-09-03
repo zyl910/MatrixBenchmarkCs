@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,23 @@ namespace MatrixLib.MathTraits.Providers {
                 throw new NotSupportedException($"{nameof(caller)} 参数不支持该类型!");
             }
             return define;
+        }
+
+        /// <summary>
+        /// Preheat (预热).
+        /// </summary>
+        /// <typeparam name="T">Element type (元素类型).</typeparam>
+        public static int Preheat<T>() {
+            int hash = 0;
+            try {
+                var itf = NumberTraitsCacheV3<T>.NumberBase;
+                if (itf is not null) {
+                    hash = itf.GetHashCode();
+                }
+            } catch (Exception ex) {
+                Debug.WriteLine("Preheat fail!" + ex);
+            }
+            return hash;
         }
 
     }
