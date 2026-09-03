@@ -19,6 +19,7 @@ namespace MatrixBenchmarkCs {
             NumberTraitsCache<StructNumberBase<Int64>>.Register();
             ZeroOfTypes<StructNumberBase<Int64>>.Register(default);
             // NumberTraitsManager.
+            NumberTraitsGlobal.Init();
             //NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(); // Build-in caller.
             NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
             // benchmarkMode
