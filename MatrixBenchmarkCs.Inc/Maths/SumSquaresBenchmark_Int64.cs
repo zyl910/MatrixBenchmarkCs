@@ -294,19 +294,19 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV3Struct");
         }
 
-        private static TMy StaticSumTraitsV3StructOld(TMy[] src, int srcCount) {
+        private static TMy StaticSumTraitsV3StructCommon(TMy[] src, int srcCount) {
             var span2 = MemoryMarshal.Cast<TMy, StructNumberBase<TMy>>(src.AsSpan(0, srcCount));
             var rt = DemoTraitsUtilCommon.SumSquares<StructNumberBase<TMy>>(span2);
             return rt.Value;
         }
 
         [Benchmark]
-        public void SumTraitsV3StructOld() {
+        public void SumTraitsV3StructCommon() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV3StructOld(srcArray, srcArray.Length);
+            dstTMy = StaticSumTraitsV3StructCommon(srcArray, srcArray.Length);
             CheckResult("SumTraitsV3StructOld");
         }
 
