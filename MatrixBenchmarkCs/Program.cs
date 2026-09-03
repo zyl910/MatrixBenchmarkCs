@@ -6,12 +6,30 @@ using MatrixBenchmarkCs.MultiplyMatrix;
 using MatrixLib;
 using MatrixLib.MathTraits;
 using MatrixLib.MathTraits.CallerNumbers;
+using MatrixLib.MathTraits.Providers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 
 namespace MatrixBenchmarkCs {
     internal class Program {
+
+            private class LocalRecvTye : IRecvNumberType {
+                public static LocalRecvTye Instance { get; } = new ();
+                public void RecvType<
+#if NET5_0_OR_GREATER
+                    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif // NET5_0_OR_GREATER
+                T>()
+#if NET9_0_OR_GREATER
+                    where T : allows ref struct
+#endif // NET9_0_OR_GREATER
+                {
+                    //NumberTraitsManager.Instance.Add<StructNumberBase<T>>();
+                }
+            };
+
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
             writer.WriteLine("MatrixBenchmarkCs");
@@ -21,7 +39,8 @@ namespace MatrixBenchmarkCs {
             // NumberTraitsManager.
             NumberTraitsGlobal.Init();
             //NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(); // Build-in caller.
-            NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
+            //NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
+            NumberTraitsGlobal.SendTypesCommon(LocalRecvTye.Instance);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.
