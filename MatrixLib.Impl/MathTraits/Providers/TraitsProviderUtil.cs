@@ -19,11 +19,7 @@ namespace MatrixLib.MathTraits.Providers {
         /// <param name="caller">调用者.</param>
         /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值.</param>
         /// <returns>返回是否成功.</returns>
-        public static bool FillDefine<
-#if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-#endif // NET5_0_OR_GREATER
-        T>(NumberTraitsDefine<T> define, IBaseMathCaller caller, T instance = default!) {
+        public static bool FillDefine<T>(NumberTraitsDefine<T> define, IBaseMathCaller caller, T instance = default!) {
             bool rt = false;
             _ = instance;
             if (caller is null) return rt;
@@ -40,13 +36,13 @@ namespace MatrixLib.MathTraits.Providers {
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
         /// <param name="caller">调用者. 若该类型具有 IBaseMathCaller 系列接口时可空.</param>
-        /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值.</param>
+        /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值. 若为 null, 会尝试用 <see cref="Activator.CreateInstance{T}()"/> 创建. </param>
         /// <returns>返回是否成功.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
         public static NumberTraitsDefine<T> GetDefine<
 #if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
         T>(IBaseMathCaller? caller, T instance = default!) {
             if (instance == null) {
