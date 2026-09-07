@@ -30,24 +30,24 @@ namespace MatrixLib.MathTraits {
         }
 
         /// <summary>
-        /// 添加类型. Add 成功后, 才能调用 GetDefine.
+        /// 注册类型. 本方法调用成功后, 才能调用 GetDefine.
         /// </summary>
         /// <typeparam name="T">Element type (元素类型).</typeparam>
         /// <param name="caller">调用者. 若该类型具有 IBaseMathCaller 系列接口时, 可空.</param>
         /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
-        public bool Add<
+        public bool Register<
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
         T>(IBaseMathCaller? caller = null) {
-            return Add(caller, default(T)!);
+            return Register(caller, default(T)!);
         }
 
-        /// <inheritdoc cref="Add{T}(IBaseMathCaller?)"/>
+        /// <inheritdoc cref="Register{T}(IBaseMathCaller?)"/>
         /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值. 它为 null 时, 会尝试调用 <see cref="Activator.CreateInstance"/> 创建实例, 可能会有异常.</param>
-        public bool Add<
+        public bool Register<
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
@@ -58,7 +58,7 @@ namespace MatrixLib.MathTraits {
             }
             // Make.
             NumberTraitsDefine<T> define = TraitsProviderUtil.GetDefine(caller, instance);
-            // Add.
+            // Register.
             if (define is not null) {
                 if (define.Zero is null) {
                     // 当 Zero 为 null 时, 设为 instance.

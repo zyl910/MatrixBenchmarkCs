@@ -26,7 +26,7 @@ namespace MatrixBenchmarkCs {
                     where T : allows ref struct
 #endif // NET9_0_OR_GREATER
                 {
-                    //NumberTraitsManager.Instance.Add<StructNumberBase<T>>();
+                    //NumberTraitsManager.Instance.Register<StructNumberBase<T>>();
                 }
             };
 
@@ -38,8 +38,8 @@ namespace MatrixBenchmarkCs {
             ZeroOfTypes<StructNumberBase<Int64>>.Register(default);
             // NumberTraitsManager.
             NumberTraitsGlobal.Init();
-            //NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(); // Build-in caller.
-            //NumberTraitsManager.Instance.Add<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
+            //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(); // Build-in caller.
+            //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
             NumberTraitsGlobal.SendTypesCommon(LocalRecvTye.Instance);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
