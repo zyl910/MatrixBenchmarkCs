@@ -21,7 +21,11 @@ namespace MatrixLib.MathTraits.CallerNumbers {
 #endif // NET5_0_OR_GREATER
     T> : IEquatable<StructNumberBase<T>>
 #if NET7_0_OR_GREATER
-        , INumberBase<StructNumberBase<T>> where T : INumberBase<T>
+        , INumberBase<StructNumberBase<T>>
+#endif // NET7_0_OR_GREATER
+        where T : IEquatable<T>
+#if NET7_0_OR_GREATER
+        , INumberBase<T>
 #endif // NET7_0_OR_GREATER
     {
         private T m_value;
