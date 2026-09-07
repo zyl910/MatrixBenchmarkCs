@@ -40,7 +40,8 @@ namespace MatrixBenchmarkCs {
             NumberTraitsGlobal.Init();
             //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(); // Build-in caller.
             //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
-            NumberTraitsGlobal.SendTypesCommon(LocalRecvTye.Instance);
+            NumberTraitsManager.Instance.RegisterGeneric(typeof(Int64), typeof(StructNumberBase<>));
+            //NumberTraitsGlobal.SendTypesCommon(LocalRecvTye.Instance);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.
