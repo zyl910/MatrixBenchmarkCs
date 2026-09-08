@@ -20,7 +20,11 @@ namespace MatrixLib.MathTraits.Providers {
         /// <param name="caller">调用者.</param>
         /// <param name="instance">实例. 值类型时可空, 引用类型时建议传递 零值.</param>
         /// <returns>返回是否成功.</returns>
-        public static bool FillDefine<T>(NumberTraitsDefine<T> define, IBaseMathCaller caller, T instance = default!) {
+        public static bool FillDefine<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+#endif // NET5_0_OR_GREATER
+        T>(NumberTraitsDefine<T> define, IBaseMathCaller caller, T instance = default!) {
             bool rt = false;
             _ = instance;
             if (caller is null) return rt;
@@ -41,7 +45,11 @@ namespace MatrixLib.MathTraits.Providers {
         /// <returns>返回是否成功.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
-        public static NumberTraitsDefine<T> GetDefine<T>(IBaseMathCaller? caller, T instance = default!) {
+        public static NumberTraitsDefine<T> GetDefine<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+#endif // NET5_0_OR_GREATER
+        T>(IBaseMathCaller? caller, T instance = default!) {
             if (caller is null) {
                 if (instance is IBaseMathCaller) {
                     var callerT = instance as IBaseMathCaller<T>;
