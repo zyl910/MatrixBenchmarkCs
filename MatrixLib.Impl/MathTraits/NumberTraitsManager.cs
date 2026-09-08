@@ -1,4 +1,6 @@
-﻿using MatrixLib.MathTraits.Providers;
+﻿#define Allow_Obsolete_Code
+
+using MatrixLib.MathTraits.Providers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -84,51 +86,49 @@ namespace MatrixLib.MathTraits {
             return false;
         }
 
-        /*
-                /// <summary>
-                /// 为泛型类型(`containerType&lt;elementType&gt;`)执行注册.
-                /// </summary>
-                /// <param name="elementType">Element type (元素类型).</param>
-                /// <param name="containerType">Container type (容器类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法. e.g. `typeof(StructNumberBase&lt;&gt;)`.</param>
-                /// <param name="callerType">Caller type (调用者类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法, 还需实现 IBaseMathCaller 接口. e.g. `typeof(ComplexCaller&lt;&gt;)`.</param>
-                /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
-                /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
-                /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
-        #if NET7_0_OR_GREATER
-                [RequiresDynamicCode("Not support AOT. Use INumberTypeAction on AOT.")]
-        #endif // NET7_0_OR_GREATER
-                public bool RegisterGeneric([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type elementType,
-                    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type containerType,
-                    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type? callerType = null,
-                    object? instance = null
-                    ) {
-                    MethodInfo? methodT = typeof(NumberTraitsManager).GetMethod(nameof(RegisterCore), BindingFlags.NonPublic| BindingFlags.Instance);
-                    if (methodT is null) {
-                        throw new NotSupportedException(nameof(RegisterCore));
-                    }
-                    // IL2055	https://learn.microsoft.com/dotnet/core/deploying/trimming/trim-warnings/il2055 Using member 'System.Type.MakeGenericType(params Type[])' which has 'RequiresDynamicCodeAttribute' can break functionality when AOT compiling. The native code for this instantiation might not be available at runtime.
-                    Type containerTypeClosed = containerType.MakeGenericType(elementType);
-                    if (instance is null) {
-                        instance = Activator.CreateInstance(containerTypeClosed);
-                        if (instance is null) {
-                            throw new NotSupportedException(nameof(containerType));
-                        }
-                    }
-                    MethodInfo method = methodT.MakeGenericMethod(containerTypeClosed);
-                    // caller.
-                    object callerObject;
-                    if (callerType is null) {
-                        callerObject = instance;
-                    } else {
-                        Type callerTypeClosed = callerType.MakeGenericType(elementType);
-                        callerObject = Activator.CreateInstance(callerTypeClosed)!;
-                    }
-                    // Invoke.
-                    object[] parameters = [callerObject, instance];
-                    return (bool)method.Invoke(this, parameters)!;
+#if Allow_Obsolete_Code
+        /// <summary>
+        /// 为泛型类型(`containerType&lt;elementType&gt;`)执行注册.
+        /// </summary>
+        /// <param name="elementType">Element type (元素类型).</param>
+        /// <param name="containerType">Container type (容器类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法. e.g. `typeof(StructNumberBase&lt;&gt;)`.</param>
+        /// <param name="callerType">Caller type (调用者类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法, 还需实现 IBaseMathCaller 接口. e.g. `typeof(ComplexCaller&lt;&gt;)`.</param>
+        /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
+        /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
+        /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
+#if NET7_0_OR_GREATER
+        [RequiresDynamicCode("Not support AOT. Use INumberTypeAction on AOT.")]
+#endif // NET7_0_OR_GREATER
+        public bool RegisterGeneric([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type elementType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type containerType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type? callerType = null,
+            object? instance = null
+            ) {
+            MethodInfo? methodT = typeof(NumberTraitsManager).GetMethod(nameof(RegisterCore), BindingFlags.NonPublic| BindingFlags.Instance);
+            if (methodT is null) {
+                throw new NotSupportedException(nameof(RegisterCore));
+            }
+            // IL2055	https://learn.microsoft.com/dotnet/core/deploying/trimming/trim-warnings/il2055 Using member 'System.Type.MakeGenericType(params Type[])' which has 'RequiresDynamicCodeAttribute' can break functionality when AOT compiling. The native code for this instantiation might not be available at runtime.
+            Type containerTypeClosed = containerType.MakeGenericType(elementType);
+            if (instance is null) {
+                instance = Activator.CreateInstance(containerTypeClosed);
+                if (instance is null) {
+                    throw new NotSupportedException(nameof(containerType));
                 }
-        */
-
+            }
+            MethodInfo method = methodT.MakeGenericMethod(containerTypeClosed);
+            // caller.
+            object callerObject;
+            if (callerType is null) {
+                callerObject = instance;
+            } else {
+                Type callerTypeClosed = callerType.MakeGenericType(elementType);
+                callerObject = Activator.CreateInstance(callerTypeClosed)!;
+            }
+            // Invoke.
+            object[] parameters = [callerObject, instance];
+            return (bool)method.Invoke(this, parameters)!;
+        }
 
         /// <summary>
         /// 根据 <see cref="Type"/> 注册类型. 本方法调用成功后, 才能调用 GetDefine.
@@ -139,11 +139,12 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
+        [Obsolete("Unhandled exception. System.NotSupportedException: 'NumberTraitsManager.RegisterCore[StructNumberBase`1[System.Int64]](IBaseMathCaller,StructNumberBase`1[System.Int64])' is missing native code. MethodInfo.MakeGenericMethod() is not compatible with AOT compilation. Inspect and fix AOT related warnings that were generated when the app was published. For more information see https://aka.ms/nativeaot-compatibility")]
 #if NET5_0_OR_GREATER
         [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "At methodT.MakeGenericMethod")]
 #endif // NET5_0_OR_GREATER
-        public bool RegisterType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type numberType,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type? callerType = null,
+        public bool RegisterType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type numberType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type? callerType = null,
             object? instance = null
             ) {
             MethodInfo? methodT = typeof(NumberTraitsManager).GetMethod(nameof(RegisterCore), BindingFlags.NonPublic | BindingFlags.Instance);
@@ -169,6 +170,7 @@ namespace MatrixLib.MathTraits {
             object[] parameters = [callerObject, instance];
             return (bool)method.Invoke(this, parameters)!;
         }
+#endif // Allow_Obsolete_Code
 
         /// <summary>
         /// Preheat (预热).
