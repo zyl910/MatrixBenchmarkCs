@@ -17,7 +17,7 @@ namespace MatrixLib.MathTraits.CallerNumbers {
     [StructLayout(LayoutKind.Sequential)]
     public partial struct StructNumberBase<
 #if NET5_0_OR_GREATER
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
     T> : IEquatable<StructNumberBase<T>>
 #if NET7_0_OR_GREATER
@@ -283,7 +283,7 @@ namespace MatrixLib.MathTraits.CallerNumbers {
                 if (other.Value is null) {
                     return true;
                 } else {
-                    return other.Value.Equals(Value);
+                    return other.Value.Equals(Value!);
                 }
             }
             return Value.Equals(other.Value);

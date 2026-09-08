@@ -1,4 +1,6 @@
-﻿using MatrixLib.MathTraits.Providers;
+﻿#define Allow_Obsolete_Code
+
+using MatrixLib.MathTraits.Providers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -36,6 +38,28 @@ namespace MatrixLib.MathTraits {
             // Preheat common numeric types (常用数值类型).
             // Init Others.
         }
+
+#if Allow_Obsolete_Code
+        /// <inheritdoc cref="NumberTraitsManager.Register{T}(IBaseMathCaller?)"/>
+        public static bool RegisterCaller1<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T>(this INumberBaseCaller<T> caller) {
+            // CS0120	An object reference is required for the non-static field, method, or property 'NumberTraitsGlobal.RegisterCaller1.
+            return NumberTraitsManager.Instance.Register<T>(caller);
+        }
+
+        /// <inheritdoc cref="NumberTraitsManager.Register{T}(IBaseMathCaller?)"/>
+        public static bool RegisterCaller<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif // NET5_0_OR_GREATER
+        T, TCaller>(this TCaller caller, T instance) where TCaller: INumberBaseCaller<T> {
+            // An object reference is required for the non-static field, method, or property 'NumberTraitsGlobal.RegisterCaller' // 看来 扩展方法无法支持它. C# 14 扩展 可能支持, 但可能有类型推导难题, 故还是用自身静态方法吧.
+            return NumberTraitsManager.Instance.Register<T>(caller, instance);
+        }
+#endif // Allow_Obsolete_Code
 
         /// <summary>
         /// 发送核心数值类型. 核心数值类型是指 <see cref="System.Numerics.Vector{T}"/> 能支持的类型.
