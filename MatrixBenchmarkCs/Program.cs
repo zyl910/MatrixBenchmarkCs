@@ -41,9 +41,10 @@ namespace MatrixBenchmarkCs {
             //NumberTraitsManager.Instance.Register<NumberBaseProxy<Int64>>(); // Build-in caller.
             //NumberTraitsManager.Instance.Register<NumberBaseProxy<Int64>>(new NumberBaseProxy<Int64>()); // Build-out caller.
             //NumberBaseProxy<Int64>.RegisterCaller(default(NumberBaseProxy<Int64>));
-            NumberBaseProxy<Int64>.CallerRegister();
+            //NumberBaseProxy<Int64>.CallerRegister();
             //NumberTraitsManager.Instance.RegisterGeneric(typeof(Int64), typeof(NumberBaseProxy<>));
             //NumberTraitsManager.Instance.RegisterType(typeof(NumberBaseProxy<Int64>));
+            NumberTraitsBoot.AcceptTypesCommon(new NumberBaseProxyRegisterAccepter());
             //NumberTraitsBoot.SendTypesCommon(LocalRecvTye.Instance);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.

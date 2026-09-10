@@ -24,8 +24,8 @@ namespace MatrixLib.MathTraits.Providers {
     /// <para>当 AcceptINumber 等方法被调用时, 会根据约束的继承树, 逐层调用基类型的方法, 直至 AcceptType, 期间 thisDeep 每次会+1. 对于名称含有“With”的方法, 仅在 thisDeep 为0时才会调用基类型的方法.</para>
     /// <para>当派生类 override 方法时, 建议先执行自己的代码, 再调用基类.</para>
     /// <para>- AcceptIBinaryInteger: AcceptIBinaryNumber: AcceptINumber: AcceptINumberBase: AcceptIEquatable: AcceptType: AcceptTypeAction</para>
-    /// <para>- AcceptIBinaryFloatingPointIeee754: AcceptIFloatingPointIeee754: IFloatingPoint: AcceptINumber // e.g. <see cref="float"/>, <see cref="double"/>, <see cref="Half"/></para>
-    /// <para>- AcceptIDecimalFloatingPointIeee754: AcceptIFloatingPointIeee754 // e.g. <see cref="decimal"/> </para>
+    /// <para>- AcceptIBinaryFloatingPointIeee754: AcceptIFloatingPointIeee754: AcceptIFloatingPoint: AcceptINumber // e.g. <see cref="float"/>, <see cref="double"/>, <see cref="Half"/></para>
+    /// <para>- AcceptIDecimalFloatingPointIeee754: AcceptIFloatingPointIeee754 // e.g. <see cref="Decimal128"/> </para>
     /// <para>- AcceptIBinaryIntegerWithSigned: AcceptIBinaryInteger // e.g. <see cref="sbyte"/>, <see cref="short"/>, <see cref="int"/>, <see cref="long"/>, <see cref="nint"/>, <see cref="Int128"/>, <see cref="BigInteger"/></para>
     /// <para>- AcceptIBinaryIntegerWithUnsigned: AcceptIBinaryInteger // e.g. <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, <see cref="nuint"/>, <see cref="UInt128"/></para>
     /// <para>- AcceptINumberBaseWithSigned: AcceptINumberBase // e.g. <see cref="Complex"/></para>
