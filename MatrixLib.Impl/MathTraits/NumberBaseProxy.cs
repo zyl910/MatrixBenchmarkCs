@@ -69,7 +69,7 @@ namespace MatrixLib.MathTraits {
                 return T.Zero;
 #else
                 return default;
-                //return TraitsINumberBaseV3<T>.Instance.CallZero();
+                //return TraitsINumberBaseV3<T>.Instance.Zero();
 #endif
             }
         }

@@ -17,7 +17,7 @@ namespace MatrixLib.MathTraits {
         /// <param name="right">右值.</param>
         /// <returns>返回结果.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T CallAddition(T left, T right);
+        public T Addition(T left, T right);
 
         /// <summary>
         /// 乘法.
@@ -26,12 +26,12 @@ namespace MatrixLib.MathTraits {
         /// <param name="right">右值.</param>
         /// <returns>返回结果.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T CallMultiply(T left, T right);
+        public T Multiply(T left, T right);
 
         /// <summary>
         /// 零值.
         /// </summary>
-        public T CallZero {
+        public T Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
         }

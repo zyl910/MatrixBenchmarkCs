@@ -16,7 +16,7 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
-        T INumberBaseCaller<T>.CallZero {
+        T INumberBaseCaller<T>.Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
                 return Zero;
@@ -26,12 +26,12 @@ namespace MatrixLib.MathTraits {
         //Type IBaseMathCaller.CallElementType => typeof(T);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.CallAddition(T left, T right) {
+        T INumberBaseCaller<T>.Addition(T left, T right) {
             return Addition(left, right);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.CallMultiply(T left, T right) {
+        T INumberBaseCaller<T>.Multiply(T left, T right) {
             return Multiply(left, right);
         }
 
@@ -61,19 +61,19 @@ namespace MatrixLib.MathTraits {
                 //if (default(T) is not null) {
                 //    T caller = default!;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallAddition(left, right);
+                //        return CT.Addition(left, right);
                 //    }
                 //} else {
                 //    T caller = NumberTraitsCacheV3<T>.Zero;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallAddition(left, right);
+                //        return CT.Addition(left, right);
                 //    }
                 //}
 #if USE_DELEGATE
 #if USE_ZERO_OF_TYPES
-                var func = NumberTraitsCacheV3<T>.CallAddition;
+                var func = NumberTraitsCacheV3<T>.Addition;
 #else
-                var func = NumberTraitsCacheV3<T>.CallAddition;
+                var func = NumberTraitsCacheV3<T>.Addition;
 #endif // USE_ZERO_OF_TYPES
                 if (func is not null) {
                     return func(left, right);
@@ -85,7 +85,7 @@ namespace MatrixLib.MathTraits {
                 var CT = NumberTraitsCacheV3<T>.NumberBase;
 #endif // USE_ZERO_OF_TYPES
                 if (CT is not null) {
-                    return CT.CallAddition(left, right);
+                    return CT.Addition(left, right);
                 }
 #endif // USE_DELEGATE
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -118,31 +118,31 @@ namespace MatrixLib.MathTraits {
                 //if (default(T) is not null) {
                 //    T caller = default!;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallMultiply(left, right);
+                //        return CT.Multiply(left, right);
                 //    }
                 //} else {
                 //    T caller = NumberTraitsCacheV3<T>.Zero;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallMultiply(left, right);
+                //        return CT.Multiply(left, right);
                 //    }
                 //}
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
                     if (caller is INumberBaseCaller<T> CT2) {
-                        return CT2.CallMultiply(left, right);
+                        return CT2.Multiply(left, right);
                     }
                 }
 #endif // USE_IS_NOT_NULL
 #if USE_DELEGATE
-                var func = NumberTraitsCacheV3<T>.CallMultiply;
+                var func = NumberTraitsCacheV3<T>.Multiply;
                 if (func is not null) {
                     return func(left, right);
                 }
 #else
                 var CT = NumberTraitsCacheV3<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.CallMultiply(left, right);
+                    return CT.Multiply(left, right);
                 }
 #endif
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -158,7 +158,7 @@ namespace MatrixLib.MathTraits {
                     return NumberTraitsCacheV3<T>.Zero;
                     //var caller = NumberTraitsCacheV3<T>.NumberBase;
                     //if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                    //    return CT.CallZero;
+                    //    return CT.Zero;
                     //}
                     //throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
                 }

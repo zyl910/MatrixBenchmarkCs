@@ -24,8 +24,8 @@ namespace MatrixLib.MathTraits {
         public static int RegisterHash { get; private set; } = 0;
         
         public static INumberBaseCaller<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
-        public static Func<T, T, T>? CallAddition { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
-        public static Func<T, T, T>? CallMultiply { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
+        public static Func<T, T, T>? Addition { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
+        public static Func<T, T, T>? Multiply { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; private set; } = null;
 
         static ZeroOfTypes() {
             Register(default!);
@@ -42,9 +42,9 @@ namespace MatrixLib.MathTraits {
             if (zero is INumberBaseCaller<T> itf) {
                 //Debugger.Break();
                 NumberBase = itf;
-                Zero = itf.CallZero; // Instance 、Zero 未来应拆开.
-                CallAddition = itf.CallAddition;
-                CallMultiply = itf.CallMultiply;
+                Zero = itf.Zero; // Instance 、Zero 未来应拆开.
+                Addition = itf.Addition;
+                Multiply = itf.Multiply;
                 // 预热.
                 try {
                     var TT = TraitsINumberBaseV2<T>.Instance;

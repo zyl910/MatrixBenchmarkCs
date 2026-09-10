@@ -48,17 +48,17 @@ namespace MatrixLib.MathTraits {
                 //if (default(T) is not null) {
                 //    T caller = default!;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallAddition(left, right);
+                //        return CT.Addition(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallAddition(left, right);
+                //        return CT.Addition(left, right);
                 //    }
                 //}
                 var CT = ZeroOfTypes<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.CallAddition(left, right);
+                    return CT.Addition(left, right);
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
@@ -90,17 +90,17 @@ namespace MatrixLib.MathTraits {
                 //if (default(T) is not null) {
                 //    T caller = default!;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallMultiply(left, right);
+                //        return CT.Multiply(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
                 //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
-                //        return CT.CallMultiply(left, right);
+                //        return CT.Multiply(left, right);
                 //    }
                 //}
                 var CT = ZeroOfTypes<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.CallAddition(left, right);
+                    return CT.Addition(left, right);
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }

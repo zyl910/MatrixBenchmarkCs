@@ -21,7 +21,7 @@ namespace MatrixLib.MathTraits.GenericMaths {
         /// </summary>
         public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)]  get; } = new();
 
-        T INumberBaseCaller<T>.CallZero {
+        T INumberBaseCaller<T>.Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
                 return Zero;
@@ -33,12 +33,12 @@ namespace MatrixLib.MathTraits.GenericMaths {
 #pragma warning restore IDE0251 // Make member 'readonly'
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.CallAddition(T left, T right) {
+        T INumberBaseCaller<T>.Addition(T left, T right) {
             return Addition(left, right);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.CallMultiply(T left, T right) {
+        T INumberBaseCaller<T>.Multiply(T left, T right) {
             return Multiply(left, right);
         }
 
