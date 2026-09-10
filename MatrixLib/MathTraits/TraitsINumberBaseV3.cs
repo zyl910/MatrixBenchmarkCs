@@ -16,24 +16,24 @@ namespace MatrixLib.MathTraits {
         /// </summary>
         public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
-        T INumberBaseCaller<T>.Zero {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get {
-                return Zero;
-            }
-        }
+        //T INumberBaseCaller<T>.Zero {
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //    get {
+        //        return Zero;
+        //    }
+        //}
 
         //Type IBaseMathCaller.CallElementType => typeof(T);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.Addition(T left, T right) {
-            return Addition(left, right);
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //T INumberBaseCaller<T>.Addition(T left, T right) {
+        //    return Addition(left, right);
+        //}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.Multiply(T left, T right) {
-            return Multiply(left, right);
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //T INumberBaseCaller<T>.Multiply(T left, T right) {
+        //    return Multiply(left, right);
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Addition(T left, T right) {
