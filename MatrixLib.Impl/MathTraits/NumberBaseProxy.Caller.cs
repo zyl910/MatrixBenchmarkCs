@@ -7,26 +7,26 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits.CallerNumbers {
+namespace MatrixLib.MathTraits {
 #if NET7_0_OR_GREATER
     using TraitsNS = MatrixLib.MathTraits.GenericMaths;
 #else
     using TraitsNS = MatrixLib.MathTraits;
 #endif // NET7_0_OR_GREATER
 
-    partial struct StructNumberBase<T> : INumberBaseCaller<StructNumberBase<T>>, IBaseMathCallerRegister {
+    partial struct NumberBaseProxy<T> : INumberBaseCaller<NumberBaseProxy<T>>, IBaseMathCallerRegister {
 
         /// <inheritdoc cref="IBaseMathCallerRegisterDocument.CallerRegister"/>
         public static bool CallerRegister() {
-            return NumberTraitsManager.Instance.Register<StructNumberBase<T>>();
+            return NumberTraitsManager.Instance.Register<NumberBaseProxy<T>>();
         }
 
-        public StructNumberBase<T> CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ZeroOfTypes<T>.Zero; } }
+        public NumberBaseProxy<T> CallZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ZeroOfTypes<T>.Zero; } }
 
         public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(T); } }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public StructNumberBase<T> CallAddition(StructNumberBase<T> left, StructNumberBase<T> right) {
+        public NumberBaseProxy<T> CallAddition(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
 #if NET7_0_OR_GREATER
             return left.Value + right.Value;
 #else
@@ -35,7 +35,7 @@ namespace MatrixLib.MathTraits.CallerNumbers {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public StructNumberBase<T> CallMultiply(StructNumberBase<T> left, StructNumberBase<T> right) {
+        public NumberBaseProxy<T> CallMultiply(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
 #if NET7_0_OR_GREATER
             return left.Value * right.Value;
 #else

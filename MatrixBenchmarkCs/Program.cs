@@ -26,7 +26,7 @@ namespace MatrixBenchmarkCs {
                     where T : allows ref struct
 #endif // NET9_0_OR_GREATER
                 {
-                    //NumberTraitsManager.Instance.Register<StructNumberBase<T>>();
+                    //NumberTraitsManager.Instance.Register<NumberBaseProxy<T>>();
                 }
             };
 
@@ -34,16 +34,16 @@ namespace MatrixBenchmarkCs {
             TextWriter writer = Console.Out;
             writer.WriteLine("MatrixBenchmarkCs");
             // init.
-            NumberTraitsCache<StructNumberBase<Int64>>.Register();
-            ZeroOfTypes<StructNumberBase<Int64>>.Register(default);
+            NumberTraitsCache<NumberBaseProxy<Int64>>.Register();
+            ZeroOfTypes<NumberBaseProxy<Int64>>.Register(default);
             // NumberTraitsManager.
             NumberTraitsBoot.Init();
-            //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(); // Build-in caller.
-            //NumberTraitsManager.Instance.Register<StructNumberBase<Int64>>(new StructNumberBase<Int64>()); // Build-out caller.
-            //StructNumberBase<Int64>.RegisterCaller(default(StructNumberBase<Int64>));
-            StructNumberBase<Int64>.CallerRegister();
-            //NumberTraitsManager.Instance.RegisterGeneric(typeof(Int64), typeof(StructNumberBase<>));
-            //NumberTraitsManager.Instance.RegisterType(typeof(StructNumberBase<Int64>));
+            //NumberTraitsManager.Instance.Register<NumberBaseProxy<Int64>>(); // Build-in caller.
+            //NumberTraitsManager.Instance.Register<NumberBaseProxy<Int64>>(new NumberBaseProxy<Int64>()); // Build-out caller.
+            //NumberBaseProxy<Int64>.RegisterCaller(default(NumberBaseProxy<Int64>));
+            NumberBaseProxy<Int64>.CallerRegister();
+            //NumberTraitsManager.Instance.RegisterGeneric(typeof(Int64), typeof(NumberBaseProxy<>));
+            //NumberTraitsManager.Instance.RegisterType(typeof(NumberBaseProxy<Int64>));
             //NumberTraitsBoot.SendTypesCommon(LocalRecvTye.Instance);
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.

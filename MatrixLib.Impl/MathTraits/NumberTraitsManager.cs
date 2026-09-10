@@ -91,7 +91,7 @@ namespace MatrixLib.MathTraits {
         /// 为泛型类型(`containerType&lt;elementType&gt;`)执行注册.
         /// </summary>
         /// <param name="elementType">Element type (元素类型).</param>
-        /// <param name="containerType">Container type (容器类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法. e.g. `typeof(StructNumberBase&lt;&gt;)`.</param>
+        /// <param name="containerType">Container type (容器类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法. e.g. `typeof(NumberBaseProxy&lt;&gt;)`.</param>
         /// <param name="callerType">Caller type (调用者类型). 它是1个类型参数的泛型类型, 且需支持无参构造方法, 还需实现 IBaseMathCaller 接口. e.g. `typeof(ComplexCaller&lt;&gt;)`.</param>
         /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
@@ -139,7 +139,7 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回是否是首次添加. 重复添加时, 会返回 false.</returns>
         /// <exception cref="ArgumentNullException">请传递 caller 参数!</exception>
         /// <exception cref="NotSupportedException">caller 参数不支持该类型!</exception>
-        [Obsolete("Unhandled exception. System.NotSupportedException: 'NumberTraitsManager.RegisterCore[StructNumberBase`1[System.Int64]](IBaseMathCaller,StructNumberBase`1[System.Int64])' is missing native code. MethodInfo.MakeGenericMethod() is not compatible with AOT compilation. Inspect and fix AOT related warnings that were generated when the app was published. For more information see https://aka.ms/nativeaot-compatibility")]
+        [Obsolete("Unhandled exception. System.NotSupportedException: 'NumberTraitsManager.RegisterCore[NumberBaseProxy`1[System.Int64]](IBaseMathCaller,NumberBaseProxy`1[System.Int64])' is missing native code. MethodInfo.MakeGenericMethod() is not compatible with AOT compilation. Inspect and fix AOT related warnings that were generated when the app was published. For more information see https://aka.ms/nativeaot-compatibility")]
 #if NET5_0_OR_GREATER
         [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "At methodT.MakeGenericMethod")]
 #endif // NET5_0_OR_GREATER

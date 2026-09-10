@@ -153,15 +153,15 @@ namespace MatrixBenchmarkCs.Maths {
 
         private static TMy StaticSumTraitsV2UsingStruct(TMy[] src, int srcCount) {
             var span1 = src.AsSpan(0, srcCount);
-            var span2 = MemoryMarshal.Cast<TMy, StructNumberBase<TMy>>(span1);
-            //ReadOnlySpan<StructNumberBase<TMy>> span3 = span2;
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(span1);
+            //ReadOnlySpan<NumberBaseProxy<TMy>> span3 = span2;
             //var rt = MathTraitsUtil.SumTraitsV2Using(span3);
             //if (true) {
-            //    StructNumberBase<TMy> num = default;
+            //    NumberBaseProxy<TMy> num = default;
             //    bool flag = (num is INumberBaseCaller<TMy>);
             //    Console.WriteLine("Out Is INumberBaseCaller: {0}", flag);
             //}
-            var rt = MathTraitsUtil.SumTraitsV2Using<StructNumberBase<TMy>>(span2);
+            var rt = MathTraitsUtil.SumTraitsV2Using<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
@@ -177,8 +177,8 @@ namespace MatrixBenchmarkCs.Maths {
 
         private static TMy StaticSumTraitsV2RawStruct(TMy[] src, int srcCount) {
             var span1 = src.AsSpan(0, srcCount);
-            var span2 = MemoryMarshal.Cast<TMy, StructNumberBase<TMy>>(span1);
-            var rt = MathTraitsUtil.SumTraitsV2Raw<StructNumberBase<TMy>>(span2);
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(span1);
+            var rt = MathTraitsUtil.SumTraitsV2Raw<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
@@ -279,8 +279,8 @@ namespace MatrixBenchmarkCs.Maths {
         //}
 
         private static TMy StaticSumTraitsV3Struct(TMy[] src, int srcCount) {
-            var span2 = MemoryMarshal.Cast<TMy, StructNumberBase<TMy>>(src.AsSpan(0, srcCount));
-            var rt = DemoTraitsUtil.SumSquares<StructNumberBase<TMy>>(span2);
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtil.SumSquares<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
@@ -295,8 +295,8 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         private static TMy StaticSumTraitsV3StructCommon(TMy[] src, int srcCount) {
-            var span2 = MemoryMarshal.Cast<TMy, StructNumberBase<TMy>>(src.AsSpan(0, srcCount));
-            var rt = DemoTraitsUtilCommon.SumSquares<StructNumberBase<TMy>>(span2);
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtilCommon.SumSquares<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
