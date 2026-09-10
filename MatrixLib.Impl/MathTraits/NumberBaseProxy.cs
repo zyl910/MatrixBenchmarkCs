@@ -69,7 +69,7 @@ namespace MatrixLib.MathTraits {
                 return T.Zero;
 #else
                 return default;
-                //return TraitsINumberBaseV2<T>.Instance.CallZero();
+                //return TraitsINumberBaseV3<T>.Instance.CallZero();
 #endif
             }
         }
@@ -79,7 +79,7 @@ namespace MatrixLib.MathTraits {
 #if ALLOW_INTERFACE_STATIC
             return left.Value + right.Value;
 #else
-            return TraitsINumberBaseV2<T>.Instance.Addition(left.Value, right.Value);
+            return TraitsINumberBaseV3<T>.Instance.Addition(left.Value, right.Value);
 #endif
         }
 
@@ -88,7 +88,7 @@ namespace MatrixLib.MathTraits {
 #if ALLOW_INTERFACE_STATIC
             return left.Value * right.Value;
 #else
-            return TraitsINumberBaseV2<T>.Instance.Multiply(left.Value, right.Value);
+            return TraitsINumberBaseV3<T>.Instance.Multiply(left.Value, right.Value);
 #endif
         }
 
