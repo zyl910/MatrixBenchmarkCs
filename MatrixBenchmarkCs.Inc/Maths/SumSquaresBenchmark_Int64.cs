@@ -151,7 +151,7 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV2Using");
         }
 
-        private static TMy StaticSumTraitsV2UsingStruct(TMy[] src, int srcCount) {
+        private static TMy StaticSumTraitsV2UsingProxy(TMy[] src, int srcCount) {
             var span1 = src.AsSpan(0, srcCount);
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(span1);
             //ReadOnlySpan<NumberBaseProxy<TMy>> span3 = span2;
@@ -166,16 +166,16 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         [Benchmark]
-        public void SumTraitsV2UsingStruct() {
+        public void SumTraitsV2UsingProxy() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV2UsingStruct(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV2UsingStruct");
+            dstTMy = StaticSumTraitsV2UsingProxy(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV2UsingProxy");
         }
 
-        private static TMy StaticSumTraitsV2RawStruct(TMy[] src, int srcCount) {
+        private static TMy StaticSumTraitsV2RawProxy(TMy[] src, int srcCount) {
             var span1 = src.AsSpan(0, srcCount);
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(span1);
             var rt = MathTraitsUtil.SumTraitsV2Raw<NumberBaseProxy<TMy>>(span2);
@@ -183,13 +183,13 @@ namespace MatrixBenchmarkCs.Maths {
         }
 
         [Benchmark]
-        public void SumTraitsV2RawStruct() {
+        public void SumTraitsV2RawProxy() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV2RawStruct(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV2RawStruct");
+            dstTMy = StaticSumTraitsV2RawProxy(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV2RawProxy");
         }
 
         private static TMy StaticSumCallerIn(TMy[] src, int srcCount) {
@@ -278,36 +278,36 @@ namespace MatrixBenchmarkCs.Maths {
         //    CheckResult("SumTraitsV3UsingOld");
         //}
 
-        private static TMy StaticSumTraitsV3Struct(TMy[] src, int srcCount) {
+        private static TMy StaticSumTraitsV3Proxy(TMy[] src, int srcCount) {
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
             var rt = DemoTraitsUtil.SumSquares<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
         [Benchmark]
-        public void SumTraitsV3Struct() {
+        public void SumTraitsV3Proxy() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV3Struct(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV3Struct");
+            dstTMy = StaticSumTraitsV3Proxy(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3Proxy");
         }
 
-        private static TMy StaticSumTraitsV3StructCommon(TMy[] src, int srcCount) {
+        private static TMy StaticSumTraitsV3ProxyCommon(TMy[] src, int srcCount) {
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
             var rt = DemoTraitsUtilCommon.SumSquares<NumberBaseProxy<TMy>>(span2);
             return rt.Value;
         }
 
         [Benchmark]
-        public void SumTraitsV3StructCommon() {
+        public void SumTraitsV3ProxyCommon() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
                 //Debugger.Break();
             }
-            dstTMy = StaticSumTraitsV3StructCommon(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV3StructOld");
+            dstTMy = StaticSumTraitsV3ProxyCommon(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3ProxyOld");
         }
 
     }
