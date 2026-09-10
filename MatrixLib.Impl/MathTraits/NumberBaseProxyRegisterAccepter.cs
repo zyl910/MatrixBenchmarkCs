@@ -21,6 +21,9 @@ namespace MatrixLib.MathTraits {
         public override void AcceptINumberBase<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(object? userData = null, int thisDeep = 0) {
             NumberBaseProxy<T>.CallerRegister();
             base.AcceptINumberBase<T>(userData, thisDeep);
+            if (!ChildNoNewType) {
+                Child?.AcceptINumberBase<NumberBaseProxy<T>>(userData);
+            }
         }
 
     }

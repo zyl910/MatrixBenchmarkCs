@@ -179,8 +179,8 @@ namespace MatrixLib.MathTraits.Providers {
         }
 
         public virtual TypeAction? AcceptTypeAction { get; set; }
-
         public virtual INumberTypeAccepter? Child { get; set; }
+        public bool ChildNoNewType { get; set; }
 
     }
 }

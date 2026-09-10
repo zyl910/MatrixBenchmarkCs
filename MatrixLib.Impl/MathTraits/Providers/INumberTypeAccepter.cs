@@ -153,6 +153,11 @@ namespace MatrixLib.MathTraits.Providers {
         /// </summary>
         public INumberTypeAccepter? Child { get; set; }
 
+        /// <summary>
+        /// Is the new type not passed to <see cref="Child"/> (新类型是否不传给 <see cref="Child"/>).
+        /// </summary>
+        public bool ChildNoNewType { get; set; }
+
     }
 
 }
