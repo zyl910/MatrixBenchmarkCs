@@ -10,9 +10,11 @@ namespace MatrixLib.MathTraits {
     /// 基本数学访问器接口.
     /// </summary>
     public interface IBaseMathCaller {
+#if FALSE
         /// <summary>
         /// Element type (元素类型).
         /// </summary>
         Type CallElementType { get; }
+#endif
     }
 }

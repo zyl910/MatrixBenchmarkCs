@@ -23,7 +23,7 @@ namespace MatrixLib.MathTraits {
             }
         }
 
-        Type IBaseMathCaller.CallElementType => typeof(T);
+        //Type IBaseMathCaller.CallElementType => typeof(T);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         T INumberBaseCaller<T>.CallAddition(T left, T right) {
