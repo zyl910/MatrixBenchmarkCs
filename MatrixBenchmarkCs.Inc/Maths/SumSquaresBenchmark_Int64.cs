@@ -279,7 +279,8 @@ namespace MatrixBenchmarkCs.Maths {
         //}
 
         private static TMy StaticSumTraitsV3OnProxy(TMy[] src, int srcCount) {
-            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            //var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var span2 = src.AsSpan(0, srcCount).AsNumberBaseProxy();
             var rt = DemoTraitsUtil.SumSquaresOnProxy<TMy>(span2);
             return rt;
         }

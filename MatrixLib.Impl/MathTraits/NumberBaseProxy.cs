@@ -68,8 +68,7 @@ namespace MatrixLib.MathTraits {
 #if ALLOW_INTERFACE_STATIC
                 return T.Zero;
 #else
-                return default;
-                //return TraitsINumberBaseV3<T>.Instance.Zero();
+                return TraitsINumberBaseV3<T>.Instance.Zero;
 #endif
             }
         }
