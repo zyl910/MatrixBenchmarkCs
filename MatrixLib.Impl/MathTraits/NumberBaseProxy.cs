@@ -1,10 +1,15 @@
-﻿using System;
+﻿#if NET7_0_OR_GREATER
+#define ALLOW_INTERFACE_STATIC
+#endif // NET7_0_OR_GREATER
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,12 +62,40 @@ namespace MatrixLib.MathTraits {
             m_value = value;
         }
 
+        public static NumberBaseProxy<T> Zero {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get {
+#if ALLOW_INTERFACE_STATIC
+                return T.Zero;
+#else
+                return default;
+                //return TraitsINumberBaseV2<T>.Instance.CallZero();
+#endif
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static NumberBaseProxy<T> operator +(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
+#if ALLOW_INTERFACE_STATIC
+            return left.Value + right.Value;
+#else
+            return TraitsINumberBaseV2<T>.Instance.Addition(left.Value, right.Value);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static NumberBaseProxy<T> operator *(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
+#if ALLOW_INTERFACE_STATIC
+            return left.Value * right.Value;
+#else
+            return TraitsINumberBaseV2<T>.Instance.Multiply(left.Value, right.Value);
+#endif
+        }
+
 #if NET7_0_OR_GREATER
         public static NumberBaseProxy<T> One => T.One;
 
         public static int Radix => T.Radix;
-
-        public static NumberBaseProxy<T> Zero => T.Zero;
 
         public static NumberBaseProxy<T> AdditiveIdentity => T.AdditiveIdentity;
 
@@ -244,10 +277,6 @@ namespace MatrixLib.MathTraits {
             return +value.Value;
         }
 
-        public static NumberBaseProxy<T> operator +(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
-            return left.Value + right.Value;
-        }
-
         public static NumberBaseProxy<T> operator -(NumberBaseProxy<T> value) {
             return -value.Value;
         }
@@ -262,10 +291,6 @@ namespace MatrixLib.MathTraits {
 
         public static NumberBaseProxy<T> operator --(NumberBaseProxy<T> value) {
             return value.Value - T.One;
-        }
-
-        public static NumberBaseProxy<T> operator *(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
-            return left.Value * right.Value;
         }
 
         public static NumberBaseProxy<T> operator /(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
