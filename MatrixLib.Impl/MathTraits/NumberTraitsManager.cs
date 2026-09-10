@@ -32,6 +32,31 @@ namespace MatrixLib.MathTraits {
             NumberTraitsUtil.TraitsManager = Instance;
         }
 
+        public NumberTraitsDefine<T>? GetDefine<T>() {
+            INumberTraitsDefine itf = TypeMap[typeof(T)];
+            if (itf is NumberTraitsDefine<T> define) {
+                return define;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 取得已注册的类型.
+        /// </summary>
+        /// <returns>返回已注册的类型.</returns>
+        public IReadOnlyCollection<Type> GetTypes() {
+            return (IReadOnlyCollection<Type>)TypeMap.Keys;
+        }
+
+        /// <summary>
+        /// Preheat (预热).
+        /// </summary>
+        /// <typeparam name="T">Element type (元素类型).</typeparam>
+        private void Preheat<T>() {
+            int hash = TraitsProviderUtil.Preheat<T>();
+            AddedHash ^= hash;
+        }
+
         /// <summary>
         /// 注册类型. 本方法调用成功后, 才能调用 GetDefine.
         /// </summary>
@@ -171,23 +196,6 @@ namespace MatrixLib.MathTraits {
             return (bool)method.Invoke(this, parameters)!;
         }
 #endif // Allow_Obsolete_Code
-
-        /// <summary>
-        /// Preheat (预热).
-        /// </summary>
-        /// <typeparam name="T">Element type (元素类型).</typeparam>
-        private void Preheat<T>() {
-            int hash = TraitsProviderUtil.Preheat<T>();
-            AddedHash ^= hash;
-        }
-
-        public NumberTraitsDefine<T>? GetDefine<T>() {
-            INumberTraitsDefine itf = TypeMap[typeof(T)];
-            if (itf is NumberTraitsDefine<T> define) {
-                return define;
-            }
-            return null;
-        }
 
     }
 }

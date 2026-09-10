@@ -10,6 +10,7 @@ using MatrixLib.MathTraits.Providers;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MatrixBenchmarkCs {
@@ -46,6 +47,8 @@ namespace MatrixBenchmarkCs {
             //NumberTraitsManager.Instance.RegisterType(typeof(NumberBaseProxy<Int64>));
             NumberTraitsBoot.AcceptTypesCommon(new NumberBaseProxyRegisterAccepter());
             //NumberTraitsBoot.SendTypesCommon(LocalRecvTye.Instance);
+            //writer.WriteLine(NumberTraitsManager.Instance.GetTypes().ToList());
+            writer.WriteLine("GetTypes: " + string.Join(", ", NumberTraitsManager.Instance.GetTypes().OrderBy(f => f.ToString())));
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.
