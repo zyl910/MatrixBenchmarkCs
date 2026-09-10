@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// 数值基本代理. 用它包装数值类型后, .NET Standard 里的泛型代码也能使用数学运算符.
+    /// 数值基本代理. 用它包装数值类型后, 使低版本 .NET Standard 里的泛型代码也能使用数学运算符.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     [StructLayout(LayoutKind.Sequential)]

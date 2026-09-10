@@ -141,7 +141,7 @@ namespace MatrixBenchmarkCs.Maths {
             return MathTraitsUtil.SumTraitsV2Using<TMy>(src.AsSpan(0, srcCount)); // OK.
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumTraitsV2Using() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -165,7 +165,7 @@ namespace MatrixBenchmarkCs.Maths {
             return rt.Value;
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumTraitsV2UsingProxy() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -182,7 +182,7 @@ namespace MatrixBenchmarkCs.Maths {
             return rt.Value;
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumTraitsV2RawProxy() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -196,7 +196,7 @@ namespace MatrixBenchmarkCs.Maths {
             return MathTraitsUtil.SumCallerIn<TMy, CallerInt64>(default, src.AsSpan(0, srcCount)); // OK.
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumCallerIn() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -210,7 +210,7 @@ namespace MatrixBenchmarkCs.Maths {
             return MathTraitsUtil.SumCallerGetItf<TMy>(src.AsSpan(0, srcCount));
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumCallerGetItf() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -226,7 +226,7 @@ namespace MatrixBenchmarkCs.Maths {
             return MathTraitsUtil.SumCallerOut<TMy>(src.AsSpan(0, srcCount));
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SumCallerOut() {
             if (BenchmarkUtil.IsLastRun) {
                 Volatile.Write(ref dstTMy, 0);
@@ -277,6 +277,22 @@ namespace MatrixBenchmarkCs.Maths {
         //    dstTMy = StaticSumTraitsV3UsingOld(srcArray, srcArray.Length);
         //    CheckResult("SumTraitsV3UsingOld");
         //}
+
+        private static TMy StaticSumTraitsV3OnProxy(TMy[] src, int srcCount) {
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtil.SumSquaresOnProxy<TMy>(span2);
+            return rt;
+        }
+
+        [Benchmark]
+        public void SumTraitsV3OnProxy() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3OnProxy(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3OnProxy");
+        }
 
         private static TMy StaticSumTraitsV3Proxy(TMy[] src, int srcCount) {
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
