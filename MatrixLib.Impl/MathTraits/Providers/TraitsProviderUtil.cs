@@ -1,8 +1,11 @@
-﻿using System;
+﻿#define Allow_MakeGenericType
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +32,22 @@ namespace MatrixLib.MathTraits.Providers {
             _ = instance;
             if (caller is null) return rt;
             if (caller is not IBaseMathCaller<T>) return rt;
+            // Fill by T.
+            if (instance is IEquatable<T> equatable) {
+                // OK.
+            }
+#if NET7_0_OR_GREATER && Allow_MakeGenericType
+            //if (instance is INumberBase<T> numberBase) { // CS0314	类型“T”不能用作泛型类型或方法“INumberBase<TSelf>”中的类型参数“TSelf”。没有从“T”到“System.Numerics.INumberBase<T>”的装箱转换或类型参数转换
+            //}
+            Type numberInterface = typeof(INumberBase<>).MakeGenericType(typeof(T));
+            if (numberInterface.IsAssignableFrom(typeof(T))) {
+                Type typeCaller = typeof(GenericMaths.TraitsINumberBaseV3<>).MakeGenericType(typeof(T));
+                object obj = Activator.CreateInstance(typeCaller)!;
+                define.NumberBase = obj as INumberBaseCaller<T>;
+                rt = true;
+            }
+#endif // NET7_0_OR_GREATER
+            // Fill by caller.
             if (define.NumberBase is null && caller is INumberBaseCaller<T> itf) {
                 define.NumberBase = itf;
                 rt = true;
