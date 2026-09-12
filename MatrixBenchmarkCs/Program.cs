@@ -48,7 +48,7 @@ namespace MatrixBenchmarkCs {
             NumberTraitsBoot.AcceptTypesCommon(new NumberBaseProxyRegisterAccepter());
             //NumberTraitsBoot.SendTypesCommon(LocalRecvTye.Instance);
             //writer.WriteLine(NumberTraitsManager.Instance.GetTypes().ToList());
-            writer.WriteLine("GetTypes: " + string.Join(", ", NumberTraitsManager.Instance.GetTypes().OrderBy(f => f.ToString())));
+            writer.WriteLine("NumberTraitsManager.GetTypes: " + string.Join(", ", NumberTraitsManager.Instance.GetTypes().OrderBy(f => f.ToString())));
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.

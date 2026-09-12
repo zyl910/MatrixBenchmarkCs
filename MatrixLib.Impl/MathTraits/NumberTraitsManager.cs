@@ -2,6 +2,7 @@
 
 using MatrixLib.MathTraits.Providers;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,7 +24,36 @@ namespace MatrixLib.MathTraits {
         public int AddedHash { get; internal set; } = 0;
 
         /// <summary>Type map (类型的映射表).</summary>
-        internal ConcurrentDictionary<Type, INumberTraitsDefine> TypeMap { get; } = new();
+        internal ConcurrentDictionary<Type, INumberTraitsDefine> TypeMap { get; } = new(new Dictionary<Type, INumberTraitsDefine>() {
+            // AcceptIBinaryFloatingPointIeee754.
+            { typeof(float), new NumberTraitsDefine<float>() },
+            { typeof(double), new NumberTraitsDefine<double>() },
+            // AcceptIBinaryIntegerWithSigned.
+            { typeof(sbyte), new NumberTraitsDefine<sbyte>() },
+            { typeof(short), new NumberTraitsDefine<short>() },
+            { typeof(int), new NumberTraitsDefine<int>() },
+            { typeof(long), new NumberTraitsDefine<long>() },
+            // AcceptIBinaryIntegerWithSigned.
+            { typeof(byte), new NumberTraitsDefine<byte>() },
+            { typeof(ushort), new NumberTraitsDefine<ushort>() },
+            { typeof(uint), new NumberTraitsDefine<uint>() },
+            { typeof(ulong), new NumberTraitsDefine<ulong>() },
+            // AcceptTypesCommon
+#if (NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER)
+            { typeof(nint), new NumberTraitsDefine<nint>() },
+            { typeof(nuint), new NumberTraitsDefine<nuint>() },
+#endif // NET7_0_OR_GREATER
+#if NET5_0_OR_GREATER
+            { typeof(Half), new NumberTraitsDefine<Half>() },
+            { typeof(Int128), new NumberTraitsDefine<Int128>() },
+            { typeof(UInt128), new NumberTraitsDefine<UInt128>() },
+#endif // NET5_0_OR_GREATER
+#if NET11_0_OR_GREATER
+            { typeof(Decimal32), new NumberTraitsDefine<Decimal32>() },
+            { typeof(Decimal64), new NumberTraitsDefine<Decimal64>() },
+            { typeof(Decimal128), new NumberTraitsDefine<Decimal128>() },
+#endif // NET11_0_OR_GREATER
+        });
 
         /// <summary>
         /// Static create NumberTraitsManager.
