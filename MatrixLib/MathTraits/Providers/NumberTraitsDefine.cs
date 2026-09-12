@@ -8,7 +8,7 @@ namespace MatrixLib.MathTraits.Providers {
     /// 数值类型萃取定义。
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public class NumberTraitsDefine<
+    public sealed class NumberTraitsDefine<
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER

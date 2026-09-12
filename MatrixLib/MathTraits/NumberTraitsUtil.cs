@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// 数值类型萃取工具.
+    /// 数值类型萃取工具. 计划改名为 NumberTraitsManagerUtil
     /// </summary>
     public static class NumberTraitsUtil {
         //public delegate NumberTraitsItem<T>? GetDefineFunc<T>();

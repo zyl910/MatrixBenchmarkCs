@@ -11,7 +11,7 @@ namespace MatrixLib.MathTraits {
     /// 数值类型萃取缓存. 元素类型 <typeparamref name="T"/> 必须有无参构造函数, 且可实现 INumberBaseCaller 等接口. 当没有 INumberBaseCaller 等接口时. One 等静态属性会是 Zero 或 default .
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public class NumberTraitsCacheV3<
+    public sealed class NumberTraitsCacheV3<
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
