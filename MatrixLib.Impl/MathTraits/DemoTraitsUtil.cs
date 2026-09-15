@@ -33,6 +33,21 @@ using TraitsNS = MatrixLib.MathTraits;
             return SumSquaresCall(TT, src);
         }
 
+        //public static T SumSquaresOnDynamic<T>(ReadOnlySpan<T> src) {
+        //    T rt = default(T)!; // Result.
+        //    int srcCount = src.Length;
+        //    ref T p = ref Unsafe.AsRef(in src[0]);
+        //    for (int i = 0; i < srcCount; ++i) {
+        //        dynamic p1 = p!;
+        //        rt += p1 * p1;
+        //        // Next.
+        //        p = ref Unsafe.Add(ref p, 1);
+        //    }
+        //    return rt;
+        //}
+
+        /// <summary>计算平方和 - 基于代理.</summary>
+        /// <inheritdoc cref="SumSquares{T}"/>
         public static T SumSquaresOnProxy<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
             T>(ReadOnlySpan<NumberBaseProxy<T>> src) where T : IEquatable<T>
 #if NET7_0_OR_GREATER

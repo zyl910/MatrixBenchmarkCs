@@ -250,6 +250,21 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumV3CallerIn");
         }
 
+        //private static TMy StaticSumOnDynamic(TMy[] src, int srcCount) {
+        //    var rt = DemoTraitsUtil.SumSquaresOnDynamic<TMy>(src.AsSpan(0, srcCount));
+        //    return rt;
+        //}
+
+        //[Benchmark]
+        //public void SumOnDynamic() {
+        //    if (BenchmarkUtil.IsLastRun) {
+        //        Volatile.Write(ref dstTMy, 0);
+        //        //Debugger.Break();
+        //    }
+        //    dstTMy = StaticSumOnDynamic(srcArray, srcArray.Length);
+        //    CheckResult("SumOnDynamic");
+        //}
+
         private static TMy StaticSumTraitsV3Using(TMy[] src, int srcCount) {
             return DemoTraitsUtil.SumSquares<TMy>(src.AsSpan(0, srcCount));
         }
