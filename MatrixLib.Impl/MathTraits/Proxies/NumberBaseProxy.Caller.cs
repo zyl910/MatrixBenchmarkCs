@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib.MathTraits.Proxies {
 
     partial struct NumberBaseProxy<T> : INumberBaseCaller<NumberBaseProxy<T>>, IBaseMathCallerRegister {
 

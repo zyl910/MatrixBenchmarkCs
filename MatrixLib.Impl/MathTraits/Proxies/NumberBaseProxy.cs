@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib.MathTraits.Proxies {
     /// <summary>
     /// 数值基本代理. 用它包装数值类型后, 使低版本 .NET Standard 里的泛型代码也能使用数学运算符.
     /// </summary>

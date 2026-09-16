@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib.MathTraits.Proxies {
     /// <summary>
     /// Register <see cref="NumberBaseProxy{T}"/> accepter.
     /// </summary>

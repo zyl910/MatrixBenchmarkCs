@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MatrixLib.MathTraits.Proxies;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;

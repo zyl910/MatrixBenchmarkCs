@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatrixLib.MathTraits {
+namespace MatrixLib.MathTraits.Proxies {
     /// <summary>
     /// Extensions of <see cref="NumberBaseProxy{T}"/> (的扩展).
     /// </summary>
