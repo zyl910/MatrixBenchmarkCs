@@ -7,6 +7,7 @@ using MatrixLib;
 using MatrixLib.MathTraits;
 using MatrixLib.MathTraits.CallerNumbers;
 using MatrixLib.MathTraits.Providers;
+using MatrixLib.MathTraits.Proxies;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
