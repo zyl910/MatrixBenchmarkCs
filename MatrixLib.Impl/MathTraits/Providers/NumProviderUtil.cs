@@ -39,8 +39,16 @@ namespace MatrixLib.MathTraits.Providers {
 #if NET7_0_OR_GREATER && Allow_MakeGenericType
             //if (instance is INumberBase<T> numberBase) { // CS0314	类型“T”不能用作泛型类型或方法“INumberBase<TSelf>”中的类型参数“TSelf”。没有从“T”到“System.Numerics.INumberBase<T>”的装箱转换或类型参数转换
             //}
-            Type numberInterface = typeof(INumberBase<>).MakeGenericType(typeof(T));
-            if (numberInterface.IsAssignableFrom(typeof(T))) {
+            //Type floatingPointType = typeof(IFloatingPoint<>).MakeGenericType(typeof(T)); // MakeGenericType在非浮点数时报错: System.ArgumentException: GenericArguments[0], 'NumberBaseProxy`1[System.Single]', on 'IFloatingPoint`1[TSelf]' violates the constraint of type 'TSelf'
+            //if (floatingPointType.IsAssignableFrom(typeof(T))) {
+            //    Console.WriteLine("Is IFloatingPoint:" + floatingPointType.ToString());
+            //}
+            if (typeof(T).GetInterfaces().Any(i => i.IsGenericType && 
+                    typeof(INumberBase<>) == i.GetGenericTypeDefinition() )) {
+                //Console.WriteLine("Is INumberBase:" + typeof(T).ToString());
+            //}
+            //Type numberInterface = typeof(INumberBase<>).MakeGenericType(typeof(T));
+            //if (numberInterface.IsAssignableFrom(typeof(T))) {
                 Type typeCaller = typeof(GenericMaths.TraitsINumberBaseV3<>).MakeGenericType(typeof(T)); // 演示了创建泛型类. 业务不是最优.
                 object obj = Activator.CreateInstance(typeCaller)!;
                 define.NumberBase = obj as INumberBaseCaller<T>;
