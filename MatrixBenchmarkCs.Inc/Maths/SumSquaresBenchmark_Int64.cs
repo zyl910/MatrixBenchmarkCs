@@ -311,6 +311,39 @@ namespace MatrixBenchmarkCs.Maths {
             CheckResult("SumTraitsV3OnProxy");
         }
 
+        private static TMy StaticSumTraitsV3ProxyCall(TMy[] src, int srcCount) {
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtil.SumSquaresOnProxyCall<TMy>(span2);
+            return rt;
+        }
+
+        [Benchmark]
+        public void SumTraitsV3ProxyCall() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3ProxyCall(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3ProxyCall");
+        }
+
+        private static TMy StaticSumTraitsV3ProxyIf(TMy[] src, int srcCount) {
+            var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
+            var rt = DemoTraitsUtilCommon.SumSquaresIf<NumberBaseProxy<TMy>>(span2);
+            return rt.Value;
+        }
+
+        // SumTraitsV3ProxyIf 强制走分支判断接口, 不利于 Aot . 且其他场景也没有优势.
+        //[Benchmark]
+        public void SumTraitsV3ProxyIf() {
+            if (BenchmarkUtil.IsLastRun) {
+                Volatile.Write(ref dstTMy, 0);
+                //Debugger.Break();
+            }
+            dstTMy = StaticSumTraitsV3ProxyIf(srcArray, srcArray.Length);
+            CheckResult("SumTraitsV3ProxyIf");
+        }
+
         private static TMy StaticSumTraitsV3Proxy(TMy[] src, int srcCount) {
             var span2 = MemoryMarshal.Cast<TMy, NumberBaseProxy<TMy>>(src.AsSpan(0, srcCount));
             var rt = DemoTraitsUtil.SumSquares<NumberBaseProxy<TMy>>(span2);
@@ -340,7 +373,7 @@ namespace MatrixBenchmarkCs.Maths {
                 //Debugger.Break();
             }
             dstTMy = StaticSumTraitsV3ProxyCommon(srcArray, srcArray.Length);
-            CheckResult("SumTraitsV3ProxyOld");
+            CheckResult("SumTraitsV3ProxyCommon");
         }
 
     }

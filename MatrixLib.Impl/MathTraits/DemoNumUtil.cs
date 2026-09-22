@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace MatrixLib.MathTraits {
@@ -65,6 +66,30 @@ using TraitsNS = MatrixLib.MathTraits;
                 p = ref Unsafe.Add(ref p, 1);
             }
             return rt.Value;
+        }
+
+        //public static U SumSquaresU<U>(ReadOnlySpan<U> src) {
+        //    return default!;
+        //}
+
+        /// <summary>计算平方和 - 基于代理调用. 性能与直接调用代理相同, 主要是为了演示泛型函数转发.</summary>
+        /// <inheritdoc cref="SumSquares{T}"/>
+        public static T SumSquaresOnProxyCall<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+        T>(ReadOnlySpan<NumberBaseProxy<T>> src) where T : IEquatable<T>
+#if NET7_0_OR_GREATER
+            , INumberBase<T>
+#endif // NET7_0_OR_GREATER
+            {
+            //return SumSquaresU(src); // Error: CS0029 Cannot implicitly convert type 'NumberBaseProxy<T>' to 'T'
+            //return SumSquaresU<NumberBaseProxy<T>>(src); // Error: CS0029 Cannot implicitly convert type 'NumberBaseProxy<T>' to 'T'.
+            //return SumSquaresU(src).Value; // OK. 问题并不是在 NumberBaseProxy、ReadOnlySpan, 而是 返回值的类型必须一致.
+            // -- body --
+            //var call = NumberBaseProxy<NumberBaseProxy<T>>.Zero; // Error on SumSquaresCall: CS0315 The type 'NumberBaseProxy<NumberBaseProxy<T>>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no boxing conversion from 'NumberBaseProxy<NumberBaseProxy<T>>' to 'INumberBaseCaller<NumberBaseProxy<T>>'.
+            var call = NumberBaseProxy<T>.Zero; // OK.
+            //var call = NumberBaseProxy<T>.Zero as INumberBaseCaller<T>; // Error on SumSquaresCall: CS0311 The type 'INumberBaseCaller<T>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no implicit reference conversion from 'INumberBaseCaller<T>' to 'INumberBaseCaller<NumberBaseProxy<T>>'.
+            //var call = NumberBaseProxy<T>.Zero as INumberBaseCaller<NumberBaseProxy<T>>; // OK.
+            //return SumSquaresCall(call, src); // Error: CS0029 Cannot implicitly convert type 'NumberBaseProxy<T>' to 'T'
+            return SumSquaresCall(call, src).Value;
         }
 
     }

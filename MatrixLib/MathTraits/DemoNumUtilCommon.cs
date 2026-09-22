@@ -34,5 +34,20 @@ namespace MatrixLib.MathTraits {
             return rt;
         }
 
+        /// <summary>
+        /// 计算平方和-自动判断.
+        /// </summary>
+        /// <typeparam name="T">元素类型.</typeparam>
+        /// <param name="src">源数据.</param>
+        /// <returns>返回结算结果.</returns>
+        public static T SumSquaresIf<T>(ReadOnlySpan<T> src) {
+            T num = default!;
+            if (num is not null && num is INumberBaseCaller<T> ops) {
+                return SumSquaresCall(ops, src);
+            } else {
+                return SumSquaresCall(TraitsINumberBaseV3<T>.Instance, src);
+            }
+        }
+
     }
 }
