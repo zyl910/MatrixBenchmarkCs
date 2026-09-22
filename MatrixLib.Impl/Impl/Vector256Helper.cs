@@ -167,7 +167,7 @@ namespace MatrixLib.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfWhereAllBitsSet<T>(Vector256<T> vector) where T : struct {
 #if NET10_0_OR_GREATER
-            return Vector256.LastIndexOf(vector, value);
+            return Vector256.LastIndexOf(vector, Vector256<T>.AllBitsSet.ToScalar());
 #else
             if (typeof(T) == typeof(float)) {
                 return LastIndexOf(vector.AsInt32(), -1);

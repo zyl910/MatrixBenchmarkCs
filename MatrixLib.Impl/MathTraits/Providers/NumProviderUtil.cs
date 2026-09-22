@@ -41,10 +41,11 @@ namespace MatrixLib.MathTraits.Providers {
             //}
             Type numberInterface = typeof(INumberBase<>).MakeGenericType(typeof(T));
             if (numberInterface.IsAssignableFrom(typeof(T))) {
-                Type typeCaller = typeof(GenericMaths.TraitsINumberBaseV3<>).MakeGenericType(typeof(T));
+                Type typeCaller = typeof(GenericMaths.TraitsINumberBaseV3<>).MakeGenericType(typeof(T)); // 演示了创建泛型类. 业务不是最优.
                 object obj = Activator.CreateInstance(typeCaller)!;
                 define.NumberBase = obj as INumberBaseCaller<T>;
                 rt = true;
+                //Console.WriteLine("CreateInstance OK:" + typeCaller.ToString());
             }
 #endif // NET7_0_OR_GREATER
             // Fill by caller.

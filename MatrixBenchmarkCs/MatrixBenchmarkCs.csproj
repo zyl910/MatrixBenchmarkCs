@@ -6,19 +6,20 @@
         <TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(OS)' == 'Windows_NT' ">
-      <PropertyGroup>
-        <TargetFrameworks>net9.0;net462</TargetFrameworks>
-      </PropertyGroup>
-    </When>
     <Otherwise>
       <PropertyGroup>
+        <!--
+        net8.0;net7.0;net6.0
+        -->
         <TargetFrameworks>net9.0</TargetFrameworks>
       </PropertyGroup>
+        <PropertyGroup Condition=" $(VisualStudioVersion) &gt;= 18.0 ">
+            <TargetFrameworks>$(TargetFrameworks);net10.0</TargetFrameworks>
+        </PropertyGroup>
+        <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+            <TargetFrameworks>$(TargetFrameworks);net462</TargetFrameworks>
+        </PropertyGroup>
     </Otherwise>
-      <!--
-      net8.0;net7.0;net6.0
-      -->
   </Choose>
 
   <PropertyGroup>
