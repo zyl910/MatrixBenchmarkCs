@@ -22,12 +22,12 @@ namespace MatrixLib.MathTraits {
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
         {
-            T rt = TC.Zero; // Result.
+            T rt = TC.DoZero; // Result.
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
             for (int i = 0; i < srcCount; ++i) {
-                var temp = TC.Multiply(p, p);
-                rt = TC.Addition(rt, temp);
+                var temp = TC.DoMultiply(p, p);
+                rt = TC.DoAddition(rt, temp);
                 // Next.
                 p = ref Unsafe.Add(ref p, 1);
             }

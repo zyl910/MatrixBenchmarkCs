@@ -39,10 +39,10 @@ namespace MatrixLib.MathTraits {
             if (instance is INumberBaseCaller<T> itf) {
                 //Debugger.Break();
                 NumberBase = itf;
-                Zero = itf.Zero;
+                Zero = itf.DoZero;
                 //One = itf.CallOne;
-                Addition = itf.Addition;
-                Multiply = itf.Multiply;
+                Addition = itf.DoAddition;
+                Multiply = itf.DoMultiply;
                 // 预热.
                 try {
                     var TT = TraitsINumberBaseV2<T>.Instance;

@@ -88,7 +88,7 @@ namespace MatrixLib.MathTraits {
                 var CT = NumberTraitsCache<T>.NumberBase;
 #endif // USE_ZERO_OF_TYPES
             if (CT is not null) {
-                    return CT.Addition(left, right);
+                    return CT.DoAddition(left, right);
                 }
 #endif // USE_DELEGATE
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -145,7 +145,7 @@ namespace MatrixLib.MathTraits {
 #else
                 var CT = ZeroOfTypes<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.Multiply(left, right);
+                    return CT.DoMultiply(left, right);
                 }
 #endif
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));

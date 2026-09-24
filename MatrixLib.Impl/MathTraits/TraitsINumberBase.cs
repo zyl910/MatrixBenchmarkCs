@@ -58,7 +58,7 @@ namespace MatrixLib.MathTraits {
                 //}
                 var CT = ZeroOfTypes<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.Addition(left, right);
+                    return CT.DoAddition(left, right);
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
@@ -100,7 +100,7 @@ namespace MatrixLib.MathTraits {
                 //}
                 var CT = ZeroOfTypes<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.Addition(left, right);
+                    return CT.DoMultiply(left, right);
                 }
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }

@@ -41,14 +41,14 @@ namespace MatrixLib.MathTraits {
             InitHash = define.GetHashCode();
             NumberBase = define.NumberBase;
             if (NumberBase is not null) {
-                Zero = NumberBase.Zero;
-                Addition = NumberBase.Addition;
-                Multiply = NumberBase.Multiply;
+                Zero = NumberBase.DoZero;
+                Addition = NumberBase.DoAddition;
+                Multiply = NumberBase.DoMultiply;
                 // 预热.
                 try {
                     var TT = TraitsINumberBaseV3<T>.Instance;
-                    var t1 = TT.Addition(Zero, Zero);
-                    t1 = TT.Multiply(t1, Zero);
+                    var t1 = TT.DoAddition(Zero, Zero);
+                    t1 = TT.DoMultiply(t1, Zero);
                     InitHash ^= t1?.GetHashCode() ?? 1;
                 } catch (Exception ex) {
                     Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseCaller fail! " + ex.ToString());

@@ -42,9 +42,9 @@ namespace MatrixLib.MathTraits {
             if (zero is INumberBaseCaller<T> itf) {
                 //Debugger.Break();
                 NumberBase = itf;
-                Zero = itf.Zero; // Instance 、Zero 未来应拆开.
-                Addition = itf.Addition;
-                Multiply = itf.Multiply;
+                Zero = itf.DoZero; // Instance 、Zero 未来应拆开.
+                Addition = itf.DoAddition;
+                Multiply = itf.DoMultiply;
                 // 预热.
                 try {
                     var TT = TraitsINumberBaseV2<T>.Instance;

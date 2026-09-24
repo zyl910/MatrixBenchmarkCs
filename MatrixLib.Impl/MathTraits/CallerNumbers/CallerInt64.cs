@@ -9,18 +9,18 @@ namespace MatrixLib.MathTraits.CallerNumbers {
     /// </summary>
     public readonly struct CallerInt64 : INumberBaseCaller<TMy> {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TMy Addition(TMy left, TMy right) {
+        public TMy DoAddition(TMy left, TMy right) {
             return left + right;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TMy Multiply(TMy left, TMy right) {
+        public TMy DoMultiply(TMy left, TMy right) {
             return left * right;
         }
 
         public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(TMy); } }
 
-        public TMy Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return default; } }
+        public TMy DoZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return default; } }
 
     }
 }

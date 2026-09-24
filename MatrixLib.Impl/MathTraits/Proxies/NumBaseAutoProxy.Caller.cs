@@ -11,17 +11,17 @@ namespace MatrixLib.MathTraits.Proxies {
             return NumberTraitsManager.Instance.Register<NumberBaseProxy<T>>();
         }
 
-        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.Zero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Zero; } }
+        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.DoZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Zero; } }
 
         //public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(T); } }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.Addition(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
+        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.DoAddition(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
             return left + right;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.Multiply(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
+        readonly NumberBaseProxy<T> INumberBaseCaller<NumberBaseProxy<T>>.DoMultiply(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
             return left * right;
         }
     }

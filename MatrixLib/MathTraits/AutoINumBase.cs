@@ -36,7 +36,7 @@ namespace MatrixLib.MathTraits {
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Addition(T left, T right) {
+        public T DoAddition(T left, T right) {
             if (typeof(T) == typeof(float)) {
                 UnsafeAs<T, float> AsT; return AsT.From(AsT.To(left) + AsT.To(right));
             } else if (typeof(T) == typeof(double)) {
@@ -85,7 +85,7 @@ namespace MatrixLib.MathTraits {
                 var CT = NumberTraitsCacheV3<T>.NumberBase;
 #endif // USE_ZERO_OF_TYPES
                 if (CT is not null) {
-                    return CT.Addition(left, right);
+                    return CT.DoAddition(left, right);
                 }
 #endif // USE_DELEGATE
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
@@ -93,7 +93,7 @@ namespace MatrixLib.MathTraits {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Multiply(T left, T right) {
+        public T DoMultiply(T left, T right) {
             if (typeof(T) == typeof(float)) {
                 UnsafeAs<T, float> AsT; return AsT.From(AsT.To(left) * AsT.To(right));
             } else if (typeof(T) == typeof(double)) {
@@ -142,14 +142,14 @@ namespace MatrixLib.MathTraits {
 #else
                 var CT = NumberTraitsCacheV3<T>.NumberBase;
                 if (CT is not null) {
-                    return CT.Multiply(left, right);
+                    return CT.DoMultiply(left, right);
                 }
 #endif
                 throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
             }
         }
 
-        public T Zero {
+        public T DoZero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
                 if (default(T) is not null) {

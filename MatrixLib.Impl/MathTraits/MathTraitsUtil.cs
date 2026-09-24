@@ -353,12 +353,12 @@ using TraitsNS = MatrixLib.MathTraits;
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
 		{
-			T rt = TV.Zero; // Result.
+			T rt = TV.DoZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.DoMultiply(p, p);
+				rt = TV.DoAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
@@ -377,12 +377,12 @@ using TraitsNS = MatrixLib.MathTraits;
 #endif // NET7_0_OR_GREATER
 		{
 			var TV = MathTrait.GetCallerItf<T>();
-			T rt = TV.Zero; // Result.
+			T rt = TV.DoZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.DoMultiply(p, p);
+				rt = TV.DoAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
@@ -401,12 +401,12 @@ using TraitsNS = MatrixLib.MathTraits;
 #endif // NET7_0_OR_GREATER
 		{
 			MathTrait.OutCaller<T, INumberBaseCaller<T>>(out var TV);
-			T rt = TV.Zero; // Result.
+			T rt = TV.DoZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);
 			for (int i = 0; i < srcCount; ++i) {
-				var temp = TV.Multiply(p, p);
-				rt = TV.Addition(rt, temp);
+				var temp = TV.DoMultiply(p, p);
+				rt = TV.DoAddition(rt, temp);
 				// Next.
 				p = ref Unsafe.Add(ref p, 1);
 			}
