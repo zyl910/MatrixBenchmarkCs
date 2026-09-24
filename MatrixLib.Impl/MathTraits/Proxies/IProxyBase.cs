@@ -12,18 +12,11 @@ namespace MatrixLib.MathTraits.Proxies {
     public interface IProxyBase {
     }
 
+#if NET7_0_OR_GREATER
     /// <summary>
     /// 带类型的基本代理接口.
     /// </summary>
     public interface IProxyBase<TSelf, T> {
-
-        /// <summary>
-        /// 将自身类型, 转为元素类型.
-        /// </summary>
-        /// <param name="src">源值.</param>
-        /// <returns>返回转换后的值.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T To(TSelf src);
 
         /// <summary>
         /// 将元素类型, 转为自身类型.
@@ -31,7 +24,17 @@ namespace MatrixLib.MathTraits.Proxies {
         /// <param name="src">源值.</param>
         /// <returns>返回转换后的值.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TSelf From(T src);
+        public abstract static TSelf From(T src);
+
+        /// <summary>
+        /// 将自身类型, 转为元素类型.
+        /// </summary>
+        /// <param name="src">源值.</param>
+        /// <returns>返回转换后的值.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public abstract static T To(TSelf src);
 
     }
+#endif // NET7_0_OR_GREATER
+
 }
