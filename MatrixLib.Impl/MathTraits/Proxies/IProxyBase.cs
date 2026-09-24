@@ -18,6 +18,11 @@ namespace MatrixLib.MathTraits.Proxies {
     /// </summary>
     public interface IProxyBase<TSelf, T> {
 
+        /// <summary>值.</summary>
+        public T Value {
+            get;
+        }
+
         /// <summary>
         /// 将元素类型, 转为自身类型.
         /// </summary>
