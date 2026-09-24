@@ -13,15 +13,27 @@ namespace MatrixLib.MathTraits.Proxies {
     /// </summary>
     /// <typeparam name="TSelf">Self type (自身类型).</typeparam>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public partial interface IProxyFromINumberBase<TSelf, T>: IProxyBase<TSelf, T> where T: INumberBase<T>, new() {
+    public partial interface IProxyFromINumberBase<TSelf, T>: IProxyBase<TSelf, T> where TSelf : IProxyBase<TSelf, T>, new() where T : INumberBase<T> {
+        /// <summary>
+        /// 实例.
+        /// </summary>
+        public static TSelf Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
-        public new static NumberBaseProxy<T> Zero {
-            // Zero 同名. CS0108	A variable was declared with the same name as a variable in a base type. However, the new keyword was not used. This warning informs you that you should use new; the variable is declared as if new had been used in the declaration.
+
+        /// <inheritdoc cref="INumberBaseCaller{T}.DoZero"/>
+        public static NumberBaseProxy<T> Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
                 return T.Zero;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TSelf Addition(TSelf left, TSelf right) => Instance.From(Instance.To(left) + Instance.To(right));
+        //public static TSelf Addition(TSelf left, TSelf right) => Instance.DoAddition(left, right); // CS1061 'TSelf' does not contain a definition for 'DoAddition' and no accessible extension method 'DoAddition' accepting a first argument of type 'TSelf' could be found (are you missing a using directive or an assembly reference?)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TSelf Multiply(TSelf left, TSelf right) => Instance.From(Instance.To(left) * Instance.To(right));
 
         // CS0563	One of the parameters of a binary operator must be the containing type
         // CS0563：二元运算符其中一个参数必须是包含类型。`public static` 的二元运算符，**至少有一个参数必须是当前所在类型（包含类型）**。
