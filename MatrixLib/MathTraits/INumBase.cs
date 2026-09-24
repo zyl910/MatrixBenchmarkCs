@@ -11,6 +11,14 @@ namespace MatrixLib.MathTraits {
     public interface INumberBaseCaller<T> : IBaseMathCaller<T> {
 
         /// <summary>
+        /// 零值.
+        /// </summary>
+        public T Zero {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+        }
+
+        /// <summary>
         /// 加法.
         /// </summary>
         /// <param name="left">左值.</param>
@@ -27,14 +35,6 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回结果.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Multiply(T left, T right);
-
-        /// <summary>
-        /// 零值.
-        /// </summary>
-        public T Zero {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-        }
     }
 
 }
