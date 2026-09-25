@@ -6,8 +6,8 @@ namespace MatrixLib.MathTraits.Proxies {
 
         TSelf INumberBaseCaller<TSelf>.DoZero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //get => TSelf.From(T.Zero);
-            get => Zero;
+            get => TSelf.From(T.Zero);
+            //get => Zero;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -17,7 +17,7 @@ namespace MatrixLib.MathTraits.Proxies {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //TSelf INumberBaseCaller<TSelf>.DoMultiply(TSelf left, TSelf right) => TSelf.From(TSelf.To(left) * TSelf.To(right));
-        TSelf INumberBaseCaller<TSelf>.DoMultiply(TSelf left, TSelf right) => Multiply(left, right);
+        TSelf INumberBaseCaller<TSelf>.DoMultiply(TSelf left, TSelf right) => DoMultiply(left, right);
 
     }
 #endif // NET7_0_OR_GREATER

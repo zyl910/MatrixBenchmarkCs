@@ -12,25 +12,120 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace MatrixBenchmarkCs {
     internal class Program {
 
-            private class LocalRecvTye : IRecvNumberType {
-                public static LocalRecvTye Instance { get; } = new ();
-                public void RecvType<
-#if NET5_0_OR_GREATER
-                    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-#endif // NET5_0_OR_GREATER
-                T>()
-#if NET9_0_OR_GREATER
-                    where T : allows ref struct
-#endif // NET9_0_OR_GREATER
-                {
-                    //NumberTraitsManager.Instance.Register<NumberBaseProxy<T>>();
-                }
-            };
+#if NET7_0_OR_GREATER
+        interface IFoo {
+            public string Report();
+            public static string ReportStatic() {
+                return "IFoo.ReportStatic";
+            }
+            public static abstract string ReportStaticVirtual();
+        }
+
+        interface IFoo1: IFoo {
+            //public new string Report() { // 虽然能编译通过. 但它会创建一个新的同名方法, 而不是改写.
+            //    return "IFoo1.Report_new";
+            //}
+            string IFoo.Report() {
+                return "IFoo1.Report";
+            }
+            public new static string ReportStatic() {
+                return "IFoo1.ReportStatic_new";
+            }
+            //static string IFoo.ReportStatic() { // CS0539 'Program.IFoo1.ReportStatic()' in explicit interface declaration is not found among members of the interface that can be implemented
+            //    return "IFoo1.ReportStatic";
+            //}
+            static string IFoo.ReportStaticVirtual() {
+                return "IFoo1.ReportStaticVirtual";
+            }
+        }
+
+        interface IFoo2 : IFoo1 {
+            //public new string Report() {
+            //    return "IFoo2.Report_new";
+            //}
+            string IFoo.Report() { // 成功修改了 IFoo1 的 Report 的实现.
+                return "IFoo2.Report";
+            }
+            public new static string ReportStatic() {
+                return "IFoo2.ReportStatic_new";
+            }
+            //static string IFoo.ReportStatic() {
+            //    return "IFoo2.ReportStatic";
+            //}
+            static string IFoo.ReportStaticVirtual() {
+                // 接口默认实现里, 仅 static 的可以通过类型名来调用（故可以根据类型名来指定谁的方法）, 无法通过泛型访问, 可以new来重新定义, 可看作普通静态方法; 而 static abstract、static virtual 需要通过泛型来调用, 无法通过类型名来调用, 且推荐用 显式实现来重新定义（IFoo.SayStaticCall）.
+                return "IFoo2.ReportStaticVirtual. " + IFoo1.ReportStatic();
+                //return "IFoo2.ReportStaticVirtual. " + IFoo1.ReportStaticVirtual(); // CS8926 A static virtual or abstract interface member can be accessed only on a type parameter.
+            }
+        }
+
+        class Foo: IFoo2 {
+            //void IFoo.Report() {
+            //    //base(IFoo2).Say();
+            //    //IFoo2.base.Say();
+            //    //((IFoo2)this).Say();
+            //    // Stack overflow. Repeated 32150 times
+            //}
+
+            // 如果 IFoo1/IFoo2 使用`public new string Report`, 且本类没有 `Report`. 会报错: CS0535 'Program.Foo' does not implement interface member 'Program.IFoo.Report()'
+            // If has `Report` member: Stack overflow. Repeated 32150 times
+            //public string Report() {
+            //    //return base(IFoo2).Report(); // Error
+            //    //return IFoo2.base.Report(); // Error
+            //    return ((IFoo2)this).Report();
+            //}
+            public string Report2() {
+                return ((IFoo2)this).Report(); // 在不存在同名方法时, 才能用这种办法转发接口的非静态默认实现.
+            }
+
+            public static string ReportStatic() {
+                return "Foo-" + IFoo2.ReportStatic();
+            }
+        }
+
+        //static string CallReportStatic<T>() where T : IFoo {
+        //    return T.ReportStatic(); // 仅 static 的无法通过泛型访问. CS0704 Cannot do non-virtual member lookup in 'T' because it is a type parameter.
+        //}
+
+        static string CallReportStaticVirtual<T>() where T : IFoo {
+            return T.ReportStaticVirtual();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void TestInterface() {
+            TextWriter writer = Console.Out;
+            Foo foo = new Foo();
+            //writer.WriteLine("foo.Report(): " + foo.Report());
+            writer.WriteLine("((IFoo)foo).Report(): " + ((IFoo)foo).Report());
+            writer.WriteLine("((IFoo1)foo).Report(): " + ((IFoo1)foo).Report());
+            writer.WriteLine("((IFoo2)foo).Report(): " + ((IFoo2)foo).Report());
+            writer.WriteLine("CallReportStaticVirtual<Foo>(): " + CallReportStaticVirtual<Foo>());
+            //writer.WriteLine("CallReportStaticVirtual<IFoo>(): " + CallReportStaticVirtual<IFoo>()); // CS8920 The interface 'Program.IFoo' cannot be used as type argument. Static member 'Program.IFoo.SayStatic()' does not have a most specific implementation in the interface.
+            writer.WriteLine("CallReportStaticVirtual<IFoo1>(): " + CallReportStaticVirtual<IFoo1>());
+            writer.WriteLine("CallReportStaticVirtual<IFoo2>(): " + CallReportStaticVirtual<IFoo2>());
+            writer.WriteLine("Foo.ReportStatic(): " + Foo.ReportStatic());
+            writer.WriteLine("IFoo.ReportStatic(): " + IFoo.ReportStatic());
+            writer.WriteLine("IFoo1.ReportStatic(): " + IFoo1.ReportStatic());
+            writer.WriteLine("IFoo2.ReportStatic(): " + IFoo2.ReportStatic());
+            // Output:
+            //((IFoo)foo).Report(): IFoo2.Report
+            //((IFoo1)foo).Report(): IFoo2.Report
+            //((IFoo2)foo).Report(): IFoo2.Report
+            //CallReportStaticVirtual<Foo>(): IFoo2.ReportStaticVirtual.IFoo1.ReportStatic_new
+            //CallReportStaticVirtual<IFoo1>(): IFoo1.ReportStaticVirtual
+            //CallReportStaticVirtual<IFoo2>(): IFoo2.ReportStaticVirtual.IFoo1.ReportStatic_new
+            //Foo.ReportStatic(): Foo - IFoo2.ReportStatic_new
+            //IFoo.ReportStatic(): IFoo.ReportStatic
+            //IFoo1.ReportStatic(): IFoo1.ReportStatic_new
+            //IFoo2.ReportStatic(): IFoo2.ReportStatic_new
+        }
+#endif // NET7_0_OR_GREATER
 
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
@@ -47,9 +142,15 @@ namespace MatrixBenchmarkCs {
             //NumberTraitsManager.Instance.RegisterGeneric(typeof(Int64), typeof(NumberBaseProxy<>));
             //NumberTraitsManager.Instance.RegisterType(typeof(NumberBaseProxy<Int64>));
             NumberTraitsBoot.AcceptTypesCommon(new NumberBaseProxyRegisterAccepter());
-            //NumberTraitsBoot.SendTypesCommon(LocalRecvTye.Instance);
             //writer.WriteLine(NumberTraitsManager.Instance.GetTypes().ToList());
             writer.WriteLine("NumberTraitsManager.GetTypes: " + string.Join(", ", NumberTraitsManager.Instance.GetTypes().OrderBy(f => f.ToString())));
+#if NET7_0_OR_GREATER
+            try {
+                TestInterface();
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
+#endif // NET7_0_OR_GREATER
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.

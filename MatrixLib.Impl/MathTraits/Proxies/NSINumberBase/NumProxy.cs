@@ -77,6 +77,8 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
 #if ALLOW_INTERFACE_STATIC
                 return T.Zero;
 #else
+                //return INumberBase<NumProxy<T>>.base.Zero;
+                //return base(INumberBase<NumProxy<T>>).Zero;
                 return TraitsINumberBaseV3<T>.Instance.DoZero;
                 //return INumberBase<NumProxy<T>>.Zero; // CS8926	A static virtual or abstract interface member can be accessed only on a type parameter.
                 //return ((INumberBase<NumProxy<T>>)this).DoZero; // CS0026 Keyword 'this' is not valid in a static property, static method, or static field initializer
