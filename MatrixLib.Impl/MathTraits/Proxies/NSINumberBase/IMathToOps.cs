@@ -7,18 +7,18 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
     /// <summary>
     /// 泛型数学转为数值操作接口.
     /// </summary>
-    public partial interface IMathToOps<T>: INumberBaseCaller<T> where T : INumberBase<T> {
+    public partial interface IMathToOps<T>: INumOps<T> where T : INumberBase<T> {
 
-        T INumberBaseCaller<T>.DoZero {
+        T INumOps<T>.DoZero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => StaticZero;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.DoAddition(T left, T right) => StaticAddition(left, right);
+        T INumOps<T>.DoAddition(T left, T right) => StaticAddition(left, right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        T INumberBaseCaller<T>.DoMultiply(T left, T right) => StaticMultiply(left, right);
+        T INumOps<T>.DoMultiply(T left, T right) => StaticMultiply(left, right);
 
     }
 

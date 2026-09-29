@@ -10,13 +10,13 @@ namespace MatrixLib.MathTraits {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public struct TraitsINumberBaseV3<T>: INumberBaseCaller<T> {
+    public struct TraitsINumberBaseV3<T>: INumOps<T> {
         /// <summary>
         /// 实例.
         /// </summary>
         public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
-        //T INumberBaseCaller<T>.Zero {
+        //T INumOps<T>.Zero {
         //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //    get {
         //        return Zero;
@@ -26,12 +26,12 @@ namespace MatrixLib.MathTraits {
         //Type IBaseMathCaller.CallElementType => typeof(T);
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //T INumberBaseCaller<T>.Addition(T left, T right) {
+        //T INumOps<T>.Addition(T left, T right) {
         //    return Addition(left, right);
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //T INumberBaseCaller<T>.Multiply(T left, T right) {
+        //T INumOps<T>.Multiply(T left, T right) {
         //    return Multiply(left, right);
         //}
 
@@ -60,12 +60,12 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Addition(left, right);
                 //    }
                 //} else {
                 //    T caller = NumberTraitsCacheV3<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Addition(left, right);
                 //    }
                 //}
@@ -117,19 +117,19 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Multiply(left, right);
                 //    }
                 //} else {
                 //    T caller = NumberTraitsCacheV3<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Multiply(left, right);
                 //    }
                 //}
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
-                    if (caller is INumberBaseCaller<T> CT2) {
+                    if (caller is INumOps<T> CT2) {
                         return CT2.Multiply(left, right);
                     }
                 }
@@ -157,7 +157,7 @@ namespace MatrixLib.MathTraits {
                 } else {
                     return NumberTraitsCacheV3<T>.Zero;
                     //var caller = NumberTraitsCacheV3<T>.NumberBase;
-                    //if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                    //if ((caller is not null) && (caller is INumOps<T> CT)) {
                     //    return CT.Zero;
                     //}
                     //throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));

@@ -9,7 +9,7 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct MathToOps<T>: IProxyBase, INumberBaseCaller<T>, IMathToOps<T>
+    public readonly struct MathToOps<T>: IProxyBase, INumOps<T>, IMathToOps<T>
     where T : INumberBase<T> {
 
     }

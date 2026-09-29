@@ -8,7 +8,7 @@ namespace MatrixLib.MathTraits.CallerNumbers {
     /// <see cref="TMy"/> 的数值访问器.
     /// </summary>
     [CLSCompliant(false)]
-    public readonly struct CallerUInt64 : INumberBaseCaller<TMy> {
+    public readonly struct CallerUInt64 : INumOps<TMy> {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TMy DoAddition(TMy left, TMy right) {
             return left + right;

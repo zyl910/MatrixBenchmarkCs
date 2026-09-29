@@ -49,19 +49,19 @@ namespace MatrixLib.MathTraits {
 #endif // NET7_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static INumberBaseCaller<T> GetCallerItf<T>() {
+        public static INumOps<T> GetCallerItf<T>() {
             if (false) {
             } else if (typeof(T) == typeof(long)) {
-                return (INumberBaseCaller<T>)(object)(INumberBaseCaller<long>)(new CallerInt64());
+                return (INumOps<T>)(object)(INumOps<long>)(new CallerInt64());
             } else if (typeof(T) == typeof(ulong)) {
-                return (INumberBaseCaller<T>)(object)(INumberBaseCaller<ulong>)(new CallerUInt64());
+                return (INumOps<T>)(object)(INumOps<ulong>)(new CallerUInt64());
             }
             throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void OutCaller<T, TCaller>(out TCaller visitor)
-            where TCaller : INumberBaseCaller<T> {
+            where TCaller : INumOps<T> {
             if (false) {
             } else if (typeof(T) == typeof(long)) {
                 visitor = (TCaller)(object)(new CallerInt64());

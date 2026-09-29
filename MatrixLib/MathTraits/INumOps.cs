@@ -5,10 +5,10 @@ using System.Runtime.CompilerServices;
 namespace MatrixLib.MathTraits {
 
     /// <summary>
-    /// <see cref="INumberBase{TSelf}"/> 的访问器.
+    /// 数值运算接口.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public interface INumberBaseCaller<T> : IBaseMathCaller<T> {
+    public interface INumOps<T> : IBaseMathCaller<T> {
 
         /// <summary>
         /// 零值.

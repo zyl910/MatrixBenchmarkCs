@@ -84,10 +84,10 @@ using TraitsNS = MatrixLib.MathTraits;
             //return SumSquaresU<NumberBaseProxy<T>>(src); // Error: CS0029 Cannot implicitly convert type 'NumberBaseProxy<T>' to 'T'.
             //return SumSquaresU(src).Value; // OK. 问题并不是在 NumberBaseProxy、ReadOnlySpan, 而是 返回值的类型必须一致.
             // -- body --
-            //var call = NumberBaseProxy<NumberBaseProxy<T>>.Zero; // Error on SumSquaresCall: CS0315 The type 'NumberBaseProxy<NumberBaseProxy<T>>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no boxing conversion from 'NumberBaseProxy<NumberBaseProxy<T>>' to 'INumberBaseCaller<NumberBaseProxy<T>>'.
+            //var call = NumberBaseProxy<NumberBaseProxy<T>>.Zero; // Error on SumSquaresCall: CS0315 The type 'NumberBaseProxy<NumberBaseProxy<T>>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no boxing conversion from 'NumberBaseProxy<NumberBaseProxy<T>>' to 'INumOps<NumberBaseProxy<T>>'.
             var call = NumberBaseProxy<T>.Zero; // OK.
-            //var call = NumberBaseProxy<T>.Zero as INumberBaseCaller<T>; // Error on SumSquaresCall: CS0311 The type 'INumberBaseCaller<T>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no implicit reference conversion from 'INumberBaseCaller<T>' to 'INumberBaseCaller<NumberBaseProxy<T>>'.
-            //var call = NumberBaseProxy<T>.Zero as INumberBaseCaller<NumberBaseProxy<T>>; // OK.
+            //var call = NumberBaseProxy<T>.Zero as INumOps<T>; // Error on SumSquaresCall: CS0311 The type 'INumOps<T>' cannot be used as type parameter 'TCaller' in the generic type or method 'DemoTraitsUtilCommon.SumSquaresCall<T, TCaller>(TCaller, ReadOnlySpan<T>)'. There is no implicit reference conversion from 'INumOps<T>' to 'INumOps<NumberBaseProxy<T>>'.
+            //var call = NumberBaseProxy<T>.Zero as INumOps<NumberBaseProxy<T>>; // OK.
             //return SumSquaresCall(call, src); // Error: CS0029 Cannot implicitly convert type 'NumberBaseProxy<T>' to 'T'
             return SumSquaresCall(call, src).Value;
         }

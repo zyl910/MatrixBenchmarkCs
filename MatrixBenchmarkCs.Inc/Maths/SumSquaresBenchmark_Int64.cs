@@ -159,8 +159,8 @@ namespace MatrixBenchmarkCs.Maths {
             //var rt = MathTraitsUtil.SumTraitsV2Using(span3);
             //if (true) {
             //    NumberBaseProxy<TMy> num = default;
-            //    bool flag = (num is INumberBaseCaller<TMy>);
-            //    Console.WriteLine("Out Is INumberBaseCaller: {0}", flag);
+            //    bool flag = (num is INumOps<TMy>);
+            //    Console.WriteLine("Out Is INumOps: {0}", flag);
             //}
             var rt = MathTraitsUtil.SumTraitsV2Using<NumberBaseProxy<TMy>>(span2);
             return rt.Value;

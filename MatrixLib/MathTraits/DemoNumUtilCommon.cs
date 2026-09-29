@@ -17,7 +17,7 @@ namespace MatrixLib.MathTraits {
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
         public static T SumSquaresCall<T, TCaller>(TCaller TC, ReadOnlySpan<T> src)
-            where TCaller : INumberBaseCaller<T>
+            where TCaller : INumOps<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
@@ -42,7 +42,7 @@ namespace MatrixLib.MathTraits {
         /// <returns>返回结算结果.</returns>
         public static T SumSquaresIf<T>(ReadOnlySpan<T> src) {
             T num = default!;
-            if (num is not null && num is INumberBaseCaller<T> ops) {
+            if (num is not null && num is INumOps<T> ops) {
                 return SumSquaresCall(ops, src);
             } else {
                 return SumSquaresCall(TraitsINumberBaseV3<T>.Instance, src);

@@ -45,7 +45,7 @@ namespace MatrixLib.MathTraits {
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-        T>(this INumberBaseCaller<T> caller) {
+        T>(this INumOps<T> caller) {
             // CS0120	An object reference is required for the non-static field, method, or property 'NumberTraitsBoot.RegisterCaller1.
             return NumberTraitsManager.Instance.Register<T>(caller);
         }
@@ -55,7 +55,7 @@ namespace MatrixLib.MathTraits {
 #if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif // NET5_0_OR_GREATER
-        T, TCaller>(this TCaller caller, T instance) where TCaller: INumberBaseCaller<T> {
+        T, TCaller>(this TCaller caller, T instance) where TCaller: INumOps<T> {
             // An object reference is required for the non-static field, method, or property 'NumberTraitsBoot.RegisterCaller' // 看来 扩展方法无法支持它. C# 14 扩展 可能支持, 但可能有类型推导难题, 故还是用自身静态方法吧.
             return NumberTraitsManager.Instance.Register<T>(caller, instance);
         }

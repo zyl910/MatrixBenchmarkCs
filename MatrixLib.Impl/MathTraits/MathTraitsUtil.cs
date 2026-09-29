@@ -301,8 +301,8 @@ using TraitsNS = MatrixLib.MathTraits;
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
             //if (true) {
-            //    bool flag = (p is INumberBaseCaller<T>);
-            //    Console.WriteLine("Is INumberBaseCaller: {0}", flag);
+            //    bool flag = (p is INumOps<T>);
+            //    Console.WriteLine("Is INumOps: {0}", flag);
             //}
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TT.Multiply(p, p);
@@ -329,8 +329,8 @@ using TraitsNS = MatrixLib.MathTraits;
             int srcCount = src.Length;
             ref T p = ref Unsafe.AsRef(in src[0]);
             //if (true) {
-            //    bool flag = (p is INumberBaseCaller<T>);
-            //    Console.WriteLine("Is INumberBaseCaller: {0}", flag);
+            //    bool flag = (p is INumOps<T>);
+            //    Console.WriteLine("Is INumOps: {0}", flag);
             //}
             for (int i = 0; i < srcCount; ++i) {
                 var temp = TT.Multiply(p, p);
@@ -342,13 +342,13 @@ using TraitsNS = MatrixLib.MathTraits;
         }
 
         /// <summary>
-        /// 计算平方和, 使用 INumberBaseCaller 来计算.
+        /// 计算平方和, 使用 INumOps 来计算.
         /// </summary>
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回结算结果.</returns>
         public static T SumCallerIn<T, TCaller>(TCaller TV, ReadOnlySpan<T> src)
-            where TCaller: INumberBaseCaller<T>
+            where TCaller: INumOps<T>
 #if NET7_0_OR_GREATER
 		//where T : INumberBase<T> // 可忽略.
 #endif // NET7_0_OR_GREATER
@@ -400,7 +400,7 @@ using TraitsNS = MatrixLib.MathTraits;
 			where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
 		{
-			MathTrait.OutCaller<T, INumberBaseCaller<T>>(out var TV);
+			MathTrait.OutCaller<T, INumOps<T>>(out var TV);
 			T rt = TV.DoZero; // Result.
 			int srcCount = src.Length;
 			ref T p = ref Unsafe.AsRef(in src[0]);

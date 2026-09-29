@@ -19,6 +19,6 @@ namespace MatrixLib.MathTraits.Providers {
         public T Zero { get; set; } = default!;
 
         /// <summary>数值基础调用者.</summary>
-        public INumberBaseCaller<T>? NumberBase { get; set; }
+        public INumOps<T>? NumberBase { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace MatrixLib.MathTraits.Proxies {
 
         public static virtual TSelf MultiplicativeIdentity => TSelf.From(T.MultiplicativeIdentity);
 
-        /// <inheritdoc cref="INumberBaseCaller{T}.DoZero"/>
+        /// <inheritdoc cref="INumOps{T}.DoZero"/>
         public static virtual TSelf Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {

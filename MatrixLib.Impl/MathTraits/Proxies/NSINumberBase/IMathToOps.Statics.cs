@@ -10,17 +10,17 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
 
     partial interface IMathToOps<T> {
 
-        /// <inheritdoc cref="INumberBaseCaller{T}.DoZero"/>
+        /// <inheritdoc cref="INumOps{T}.DoZero"/>
         public static T StaticZero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => T.Zero;
         }
 
-        /// <inheritdoc cref="INumberBaseCaller{T}.DoAddition"/>
+        /// <inheritdoc cref="INumOps{T}.DoAddition"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T StaticAddition(T left, T right) => left + right;
 
-        /// <inheritdoc cref="INumberBaseCaller{T}.DoMultiply"/>
+        /// <inheritdoc cref="INumOps{T}.DoMultiply"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T StaticMultiply(T left, T right) => left * right;
 

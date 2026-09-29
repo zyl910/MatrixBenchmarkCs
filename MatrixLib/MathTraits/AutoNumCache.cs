@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// 数值类型萃取缓存. 元素类型 <typeparamref name="T"/> 必须有无参构造函数, 且可实现 INumberBaseCaller 等接口. 当没有 INumberBaseCaller 等接口时. One 等静态属性会是 Zero 或 default .
+    /// 数值类型萃取缓存. 元素类型 <typeparamref name="T"/> 必须有无参构造函数, 且可实现 INumOps 等接口. 当没有 INumOps 等接口时. One 等静态属性会是 Zero 或 default .
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
     public sealed class NumberTraitsCacheV3<
@@ -24,7 +24,7 @@ namespace MatrixLib.MathTraits {
         /// <summary>初始化后的 Hash.</summary>
         public static int InitHash { get; } = 0;
 
-        public static INumberBaseCaller<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
+        public static INumOps<T>? NumberBase { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
         public static Func<T, T, T>? Addition { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
         public static Func<T, T, T>? Multiply { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = null;
 
@@ -51,7 +51,7 @@ namespace MatrixLib.MathTraits {
                     t1 = TT.DoMultiply(t1, Zero);
                     InitHash ^= t1?.GetHashCode() ?? 1;
                 } catch (Exception ex) {
-                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumberBaseCaller fail! " + ex.ToString());
+                    Debug.WriteLine("The type `" + typeof(T).Name + "` register INumOps fail! " + ex.ToString());
                 }
             }
         }

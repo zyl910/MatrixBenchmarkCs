@@ -55,19 +55,19 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Addition(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Addition(left, right);
                 //    }
                 //}
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
-                    if (caller is INumberBaseCaller<T> CT2) {
+                    if (caller is INumOps<T> CT2) {
                         return CT2.Addition(left, right);
                     }
                 }
@@ -120,19 +120,19 @@ namespace MatrixLib.MathTraits {
             } else {
                 //if (default(T) is not null) {
                 //    T caller = default!;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Multiply(left, right);
                 //    }
                 //} else {
                 //    T caller = ZeroOfTypes<T>.Zero;
-                //    if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                //    if ((caller is not null) && (caller is INumOps<T> CT)) {
                 //        return CT.Multiply(left, right);
                 //    }
                 //}
 #if USE_IS_NOT_NULL
                 if (default(T) is not null) {
                     T caller = default!;
-                    if (caller is INumberBaseCaller<T> CT2) {
+                    if (caller is INumOps<T> CT2) {
                         return CT2.Multiply(left, right);
                     }
                 }
@@ -159,7 +159,7 @@ namespace MatrixLib.MathTraits {
                     return default!;
                 } else {
                     T caller = ZeroOfTypes<T>.Zero;
-                    //if ((caller is not null) && (caller is INumberBaseCaller<T> CT)) {
+                    //if ((caller is not null) && (caller is INumOps<T> CT)) {
                     //    return CT.Zero;
                     //}
                     throw new NotSupportedException(string.Format("Not supported type {0}!", typeof(T).FullName));
