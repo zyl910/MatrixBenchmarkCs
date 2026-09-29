@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if FALSE
+using System.Runtime.CompilerServices;
 
 namespace MatrixLib.MathTraits.Proxies {
 #if NET7_0_OR_GREATER
@@ -22,3 +23,4 @@ namespace MatrixLib.MathTraits.Proxies {
     }
 #endif // NET7_0_OR_GREATER
 }
+#endif // FALSE

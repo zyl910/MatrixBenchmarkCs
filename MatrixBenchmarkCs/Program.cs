@@ -101,7 +101,7 @@ namespace MatrixBenchmarkCs {
         static void TestInterface() {
             TextWriter writer = Console.Out;
             Foo foo = new Foo();
-            //writer.WriteLine("foo.Report(): " + foo.Report());
+            //writer.WriteLine("foo.Report(): " + foo.Report()); // Stack overflow. Repeated 32150 times
             writer.WriteLine("((IFoo)foo).Report(): " + ((IFoo)foo).Report());
             writer.WriteLine("((IFoo1)foo).Report(): " + ((IFoo1)foo).Report());
             writer.WriteLine("((IFoo2)foo).Report(): " + ((IFoo2)foo).Report());

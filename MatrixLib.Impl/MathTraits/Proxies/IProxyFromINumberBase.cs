@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FALSE
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -15,6 +16,7 @@ namespace MatrixLib.MathTraits.Proxies {
     /// </summary>
     /// <typeparam name="TSelf">Self type (自身类型).</typeparam>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
+    [Obsolete("发现该接口不适合 纯 .NET Standard、泛型类型推导等情况. 建议改为 IMathNumProxy 等.")]
     public partial interface IProxyFromINumberBase<TSelf, T>: IProxyBase<TSelf, T> where TSelf : IProxyBase<TSelf, T>, new() where T : INumberBase<T> {
 
         public static virtual TSelf One => TSelf.From(T.One);
@@ -230,3 +232,4 @@ namespace MatrixLib.MathTraits.Proxies {
     }
 #endif // NET7_0_OR_GREATER
 }
+#endif // FALSE

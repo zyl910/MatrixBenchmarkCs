@@ -12,7 +12,7 @@ namespace MatrixLib.MathTraits.Proxies {
     public interface IProxyBase {
     }
 
-#if NET7_0_OR_GREATER
+#if NET7_0_OR_GREATER && FALSE
     /// <summary>
     /// 带类型的基本代理接口.
     /// </summary>

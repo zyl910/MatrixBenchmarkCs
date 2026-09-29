@@ -1,4 +1,5 @@
-﻿#define ALLOW_INTERFACE_STATIC
+﻿#if FALSE
+#define ALLOW_INTERFACE_STATIC
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -316,3 +317,4 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
 
 #endif // NET7_0_OR_GREATER
 }
+#endif // FALSE
