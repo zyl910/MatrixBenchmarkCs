@@ -7,14 +7,14 @@ using System.Text;
 
 namespace MatrixLib.MathTraits {
     /// <summary>
-    /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 无约束.
+    /// 默认数值运算. 公共类型能内联, 可使用本类; 其他类型是接口调用, 建议手动使用该类型的 <see cref="INumOps{T}"/>.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public struct TraitsINumberBaseV3<T>: INumOps<T> {
+    public struct NumOps<T>: INumOps<T> {
         /// <summary>
         /// 实例.
         /// </summary>
-        public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
+        public static NumOps<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; } = new();
 
         //T INumOps<T>.Zero {
         //    [MethodImpl(MethodImplOptions.AggressiveInlining)]

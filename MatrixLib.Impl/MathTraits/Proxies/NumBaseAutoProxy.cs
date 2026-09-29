@@ -68,7 +68,7 @@ namespace MatrixLib.MathTraits.Proxies {
 #if ALLOW_INTERFACE_STATIC
                 return T.Zero;
 #else
-                return TraitsINumberBaseV3<T>.Instance.DoZero;
+                return NumOps<T>.Instance.DoZero;
 #endif
             }
         }
@@ -78,7 +78,7 @@ namespace MatrixLib.MathTraits.Proxies {
 #if ALLOW_INTERFACE_STATIC
             return left.Value + right.Value;
 #else
-            return TraitsINumberBaseV3<T>.Instance.DoAddition(left.Value, right.Value);
+            return NumOps<T>.Instance.DoAddition(left.Value, right.Value);
 #endif
         }
 
@@ -87,7 +87,7 @@ namespace MatrixLib.MathTraits.Proxies {
 #if ALLOW_INTERFACE_STATIC
             return left.Value * right.Value;
 #else
-            return TraitsINumberBaseV3<T>.Instance.DoMultiply(left.Value, right.Value);
+            return NumOps<T>.Instance.DoMultiply(left.Value, right.Value);
 #endif
         }
 

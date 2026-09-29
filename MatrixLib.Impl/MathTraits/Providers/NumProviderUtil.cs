@@ -49,7 +49,7 @@ namespace MatrixLib.MathTraits.Providers {
             //}
             //Type numberInterface = typeof(INumberBase<>).MakeGenericType(typeof(T));
             //if (numberInterface.IsAssignableFrom(typeof(T))) {
-                Type typeCaller = typeof(GenericMaths.TraitsINumberBaseV3<>).MakeGenericType(typeof(T)); // 演示了创建泛型类. 业务不是最优.
+                Type typeCaller = typeof(GenericMaths.NumOps<>).MakeGenericType(typeof(T)); // 演示了创建泛型类. 业务不是最优.
                 object obj = Activator.CreateInstance(typeCaller)!;
                 define.NumberBase = obj as INumOps<T>;
                 rt = true;

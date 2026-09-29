@@ -46,7 +46,7 @@ namespace MatrixLib.MathTraits {
                 Multiply = NumberBase.DoMultiply;
                 // 预热.
                 try {
-                    var TT = TraitsINumberBaseV3<T>.Instance;
+                    var TT = NumOps<T>.Instance;
                     var t1 = TT.DoAddition(Zero, Zero);
                     t1 = TT.DoMultiply(t1, Zero);
                     InitHash ^= t1?.GetHashCode() ?? 1;

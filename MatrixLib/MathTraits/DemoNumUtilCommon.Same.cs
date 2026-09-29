@@ -17,7 +17,7 @@ using TraitsNS = MatrixLib.MathTraits;
             where T : INumberBase<T>
 #endif // NET7_0_OR_GREATER
         {
-            var TT = TraitsNS.TraitsINumberBaseV3<T>.Instance;
+            var TT = TraitsNS.NumOps<T>.Instance;
             return SumSquaresCall(TT, src);
         }
 

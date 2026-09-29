@@ -10,7 +10,7 @@ namespace MatrixLib.MathTraits.GenericMaths {
     /// <see cref="INumberBase{TSelf}"/> 的类型萃取, 有约束.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public struct TraitsINumberBaseV3<T>: INumOps<T>
+    public struct NumOps<T>: INumOps<T>
         where T : INumberBase<T>
 #if NET9_0_OR_GREATER
         //, allows ref struct // 这是因为 INumberBase 的 T 尚不支持 `allows ref struct` // CS9244 The type 'T' may not be a ref struct or a type parameter allowing ref structs in order to use it as parameter 'TSelf' in the generic type or method 'INumberBase<TSelf>'
@@ -19,7 +19,7 @@ namespace MatrixLib.MathTraits.GenericMaths {
         /// <summary>
         /// 实例.
         /// </summary>
-        public static TraitsINumberBaseV3<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)]  get; } = new();
+        public static NumOps<T> Instance { [MethodImpl(MethodImplOptions.AggressiveInlining)]  get; } = new();
 
         T INumOps<T>.DoZero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

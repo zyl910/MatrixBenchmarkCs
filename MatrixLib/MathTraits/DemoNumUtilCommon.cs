@@ -45,7 +45,7 @@ namespace MatrixLib.MathTraits {
             if (num is not null && num is INumOps<T> ops) {
                 return SumSquaresCall(ops, src);
             } else {
-                return SumSquaresCall(TraitsINumberBaseV3<T>.Instance, src);
+                return SumSquaresCall(NumOps<T>.Instance, src);
             }
         }
 
