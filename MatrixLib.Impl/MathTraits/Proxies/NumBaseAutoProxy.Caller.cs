@@ -13,6 +13,12 @@ namespace MatrixLib.MathTraits.Proxies {
 
         readonly NumberBaseProxy<T> INumOps<NumberBaseProxy<T>>.DoZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Zero; } }
 
+        public bool SupportIComparable => throw new NotImplementedException();
+
+        public bool SupportIComparisonOperators => throw new NotImplementedException();
+
+        public bool SupportIModulusOperators => throw new NotImplementedException();
+
         //public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(T); } }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,6 +29,10 @@ namespace MatrixLib.MathTraits.Proxies {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         readonly NumberBaseProxy<T> INumOps<NumberBaseProxy<T>>.DoMultiply(NumberBaseProxy<T> left, NumberBaseProxy<T> right) {
             return left * right;
+        }
+
+        public int DoCompareTo(NumberBaseProxy<T> self, NumberBaseProxy<T> other) {
+            throw new NotImplementedException();
         }
     }
 }

@@ -52,6 +52,10 @@ namespace MatrixLib.MathTraits.GenericMaths {
             return left * right;
         }
 
+        public int DoCompareTo(T self, T? other) {
+            throw new NotImplementedException();
+        }
+
         public T Zero {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
@@ -59,6 +63,11 @@ namespace MatrixLib.MathTraits.GenericMaths {
             }
         }
 
+        public bool SupportIComparable => throw new NotImplementedException();
+
+        public bool SupportIComparisonOperators => throw new NotImplementedException();
+
+        public bool SupportIModulusOperators => throw new NotImplementedException();
     }
 #endif // NET7_0_OR_GREATER
 

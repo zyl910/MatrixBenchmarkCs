@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
@@ -20,6 +21,15 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         T INumOps<T>.DoMultiply(T left, T right) => StaticMultiply(left, right);
 
+        /// <inheritdoc cref="INumOps{T}.SupportIComparable"/>
+        bool INumOps<T>.SupportIComparable { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIComparable; }
+        /// <inheritdoc cref="INumOps{T}.SupportIComparisonOperators"/>
+        bool INumOps<T>.SupportIComparisonOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIComparisonOperators; }
+        /// <inheritdoc cref="INumOps{T}.SupportIModulusOperators"/>
+        bool INumOps<T>.SupportIModulusOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIModulusOperators; }
+
+        /// <inheritdoc cref="INumOps{T}.DoCompareTo"/>
+        int INumOps<T>.DoCompareTo(T self, T? other) => StaticCompareTo(self, other);
     }
 
 #endif // NET7_0_OR_GREATER

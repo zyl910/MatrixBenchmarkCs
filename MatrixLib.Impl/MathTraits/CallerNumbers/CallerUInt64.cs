@@ -19,9 +19,18 @@ namespace MatrixLib.MathTraits.CallerNumbers {
             return left + right;
         }
 
+        public int DoCompareTo(ulong self, ulong other) {
+            throw new NotImplementedException();
+        }
+
         public Type CallElementType { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return typeof(TMy); } }
 
         public TMy DoZero { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return default; } }
 
+        public bool SupportIComparable => throw new NotImplementedException();
+
+        public bool SupportIComparisonOperators => throw new NotImplementedException();
+
+        public bool SupportIModulusOperators => throw new NotImplementedException();
     }
 }

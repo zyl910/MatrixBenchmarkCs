@@ -24,6 +24,16 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T StaticMultiply(T left, T right) => left * right;
 
+        /// <inheritdoc cref="INumOps{T}.SupportIComparable"/>
+        public static bool StaticSupportIComparable { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => false; }
+        /// <inheritdoc cref="INumOps{T}.SupportIComparisonOperators"/>
+        public static bool StaticSupportIComparisonOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => false; }
+        /// <inheritdoc cref="INumOps{T}.SupportIModulusOperators"/>
+        public static bool StaticSupportIModulusOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => false; }
+
+        /// <inheritdoc cref="INumOps{T}.DoCompareTo"/>
+        public static int StaticCompareTo(T self, T? other) => throw new NotSupportedException(string.Format("The type {0} not supported {1}!", typeof(T).FullName, nameof(DoCompareTo)));
+
     }
 
 #endif // NET7_0_OR_GREATER

@@ -10,7 +10,7 @@ namespace MatrixLib.MathTraits {
     /// 默认数值运算. 公共类型能内联, 可使用本类; 其他类型是接口调用, 建议手动使用该类型的 <see cref="INumOps{T}"/>.
     /// </summary>
     /// <typeparam name="T">Element type (元素类型).</typeparam>
-    public struct NumOps<T>: INumOps<T> {
+    public partial struct NumOps<T>: INumOps<T> {
         /// <summary>
         /// 实例.
         /// </summary>
