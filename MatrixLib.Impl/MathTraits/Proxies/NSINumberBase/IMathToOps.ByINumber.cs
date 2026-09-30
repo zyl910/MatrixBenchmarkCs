@@ -1,28 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
 #if NET7_0_OR_GREATER
 
     partial interface IMathToOps<T> {
-
-        /// <inheritdoc cref="INumOps{T}.DoZero"/>
-        public static T StaticZero {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => T.Zero;
-        }
-
-        /// <inheritdoc cref="INumOps{T}.DoAddition"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T StaticAddition(T left, T right) => left + right;
-
-        /// <inheritdoc cref="INumOps{T}.DoMultiply"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T StaticMultiply(T left, T right) => left * right;
 
         /// <inheritdoc cref="INumOps{T}.SupportIComparable"/>
         public static bool StaticSupportIComparable { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => false; }
@@ -33,6 +15,16 @@ namespace MatrixLib.MathTraits.Proxies.NSINumberBase {
 
         /// <inheritdoc cref="INumOps{T}.DoCompareTo"/>
         public static int StaticCompareTo(T self, T? other) => throw new NotSupportedException(string.Format("The type {0} not supported {1}!", typeof(T).FullName, nameof(DoCompareTo)));
+
+        /// <inheritdoc cref="INumOps{T}.SupportIComparable"/>
+        bool INumOps<T>.SupportIComparable { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIComparable; }
+        /// <inheritdoc cref="INumOps{T}.SupportIComparisonOperators"/>
+        bool INumOps<T>.SupportIComparisonOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIComparisonOperators; }
+        /// <inheritdoc cref="INumOps{T}.SupportIModulusOperators"/>
+        bool INumOps<T>.SupportIModulusOperators { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => StaticSupportIModulusOperators; }
+
+        /// <inheritdoc cref="INumOps{T}.DoCompareTo"/>
+        int INumOps<T>.DoCompareTo(T self, T? other) => StaticCompareTo(self, other);
 
     }
 
