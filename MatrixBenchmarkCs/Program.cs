@@ -21,6 +21,7 @@ namespace MatrixBenchmarkCs {
 #if NET7_0_OR_GREATER
         interface IFoo {
             public string Report();
+            public string ReportB();
             public static string ReportStatic() {
                 return "IFoo.ReportStatic";
             }
@@ -33,6 +34,9 @@ namespace MatrixBenchmarkCs {
             //}
             string IFoo.Report() {
                 return "IFoo1.Report";
+            }
+            string IFoo.ReportB() {
+                return "IFoo1.ReportB";
             }
             public new static string ReportStatic() {
                 return "IFoo1.ReportStatic_new";
@@ -65,7 +69,26 @@ namespace MatrixBenchmarkCs {
             }
         }
 
-        class Foo: IFoo2 {
+        interface IFooB : IFoo {
+            public static string StaticReportB() {
+                return "IFooB.StaticReportB";
+            }
+            //string IFoo.ReportB() {
+            //    return StaticReportB();
+            //}
+        }
+
+        // `interface IFoo2B : IFoo2, IFooB` 中有 `IFoo.ReportB`:  接口 IFoo2B 不会报错, 但在使用时报错 (Foo : IFoo2B): 
+        interface IFoo2B : IFoo2
+            //, IFooB // 是否集继承IFooB, 无区别.
+            {
+            //string IFoo.ReportB() {  // 以覆写接口成员的实现为准.
+            //    return IFooB.StaticReportB();
+            //}
+        }
+
+        // class Foo : IFoo2, IFooB // CS8705 Interface member 'Program.IFoo.ReportB()' does not have a most specific implementation. Neither 'Program.IFoo1.Program.IFoo.ReportB()', nor 'Program.IFooB.Program.IFoo.ReportB()' are most specific.
+        class Foo : IFoo2B {
             //void IFoo.Report() {
             //    //base(IFoo2).Say();
             //    //IFoo2.base.Say();
@@ -113,6 +136,7 @@ namespace MatrixBenchmarkCs {
             writer.WriteLine("IFoo.ReportStatic(): " + IFoo.ReportStatic());
             writer.WriteLine("IFoo1.ReportStatic(): " + IFoo1.ReportStatic());
             writer.WriteLine("IFoo2.ReportStatic(): " + IFoo2.ReportStatic());
+            writer.WriteLine("((IFoo)foo).ReportB(): " + ((IFoo)foo).ReportB());
             // Output:
             //((IFoo)foo).Report(): IFoo2.Report
             //((IFoo1)foo).Report(): IFoo2.Report
