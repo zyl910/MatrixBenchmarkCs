@@ -19,8 +19,7 @@ namespace MatrixLib.MathTraits.Proxies {
         /// <typeparam name="T">元素类型.</typeparam>
         /// <param name="src">源数据.</param>
         /// <returns>返回转换结果.</returns>
-        public static ReadOnlySpan<T> AsFromNumberBaseProxy<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-        T>(this ReadOnlySpan<NumberBaseProxy<T>> src) where T : struct, IEquatable<T>
+        public static ReadOnlySpan<T> AsFromNumberBaseProxy<[DAM(ANum)]T>(this ReadOnlySpan<NumberBaseProxy<T>> src) where T : struct, IEquatable<T>
 #if NET7_0_OR_GREATER
         , INumberBase<T>
 #endif // NET7_0_OR_GREATER
